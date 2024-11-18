@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from 'graphql';
-import { MyContext } from '../context';
+import { MyContext } from '../index';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -24,8 +24,22 @@ export type AddBookMutationResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+export type AddBookMutationResponse1 = {
+  __typename?: 'AddBookMutationResponse1';
+  book?: Maybe<Book1>;
+  code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type Book = {
   __typename?: 'Book';
+  author?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type Book1 = {
+  __typename?: 'Book1';
   author?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
 };
@@ -33,6 +47,7 @@ export type Book = {
 export type Mutation = {
   __typename?: 'Mutation';
   addBook?: Maybe<AddBookMutationResponse>;
+  addBook1?: Maybe<AddBookMutationResponse1>;
 };
 
 
@@ -41,9 +56,16 @@ export type MutationAddBookArgs = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type MutationAddBook1Args = {
+  author?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   books?: Maybe<Array<Maybe<Book>>>;
+  books1?: Maybe<Array<Maybe<Book1>>>;
 };
 
 
@@ -118,7 +140,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AddBookMutationResponse: ResolverTypeWrapper<AddBookMutationResponse>;
+  AddBookMutationResponse1: ResolverTypeWrapper<AddBookMutationResponse1>;
   Book: ResolverTypeWrapper<Book>;
+  Book1: ResolverTypeWrapper<Book1>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
@@ -128,7 +152,9 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AddBookMutationResponse: AddBookMutationResponse;
+  AddBookMutationResponse1: AddBookMutationResponse1;
   Book: Book;
+  Book1: Book1;
   Boolean: Scalars['Boolean']['output'];
   Mutation: {};
   Query: {};
@@ -143,7 +169,21 @@ export type AddBookMutationResponseResolvers<ContextType = MyContext, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type AddBookMutationResponse1Resolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AddBookMutationResponse1'] = ResolversParentTypes['AddBookMutationResponse1']> = {
+  book?: Resolver<Maybe<ResolversTypes['Book1']>, ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type BookResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Book'] = ResolversParentTypes['Book']> = {
+  author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type Book1Resolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Book1'] = ResolversParentTypes['Book1']> = {
   author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -151,15 +191,19 @@ export type BookResolvers<ContextType = MyContext, ParentType extends ResolversP
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addBook?: Resolver<Maybe<ResolversTypes['AddBookMutationResponse']>, ParentType, ContextType, Partial<MutationAddBookArgs>>;
+  addBook1?: Resolver<Maybe<ResolversTypes['AddBookMutationResponse1']>, ParentType, ContextType, Partial<MutationAddBook1Args>>;
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   books?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book']>>>, ParentType, ContextType>;
+  books1?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book1']>>>, ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = MyContext> = {
   AddBookMutationResponse?: AddBookMutationResponseResolvers<ContextType>;
+  AddBookMutationResponse1?: AddBookMutationResponse1Resolvers<ContextType>;
   Book?: BookResolvers<ContextType>;
+  Book1?: Book1Resolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };

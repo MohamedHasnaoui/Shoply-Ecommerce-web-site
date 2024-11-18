@@ -1,11 +1,20 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { readFileSync } from "fs";
+import { loadFilesSync } from "@graphql-tools/load-files";
+import path from "path";
 import { Resolvers } from "./__generated__/resolvers-types";
+import { mergeTypeDefs } from "@graphql-tools/merge";
+import { fileURLToPath } from "url";
 
-const typeDefs = readFileSync("./schema.graphql", { encoding: "utf-8" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const typeDefsArray = loadFilesSync(
+  path.join(__dirname, "../../graphql/**/*.graphql")
+);
 
-interface MyContext {
+const typeDefs = mergeTypeDefs(typeDefsArray);
+console.log(path.join(__dirname, "../graphql/**/*.graphql"));
+export interface MyContext {
   dataSources: {};
 }
 
@@ -21,7 +30,7 @@ const books = [
 ];
 const resolvers: Resolvers = {
   Query: {
-    books: (parent, {}, context) => books,
+    books1: (parent, {}, context) => books,
   },
 };
 

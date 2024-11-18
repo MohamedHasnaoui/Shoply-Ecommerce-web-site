@@ -7,13 +7,15 @@
   "scripts": {
     "generate": "graphql-codegen --config resolvers-types.ts",
     "compile": "npm run generate && tsc",
-    "start": " npm run compile && node ./dist/index.js"
+    "start": " nodemon -e ts --exec \"npm run compile && node ./dist/src/index.js\" "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.11.2",
+    "@graphql-tools/load-files": "^7.0.0",
+    "@graphql-tools/merge": "^9.0.9",
     "graphql": "^16.9.0"
   },
   "devDependencies": {
@@ -21,6 +23,7 @@
     "@graphql-codegen/typescript": "4.1.1",
     "@graphql-codegen/typescript-resolvers": "4.4.0",
     "@types/node": "^22.9.0",
+    "nodemon": "^3.1.7",
     "typescript": "^5.6.3"
   }
 }
