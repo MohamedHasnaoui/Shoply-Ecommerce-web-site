@@ -1,10 +1,10 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-
+import { typeDefs } from "./src/graphql";
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "./**/*.graphql",
+  schema: "./src/graphql/schemas/**/*.graphql.ts",
   generates: {
-    "src/__generated__/resolvers-types.ts": {
+    "src/graphql/types/resolvers-types.ts": {
       plugins: ["typescript", "typescript-resolvers"],
       config: {
         contextType: "../index#MyContext",
