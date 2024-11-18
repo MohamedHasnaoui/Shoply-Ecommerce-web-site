@@ -17,7 +17,8 @@
     "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.9",
     "graphql": "^16.9.0",
-    "graphql-tag": "^2.12.6"
+    "graphql-tag": "^2.12.6",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.3",
