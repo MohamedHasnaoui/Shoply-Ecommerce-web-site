@@ -1,5 +1,4 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import { typeDefs } from "./src/graphql";
 const config: CodegenConfig = {
   overwrite: true,
   schema: "./src/graphql/schemas/**/*.graphql.ts",

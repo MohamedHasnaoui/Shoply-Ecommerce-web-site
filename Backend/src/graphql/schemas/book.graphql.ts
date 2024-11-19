@@ -1,4 +1,5 @@
 import { gql } from "graphql-tag";
+
 export const book_schema = gql`
   #graphql
   type Query {
