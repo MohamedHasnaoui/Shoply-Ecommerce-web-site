@@ -44,6 +44,11 @@ export type Book1 = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
+export enum Gender {
+  Female = 'FEMALE',
+  Male = 'MALE'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   addBook?: Maybe<AddBookMutationResponse>;
@@ -67,6 +72,12 @@ export type Query = {
   books?: Maybe<Array<Maybe<Book>>>;
   books1?: Maybe<Array<Maybe<Book1>>>;
 };
+
+export enum Role {
+  Admin = 'ADMIN',
+  Buyer = 'BUYER',
+  Seller = 'SELLER'
+}
 
 
 
@@ -144,8 +155,10 @@ export type ResolversTypes = {
   Book: ResolverTypeWrapper<Book>;
   Book1: ResolverTypeWrapper<Book1>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Gender: Gender;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  Role: Role;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 };
 

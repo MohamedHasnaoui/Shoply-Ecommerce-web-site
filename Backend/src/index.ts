@@ -8,7 +8,7 @@ const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,
 });
-// await appDataSource.initialize();
+await appDataSource.initialize();
 const { url } = await startStandaloneServer(server, {
   context: async ({ req, res }) => {
     return { dataSources: {} };
