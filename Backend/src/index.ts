@@ -1,10 +1,11 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { MyContext } from "./graphql/index.js";
 import { typeDefs, resolvers } from "./graphql/index.js";
 import { appDataSource } from "./database/data-source.js";
-import * as dotenv from "dotenv";
-dotenv.config();
+
 const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Order } from "../order/Order.entity.js";
+import { IsString, IsDate } from "class-validator";
 
 @Entity()
 export class Payment {
@@ -7,10 +7,10 @@ export class Payment {
   id: number;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @IsDate({ message: "Invalid date format." })
   paymentDate: Date;
 
   @Column()
+  @IsString()
   paymentType: string;
-  @OneToMany(() => Order, (order: Order) => order.payment)
-  order: Order[];
 }

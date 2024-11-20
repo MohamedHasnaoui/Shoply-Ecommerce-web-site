@@ -10,6 +10,7 @@
     "emitDecoratorMetadata": true, // Emit metadata for decorators (needed by TypeORM)
     "skipLibCheck": true, // Skip type checking of declaration files
     "lib": ["es2020"], // Include modern JS features
-    "types": ["node"] // Include node types for development
+    "types": ["node"], // Include node types for development
+    "forceConsistentCasingInFileNames": true
   }
 }
