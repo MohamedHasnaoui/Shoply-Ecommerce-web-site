@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { IsString, IsDate } from "class-validator";
-
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { IsString, IsDate, IsEnum } from "class-validator";
+import { PaymentType } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn()
@@ -12,5 +12,6 @@ export class Payment {
 
   @Column()
   @IsString()
-  paymentType: string;
+  @IsEnum(PaymentType, { message: "Type of Payment must be Visa or by PayPal" })
+  paymentType: PaymentType;
 }
