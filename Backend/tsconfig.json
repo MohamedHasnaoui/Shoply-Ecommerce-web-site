@@ -1,14 +1,15 @@
 {
-    "compilerOptions": {
-      "rootDirs": ["src"],
-      "outDir": "dist",
-      "lib": ["es2020"],
-      "target": "es2020",
-      "module": "esnext",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "types": ["node"],
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-    }
+  "compilerOptions": {
+    "target": "es2020", // Modern JavaScript
+    "module": "esnext", // Use ES modules
+    "moduleResolution": "node", // Resolve modules like Node.js
+    "outDir": "dist", // Output directory for compiled files
+    "rootDirs": ["src"], // Source directory (could remove if not needed)
+    "esModuleInterop": true, // Interoperability between CommonJS and ES modules
+    "experimentalDecorators": true, // Enable decorators for TypeORM
+    "emitDecoratorMetadata": true, // Emit metadata for decorators (needed by TypeORM)
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "lib": ["es2020"], // Include modern JS features
+    "types": ["node"] // Include node types for development
   }
+}
