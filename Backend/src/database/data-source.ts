@@ -16,7 +16,7 @@ export const appDataSource = new DataSource({
   port: Number(process.env.PG_PORT),
   username: process.env.PG_NAME,
   password: process.env.PG_PASSWORD,
-  database: "test",
+  database: process.env.DB_NAME,
   entities: [
     User,
     Order,
