@@ -67,6 +67,17 @@ export type MutationAddBook1Args = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum OrderItemStatus {
+  Delivered = 'Delivered',
+  Pending = 'Pending',
+  Shipped = 'Shipped'
+}
+
+export enum PaymentType {
+  PayPal = 'PayPal',
+  Visa = 'Visa'
+}
+
 export type Query = {
   __typename?: 'Query';
   books?: Maybe<Array<Maybe<Book>>>;
@@ -77,6 +88,18 @@ export enum Role {
   Admin = 'ADMIN',
   Buyer = 'BUYER',
   Seller = 'SELLER'
+}
+
+export enum Status {
+  Cancelled = 'Cancelled',
+  Confirmed = 'Confirmed',
+  Delivered = 'Delivered',
+  Failed = 'Failed',
+  Partially = 'Partially',
+  Pending = 'Pending',
+  Refunded = 'Refunded',
+  Returned = 'Returned',
+  Shipped = 'Shipped'
 }
 
 
@@ -157,8 +180,11 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Gender: Gender;
   Mutation: ResolverTypeWrapper<{}>;
+  OrderItemStatus: OrderItemStatus;
+  PaymentType: PaymentType;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
+  Status: Status;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 };
 

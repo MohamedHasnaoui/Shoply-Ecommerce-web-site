@@ -3,13 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  JoinColumn,
   Relation,
 } from "typeorm";
 import { Order } from "../order/Order.entity.js";
 import { Product } from "../product/Product.entity.js";
-import { IsNumber, Min } from "class-validator";
-
+import { IsNumber, Min, IsEnum } from "class-validator";
+import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class OrderItem {
   @PrimaryGeneratedColumn()
@@ -20,6 +19,11 @@ export class OrderItem {
   @Min(0, { message: "Quantity cannot be negative." })
   quantity: number;
 
+  @Column()
+  @IsEnum(OrderItemStatus, {
+    message: "State of an order item must be Pending,Shipped or Delivered ",
+  })
+  status: OrderItemStatus;
   @Column()
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative." })
