@@ -1,0 +1,30 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment Variables
+# .env
+# .env.local
+# .env.*.local
+
+# TypeScript
+*.tsbuildinfo
+dist/
+out/
+
+# Debugging
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS-Specific Files
+Thumbs.db
+Desktop.ini
