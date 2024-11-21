@@ -1,7 +1,9 @@
 import {
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   TableInheritance,
 } from "typeorm";
 import {
@@ -14,6 +16,7 @@ import {
   IsPhoneNumber,
 } from "class-validator";
 import { Gender, Role } from "../../graphql/types/resolvers-types.js";
+import { Message } from "../message/Message.entity.js";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -68,4 +71,7 @@ export class User {
     message: "Role must be one of 'ADMIN', 'BUYER', or 'SELLER'.",
   })
   role: Role;
+
+  @OneToMany(() => Message, (message: Message) => message.sender)
+  messages: Relation<Message>[];
 }

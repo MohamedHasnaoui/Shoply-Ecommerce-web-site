@@ -1,6 +1,7 @@
 import { IsNumber, IsString, Length } from "class-validator";
-import { ChildEntity, Column } from "typeorm";
+import { ChildEntity, Column, OneToMany, Relation } from "typeorm";
 import { User } from "../user/User.entity.js";
+import { Conversation } from "../conversation/Conversation.entity.js";
 
 @ChildEntity()
 export class Seller extends User {
@@ -14,4 +15,10 @@ export class Seller extends User {
     message: "storeBalance must be between 2 and 50 characters.",
   })
   storeBalance: number;
+
+  @OneToMany(
+    () => Conversation,
+    (conversation: Conversation) => conversation.seller
+  )
+  conversations: Relation<Conversation>[];
 }

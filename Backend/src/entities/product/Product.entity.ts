@@ -4,10 +4,12 @@ import {
   Column,
   OneToMany,
   Relation,
+  ManyToOne,
 } from "typeorm";
 import { CartItem } from "../cartItem/CartItem.entity.js";
 import { OrderItem } from "../orderItem/OrderItem.entity.js";
 import { IsNumber, IsString, Min } from "class-validator";
+import { Category } from "../category/Category.entity.js";
 
 @Entity()
 export class Product {
@@ -35,4 +37,7 @@ export class Product {
 
   @OneToMany(() => CartItem, (cartItem: CartItem) => cartItem.product)
   cartItems: Relation<CartItem>[];
+
+  @ManyToOne(() => Category, (category: Category) => category.products)
+  category: Relation<Category>;
 }

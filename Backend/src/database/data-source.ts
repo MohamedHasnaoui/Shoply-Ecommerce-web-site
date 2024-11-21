@@ -10,6 +10,10 @@ import { Payment } from "../entities/payment/Payment.entity.js";
 import { CartItem } from "../entities/cartItem/CartItem.entity.js";
 import { ShoppingCart } from "../entities/shoppingCart/ShoppingCart.entity.js";
 import { Product } from "../entities/product/Product.entity.js";
+import { Category } from "../entities/category/Category.entity.js";
+import { WishList } from "../entities/wishList/WishList.entity.js";
+import { Conversation } from "../entities/conversation/Conversation.entity.js";
+import { Message } from "../entities/message/Message.entity.js";
 export const appDataSource = new DataSource({
   type: "postgres",
   host: "localhost",
@@ -27,6 +31,10 @@ export const appDataSource = new DataSource({
     CartItem,
     ShoppingCart,
     Product,
+    Category,
+    WishList,
+    Conversation,
+    Message,
   ],
   logging: false,
   synchronize: true,
