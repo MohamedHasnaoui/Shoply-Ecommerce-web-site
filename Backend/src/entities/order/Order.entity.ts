@@ -11,7 +11,7 @@ import { OrderItem } from "../orderItem/OrderItem.entity.js";
 import { Payment } from "../payment/Payment.entity.js";
 import { Buyer } from "../buyer/Buyer.entity.js";
 import { IsNumber, IsDate, Min, IsString, IsEnum } from "class-validator";
-import { Status } from "../../graphql/types/resolvers-types.js";
+import { OrderStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
@@ -28,11 +28,11 @@ export class Order {
 
   @Column()
   @IsString()
-  @IsEnum(Status, {
+  @IsEnum(OrderStatus, {
     message:
       "Status must be one of Pending, Confirmed, Failed, Cancelled, Shipped, Partially Shipped, Delivered, Partially Delivered, Returned,Refunded.",
   })
-  status: Status;
+  status: OrderStatus;
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.order)
   orderItems: Relation<OrderItem>[];
 

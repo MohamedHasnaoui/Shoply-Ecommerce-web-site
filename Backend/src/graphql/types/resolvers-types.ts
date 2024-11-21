@@ -68,14 +68,32 @@ export type MutationAddBook1Args = {
 };
 
 export enum OrderItemStatus {
-  Delivered = 'Delivered',
-  Pending = 'Pending',
-  Shipped = 'Shipped'
+  Cancelled = 'CANCELLED',
+  Confirmed = 'CONFIRMED',
+  Delivered = 'DELIVERED',
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Refunded = 'REFUNDED',
+  Returned = 'RETURNED',
+  Shipped = 'SHIPPED'
+}
+
+export enum OrderStatus {
+  Cancelled = 'CANCELLED',
+  Confirmed = 'CONFIRMED',
+  Delivered = 'DELIVERED',
+  Failed = 'FAILED',
+  Partiallydelivered = 'PARTIALLYDELIVERED',
+  Partiallyshipped = 'PARTIALLYSHIPPED',
+  Pending = 'PENDING',
+  Refunded = 'REFUNDED',
+  Returned = 'RETURNED',
+  Shipped = 'SHIPPED'
 }
 
 export enum PaymentType {
-  PayPal = 'PayPal',
-  Visa = 'Visa'
+  Paypal = 'PAYPAL',
+  Visa = 'VISA'
 }
 
 export type Query = {
@@ -88,18 +106,6 @@ export enum Role {
   Admin = 'ADMIN',
   Buyer = 'BUYER',
   Seller = 'SELLER'
-}
-
-export enum Status {
-  Cancelled = 'Cancelled',
-  Confirmed = 'Confirmed',
-  Delivered = 'Delivered',
-  Failed = 'Failed',
-  Partially = 'Partially',
-  Pending = 'Pending',
-  Refunded = 'Refunded',
-  Returned = 'Returned',
-  Shipped = 'Shipped'
 }
 
 
@@ -181,10 +187,10 @@ export type ResolversTypes = {
   Gender: Gender;
   Mutation: ResolverTypeWrapper<{}>;
   OrderItemStatus: OrderItemStatus;
+  OrderStatus: OrderStatus;
   PaymentType: PaymentType;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
-  Status: Status;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
 };
 
