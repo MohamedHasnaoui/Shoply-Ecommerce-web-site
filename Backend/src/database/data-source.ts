@@ -1,19 +1,23 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import { DataSource } from "typeorm";
-import { User } from "../entities/user/User.entity.js";
-import { Buyer } from "../entities/buyer/Buyer.entity.js";
-import { Seller } from "../entities/seller/Seller.entity.js";
-import { Order } from "../entities/order/Order.entity.js";
-import { OrderItem } from "../entities/orderItem/OrderItem.entity.js";
-import { Payment } from "../entities/payment/Payment.entity.js";
-import { CartItem } from "../entities/cartItem/CartItem.entity.js";
-import { ShoppingCart } from "../entities/shoppingCart/ShoppingCart.entity.js";
-import { Product } from "../entities/product/Product.entity.js";
-import { Category } from "../entities/category/Category.entity.js";
-import { WishList } from "../entities/wishList/WishList.entity.js";
-import { Conversation } from "../entities/conversation/Conversation.entity.js";
-import { Message } from "../entities/message/Message.entity.js";
+import {
+  User,
+  Buyer,
+  CartItem,
+  Category,
+  Conversation,
+  Message,
+  Order,
+  OrderItem,
+  Payment,
+  Product,
+  Seller,
+  ShoppingCart,
+  WishList,
+  Review,
+} from "../entities/index.js";
+
 export const appDataSource = new DataSource({
   type: "postgres",
   host: "localhost",
@@ -35,6 +39,7 @@ export const appDataSource = new DataSource({
     WishList,
     Conversation,
     Message,
+    Review,
   ],
   logging: false,
   synchronize: true,

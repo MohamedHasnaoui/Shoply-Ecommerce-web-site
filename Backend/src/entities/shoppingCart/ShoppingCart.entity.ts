@@ -5,7 +5,7 @@ import {
   OneToMany,
   Relation,
 } from "typeorm";
-import { CartItem } from "../cartItem/CartItem.entity.js";
+import { CartItem } from "../index.js";
 import { IsNumber, Min } from "class-validator";
 @Entity()
 export class ShoppingCart {

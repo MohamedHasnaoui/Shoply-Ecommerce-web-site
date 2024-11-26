@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from "typeorm";
-import { Product } from "../product/Product.entity.js";
+import { Product } from "../index.js";
 
 @Entity()
 export class WishList {

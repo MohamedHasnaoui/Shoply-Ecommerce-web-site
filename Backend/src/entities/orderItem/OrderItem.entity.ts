@@ -5,8 +5,7 @@ import {
   ManyToOne,
   Relation,
 } from "typeorm";
-import { Order } from "../order/Order.entity.js";
-import { Product } from "../product/Product.entity.js";
+import { Order, Product } from "../index.js";
 import { IsNumber, Min, IsEnum } from "class-validator";
 import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()

@@ -6,10 +6,8 @@ import {
   Relation,
   ManyToOne,
 } from "typeorm";
-import { CartItem } from "../cartItem/CartItem.entity.js";
-import { OrderItem } from "../orderItem/OrderItem.entity.js";
-import { IsNumber, IsString, Min } from "class-validator";
-import { Category } from "../category/Category.entity.js";
+import { CartItem, OrderItem, Category, Seller, Review } from "../index.js";
+import { IsInt, IsNumber, IsString, Max, Min } from "class-validator";
 
 @Entity()
 export class Product {
@@ -32,6 +30,13 @@ export class Product {
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative" })
   quantity: number;
+
+  @Column()
+  @IsInt()
+  @Min(0) // Minimum rating value is 0
+  @Max(5) // Maximum rating value is 5
+  rating: number;
+
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.product)
   orderItems: Relation<OrderItem>[];
 
@@ -40,4 +45,10 @@ export class Product {
 
   @ManyToOne(() => Category, (category: Category) => category.products)
   category: Relation<Category>;
+
+  @ManyToOne(() => Seller, (seller) => seller.products)
+  owner: Relation<Seller>;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Relation<Review>[];
 }

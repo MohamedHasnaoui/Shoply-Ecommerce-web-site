@@ -5,9 +5,7 @@ import {
   ManyToOne,
   Relation,
 } from "typeorm";
-import { Product } from "../product/Product.entity.js";
-
-import { ShoppingCart } from "../shoppingCart/ShoppingCart.entity.js";
+import { Product, ShoppingCart } from "../index.js";
 import { IsNumber, Min } from "class-validator";
 @Entity()
 export class CartItem {
@@ -27,7 +25,7 @@ export class CartItem {
     () => ShoppingCart,
     (shoppingCart: ShoppingCart) => shoppingCart.cartItems
   )
-  shoppingCart: ShoppingCart;
+  shoppingCart: Relation<ShoppingCart>;
   @ManyToOne(() => Product, (product: Product) => product.cartItems)
   product: Relation<Product>;
 }

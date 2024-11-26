@@ -1,17 +1,25 @@
-import { ChildEntity, OneToMany, OneToOne, Relation } from "typeorm";
-import { Order } from "../order/Order.entity.js";
-
-import { User } from "../user/User.entity.js";
-import { ShoppingCart } from "../shoppingCart/ShoppingCart.entity.js";
-import { Conversation } from "../conversation/Conversation.entity.js";
-import { WishList } from "../wishList/WishList.entity.js";
-
+import {
+  ChildEntity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  Relation,
+} from "typeorm";
+import {
+  Order,
+  User,
+  ShoppingCart,
+  Conversation,
+  WishList,
+  Review,
+} from "../index.js";
 @ChildEntity()
 export class Buyer extends User {
-  @OneToOne(() => Order, (order) => order.buyer)
-  orders: Relation<Order>;
+  @OneToMany(() => Order, (order) => order.buyer)
+  orders: Relation<Order>[];
 
   @OneToOne(() => ShoppingCart)
+  @JoinColumn()
   shopingCart: Relation<ShoppingCart>;
 
   @OneToMany(
@@ -21,5 +29,9 @@ export class Buyer extends User {
   conversations: Relation<Conversation>[];
 
   @OneToOne(() => WishList)
+  @JoinColumn()
   wishList: Relation<WishList>;
+
+  @OneToMany(() => Review, (review) => review.reviewer)
+  reviews: Relation<Review>[];
 }
