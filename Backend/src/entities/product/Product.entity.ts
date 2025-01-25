@@ -37,6 +37,9 @@ export class Product {
   @Max(5) // Maximum rating value is 5
   rating: number;
 
+  @Column()
+  images: string[];
+
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.product)
   orderItems: Relation<OrderItem>[];
 

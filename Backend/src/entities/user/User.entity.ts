@@ -61,9 +61,15 @@ export class User {
 
   @Column()
   @IsEnum(Gender, {
-    message: "Gender must be one of 'MALE', 'FEMALE', or 'OTHER'.",
+    message: "Gender must be one of 'MALE', 'FEMALE'",
   })
   gender: Gender;
+
+  @Column()
+  profileImg: string;
+
+  @Column()
+  coverImg: string;
 
   @Column()
   @IsEnum(Role, {
