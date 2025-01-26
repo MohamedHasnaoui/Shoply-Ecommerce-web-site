@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { MyContext } from '../index';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -7,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -14,34 +15,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
-export type AddBookMutationResponse = {
-  __typename?: 'AddBookMutationResponse';
-  book?: Maybe<Book>;
-  code: Scalars['String']['output'];
-  message: Scalars['String']['output'];
-  success: Scalars['Boolean']['output'];
-};
-
-export type AddBookMutationResponse1 = {
-  __typename?: 'AddBookMutationResponse1';
-  book?: Maybe<Book1>;
-  code: Scalars['String']['output'];
-  message: Scalars['String']['output'];
-  success: Scalars['Boolean']['output'];
-};
-
-export type Book = {
-  __typename?: 'Book';
-  author?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
-};
-
-export type Book1 = {
-  __typename?: 'Book1';
-  author?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+export type AuthResponse = {
+  __typename?: 'AuthResponse';
+  jwt: Scalars['String']['output'];
+  user: User;
 };
 
 export enum Gender {
@@ -49,22 +29,26 @@ export enum Gender {
   Male = 'MALE'
 }
 
+export type JwtPayload = {
+  __typename?: 'JwtPayload';
+  email: Scalars['String']['output'];
+  userId: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  addBook?: Maybe<AddBookMutationResponse>;
-  addBook1?: Maybe<AddBookMutationResponse1>;
+  signin: AuthResponse;
+  signup: AuthResponse;
 };
 
 
-export type MutationAddBookArgs = {
-  author?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
+export type MutationSigninArgs = {
+  input: SignInInput;
 };
 
 
-export type MutationAddBook1Args = {
-  author?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
+export type MutationSignupArgs = {
+  input: SignupIpnut;
 };
 
 export enum OrderItemStatus {
@@ -98,8 +82,7 @@ export enum PaymentType {
 
 export type Query = {
   __typename?: 'Query';
-  books?: Maybe<Array<Maybe<Book>>>;
-  books1?: Maybe<Array<Maybe<Book1>>>;
+  currentUser?: Maybe<User>;
 };
 
 export enum Role {
@@ -107,6 +90,34 @@ export enum Role {
   Buyer = 'BUYER',
   Seller = 'SELLER'
 }
+
+export type SignInInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type SignupIpnut = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Role;
+};
+
+export type User = {
+  __typename?: 'User';
+  address?: Maybe<Scalars['String']['output']>;
+  birthDay?: Maybe<Scalars['DateTime']['output']>;
+  coverImg?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  gender?: Maybe<Gender>;
+  id: Scalars['Int']['output'];
+  lastName: Scalars['String']['output'];
+  phoneNumber?: Maybe<Scalars['String']['output']>;
+  profileImg?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Role>;
+};
 
 
 
@@ -179,77 +190,85 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  AddBookMutationResponse: ResolverTypeWrapper<AddBookMutationResponse>;
-  AddBookMutationResponse1: ResolverTypeWrapper<AddBookMutationResponse1>;
-  Book: ResolverTypeWrapper<Book>;
-  Book1: ResolverTypeWrapper<Book1>;
+  AuthResponse: ResolverTypeWrapper<AuthResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Gender: Gender;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  JwtPayload: ResolverTypeWrapper<JwtPayload>;
   Mutation: ResolverTypeWrapper<{}>;
   OrderItemStatus: OrderItemStatus;
   OrderStatus: OrderStatus;
   PaymentType: PaymentType;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
+  SignInInput: SignInInput;
+  SignupIpnut: SignupIpnut;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  AddBookMutationResponse: AddBookMutationResponse;
-  AddBookMutationResponse1: AddBookMutationResponse1;
-  Book: Book;
-  Book1: Book1;
+  AuthResponse: AuthResponse;
   Boolean: Scalars['Boolean']['output'];
+  DateTime: Scalars['DateTime']['output'];
+  Int: Scalars['Int']['output'];
+  JwtPayload: JwtPayload;
   Mutation: {};
   Query: {};
+  SignInInput: SignInInput;
+  SignupIpnut: SignupIpnut;
   String: Scalars['String']['output'];
+  User: User;
 };
 
-export type AddBookMutationResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AddBookMutationResponse'] = ResolversParentTypes['AddBookMutationResponse']> = {
-  book?: Resolver<Maybe<ResolversTypes['Book']>, ParentType, ContextType>;
-  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
+  jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AddBookMutationResponse1Resolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AddBookMutationResponse1'] = ResolversParentTypes['AddBookMutationResponse1']> = {
-  book?: Resolver<Maybe<ResolversTypes['Book1']>, ParentType, ContextType>;
-  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
 
-export type BookResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Book'] = ResolversParentTypes['Book']> = {
-  author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type Book1Resolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Book1'] = ResolversParentTypes['Book1']> = {
-  author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['JwtPayload'] = ResolversParentTypes['JwtPayload']> = {
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addBook?: Resolver<Maybe<ResolversTypes['AddBookMutationResponse']>, ParentType, ContextType, Partial<MutationAddBookArgs>>;
-  addBook1?: Resolver<Maybe<ResolversTypes['AddBookMutationResponse1']>, ParentType, ContextType, Partial<MutationAddBook1Args>>;
+  signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
+  signup?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  books?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book']>>>, ParentType, ContextType>;
-  books1?: Resolver<Maybe<Array<Maybe<ResolversTypes['Book1']>>>, ParentType, ContextType>;
+  currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  birthDay?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  coverImg?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileImg?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = MyContext> = {
-  AddBookMutationResponse?: AddBookMutationResponseResolvers<ContextType>;
-  AddBookMutationResponse1?: AddBookMutationResponse1Resolvers<ContextType>;
-  Book?: BookResolvers<ContextType>;
-  Book1?: Book1Resolvers<ContextType>;
+  AuthResponse?: AuthResponseResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
+  JwtPayload?: JwtPayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 
