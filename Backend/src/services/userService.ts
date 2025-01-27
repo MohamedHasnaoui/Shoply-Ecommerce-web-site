@@ -18,7 +18,6 @@ export class UserService {
 
   async create(signupInput: SignupIpnut) {
     const user = await this.findOneByEmail(signupInput.email);
-    console.log("inside create");
     if (user) {
       throw new GraphQLError("user already exist in the database", {
         extensions: { code: "BAD USER INPUTS" },

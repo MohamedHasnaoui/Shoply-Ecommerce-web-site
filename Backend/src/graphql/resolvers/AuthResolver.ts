@@ -4,22 +4,29 @@ import { Resolvers } from "../types/resolvers-types";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
+import { emailUtil, SendEmailInput } from "../../../utils/EmailUtil.js";
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
   Mutation: {
     signup: async (parent, { input }, context) => {
       const user = await userService.create(input);
 
-      console.log(user.id);
       const jwtToken = jwt.sign(
         { email: input.email, userId: user.id },
         process.env.JWT_KEY!,
         { expiresIn: "7 days" }
       );
+
       if (!user || jwtToken === "") {
         throw new GraphQLError("user is null");
       }
-
+      const emailInput: SendEmailInput = {
+        emailTitle: "Welcome to Shoply, we're glad to have you with us",
+        subject: "Email Confirmation",
+        messageBody: "<p>confirm your Email</p>",
+        RECIPIENT_EMAIL: input.email,
+      };
+      await emailUtil.sendEmail(emailInput);
       return { user, jwt: jwtToken };
     },
     signin: async (parent, { input }, context) => {
