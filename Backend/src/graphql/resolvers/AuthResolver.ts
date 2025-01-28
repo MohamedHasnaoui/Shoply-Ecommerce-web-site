@@ -1,18 +1,17 @@
 import { GraphQLError } from "graphql";
 import { userService } from "../../services/UserService.js";
-import { Resolvers } from "../types/resolvers-types";
+import { Resolvers, TokenType } from "../types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
-import { emailUtil, SendEmailInput } from "../../../utils/EmailUtil.js";
-import { tokenUtil } from "../../../utils/TokenUtil.js";
+import { emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
   Mutation: {
     signup: async (parent, { input }, context) => {
       const user = await userService.create(input);
-      emailUtil.sendVerificationEmail(user);
+      await emailUtil.sendVerificationEmail(user);
       return true;
     },
     signin: async (parent, { input }, context) => {
@@ -48,10 +47,16 @@ export const AuthResolver: Resolvers = {
         });
       }
       const verificationToken = await verificationTokenService.findByUserId(
-        user.id
+        user.id,
+        TokenType.Email
       );
       if (verificationToken == null) {
         throw new GraphQLError("Token not found", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      if (verificationToken.expiresAt < new Date()) {
+        throw new GraphQLError("Token is invalid or has expired.", {
           extensions: { code: "BAD USER INPUTS" },
         });
       }
@@ -61,6 +66,47 @@ export const AuthResolver: Resolvers = {
         });
       }
       user.verified = true;
+      await userService.update(user);
+      await verificationTokenService.deleteToken(verificationToken.id);
+      return true;
+    },
+    addResetPasswordRequest: async (parent, { email }, context) => {
+      const user = await userService.findOneByEmail(email);
+      if (!user) {
+        throw new GraphQLError("Wrong Credentials", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      await emailUtil.sendResetPasswordEmail(user);
+      return true;
+    },
+    resetPassword: async (parent, { userId, token, password }, context) => {
+      const user = await userService.findOneById(userId);
+      if (!user) {
+        throw new GraphQLError("Wrong Credentials", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      const verificationToken = await verificationTokenService.findByUserId(
+        user.id,
+        TokenType.Password
+      );
+      if (verificationToken == null) {
+        throw new GraphQLError("Token not found", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      if (verificationToken.expiresAt < new Date()) {
+        throw new GraphQLError("Token is invalid or has expired.", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      if (verificationToken.token !== token) {
+        throw new GraphQLError("Token not valid", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      user.password = await bcrypt.hash(password, 10);
       await userService.update(user);
       await verificationTokenService.deleteToken(verificationToken.id);
       return true;

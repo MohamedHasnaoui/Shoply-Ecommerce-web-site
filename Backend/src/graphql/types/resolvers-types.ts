@@ -37,9 +37,23 @@ export type JwtPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addResetPasswordRequest: Scalars['Boolean']['output'];
+  resetPassword: Scalars['Boolean']['output'];
   signin: AuthResponse;
   signup: Scalars['Boolean']['output'];
   verifyEmail: Scalars['Boolean']['output'];
+};
+
+
+export type MutationAddResetPasswordRequestArgs = {
+  email: Scalars['String']['input'];
+};
+
+
+export type MutationResetPasswordArgs = {
+  password: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 
@@ -110,6 +124,11 @@ export type SignupIpnut = {
   password: Scalars['String']['input'];
   role: Role;
 };
+
+export enum TokenType {
+  Email = 'EMAIL',
+  Password = 'PASSWORD'
+}
 
 export type User = {
   __typename?: 'User';
@@ -212,6 +231,7 @@ export type ResolversTypes = {
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  TokenType: TokenType;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -247,6 +267,8 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
+  resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
   signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
   signup?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;

@@ -3,6 +3,7 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { verificationTokenService } from "../src/services/VerificationTokenService.js";
 import { tokenUtil } from "./TokenUtil.js";
 import { User } from "../src/entities";
+import { TokenType } from "../src/graphql/types/resolvers-types.js";
 
 export type SendEmailInput = {
   RECIPIENT_EMAIL: string;
@@ -98,14 +99,34 @@ export class EmailUtil {
     });
   }
   async sendVerificationEmail(user: User) {
-    const token = tokenUtil.generateTokenString(8);
+    const token = tokenUtil.generateTokenNumber(6);
     const emailInput: SendEmailInput = {
       emailTitle: "Welcome to Shoply",
       subject: "Email Confirmation",
       messageBody: `<p>Your Confirmation Password: <strong>${token}</strong></p>`,
       RECIPIENT_EMAIL: user.email,
     };
-    await verificationTokenService.createToken(token, user.id);
+    await verificationTokenService.createToken(
+      user.email,
+      token,
+      TokenType.Email
+    );
+    await this.sendEmail(emailInput);
+  }
+  async sendResetPasswordEmail(user: User) {
+    const token = tokenUtil.generateTokenString(100);
+    const emailInput: SendEmailInput = {
+      emailTitle: "Reset Password",
+      subject: "Reset Password",
+      messageBody: `<p>Your Reset Password Token: <a href="https://${process.env.FRONT_URL}/resetpassword/${user.id}?token=${token}">Reset Password</a></p>`,
+      RECIPIENT_EMAIL: user.email,
+    };
+    console.log(emailInput.messageBody);
+    await verificationTokenService.createToken(
+      user.email,
+      token,
+      TokenType.Password
+    );
     await this.sendEmail(emailInput);
   }
 }

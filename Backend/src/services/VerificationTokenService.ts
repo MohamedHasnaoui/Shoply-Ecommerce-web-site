@@ -4,26 +4,29 @@ import { userService, UserService } from "./UserService.js";
 import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";
+import { TokenType } from "../graphql/types/resolvers-types.js";
 
 export class VerificationTokenService {
   constructor(
     private verificationTokenRepository: Repository<VerificationToken>,
     private userService: UserService
   ) {}
-  async createToken(token: string, userId: number) {
-    const user = await this.userService.findOneById(userId);
+  async createToken(email: string, token: string, type: TokenType) {
+    const user = await this.userService.findOneByEmail(email);
     if (user == null) {
       throw new GraphQLError("User not found", {
         extensions: { code: "BAD_USER_INPUTS" },
       });
     }
-    const verificationToken = await this.findByUserId(userId);
+    const verificationToken = await this.findByUserId(user.id, type);
     if (verificationToken != null) {
       return await this.verificationTokenRepository.remove(verificationToken);
     }
     const newVerificationToken = this.verificationTokenRepository.create({
-      token,
+      token: token,
       user,
+      type: type,
+      expiresAt: new Date(Date.now() + 3600 * 1000),
     });
     try {
       await validateOrReject(newVerificationToken);
@@ -34,9 +37,11 @@ export class VerificationTokenService {
       });
     }
   }
-  async findByUserId(userId: number) {
+  async findByUserId(userId: number, type: TokenType) {
     const user = await this.userService.findOneById(userId);
-    return this.verificationTokenRepository.findOne({ where: { user: user } });
+    return this.verificationTokenRepository.findOne({
+      where: { user: user, type },
+    });
   }
   async deleteToken(tokenId: number) {
     const token = await this.verificationTokenRepository.findOneBy({
