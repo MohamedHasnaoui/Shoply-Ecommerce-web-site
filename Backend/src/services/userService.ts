@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entities/index.js";
-import { SignupIpnut } from "../graphql/types/resolvers-types";
+import { SignupIpnut } from "../graphql/types/resolvers-types.js";
 import bcrypt from "bcrypt";
 import { validateOrReject, ValidationError } from "class-validator";
 import { GraphQLError } from "graphql";
@@ -34,6 +34,10 @@ export class UserService {
         extensions: { errors, code: "BAD USER INPUTS" },
       });
     }
+  }
+  async update(user: User) {
+    await this.userRepository.update({ id: user.id }, user);
+    return user;
   }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

@@ -46,7 +46,7 @@ export class User {
   password: string;
 
   @Column({ default: false })
-  emailConfermed: boolean;
+  verified: boolean;
 
   @Column({ nullable: true })
   @IsString()

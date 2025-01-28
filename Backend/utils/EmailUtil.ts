@@ -1,6 +1,9 @@
 import { MailtrapClient } from "mailtrap";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import { verificationTokenService } from "../src/services/VerificationTokenService.js";
+import { tokenUtil } from "./TokenUtil.js";
+import { User } from "../src/entities";
 
 export type SendEmailInput = {
   RECIPIENT_EMAIL: string;
@@ -30,7 +33,6 @@ export class EmailUtil {
     });
   }
   async sendEmail(sendEmailInput: SendEmailInput) {
-    console.log(sendEmailInput);
     await this.transporter.sendMail({
       from: `Shoply <${this.SENDER_EMAIL}>`,
       to: sendEmailInput.RECIPIENT_EMAIL,
@@ -95,6 +97,17 @@ export class EmailUtil {
 </html>
   `,
     });
+  }
+  async sendVerificationEmail(user: User) {
+    const token = tokenUtil.generateTokenString(8);
+    const emailInput: SendEmailInput = {
+      emailTitle: "Welcome to Shoply",
+      subject: "Email Confirmation",
+      messageBody: `<p>Your Confirmation Password: <strong>${token}</strong></p>`,
+      RECIPIENT_EMAIL: user.email,
+    };
+    await verificationTokenService.createToken(token, user.id);
+    await this.sendEmail(emailInput);
   }
 }
 

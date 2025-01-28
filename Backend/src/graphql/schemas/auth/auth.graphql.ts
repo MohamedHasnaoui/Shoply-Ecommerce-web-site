@@ -47,7 +47,8 @@ export const authSchema = gql`
     currentUser: User
   }
   type Mutation {
-    signup(input: SignupIpnut!): AuthResponse!
+    signup(input: SignupIpnut!): Boolean!
     signin(input: SignInInput!): AuthResponse!
+    verifyEmail(email: String!, token: String!): Boolean!
   }
 `;

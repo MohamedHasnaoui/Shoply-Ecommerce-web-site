@@ -16,6 +16,7 @@ import {
   ShoppingCart,
   WishList,
   Review,
+  VerificationToken,
 } from "../entities/index.js";
 
 export const appDataSource = new DataSource({
@@ -40,6 +41,7 @@ export const appDataSource = new DataSource({
     Conversation,
     Message,
     Review,
+    VerificationToken,
   ],
   logging: false,
   synchronize: true,

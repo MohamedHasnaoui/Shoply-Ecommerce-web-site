@@ -38,7 +38,8 @@ export type JwtPayload = {
 export type Mutation = {
   __typename?: 'Mutation';
   signin: AuthResponse;
-  signup: AuthResponse;
+  signup: Scalars['Boolean']['output'];
+  verifyEmail: Scalars['Boolean']['output'];
 };
 
 
@@ -49,6 +50,12 @@ export type MutationSigninArgs = {
 
 export type MutationSignupArgs = {
   input: SignupIpnut;
+};
+
+
+export type MutationVerifyEmailArgs = {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export enum OrderItemStatus {
@@ -241,7 +248,8 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
-  signup?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  signup?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
