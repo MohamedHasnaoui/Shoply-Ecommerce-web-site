@@ -1,4 +1,3 @@
-import { MailtrapClient } from "mailtrap";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { verificationTokenService } from "../src/services/VerificationTokenService.js";
