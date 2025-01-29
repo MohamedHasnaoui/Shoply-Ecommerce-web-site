@@ -111,6 +111,34 @@ export const AuthResolver: Resolvers = {
       await verificationTokenService.deleteToken(verificationToken.id);
       return true;
     },
+    updateUser: async (parent, { input }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("not authorized", {
+          extensions: { code: "not authorized" },
+        });
+      }
+      const user = await userService.findOneById(input.id);
+      if (!user) {
+        throw new GraphQLError("User not found", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      if (context.currentUser.userId !== user.id) {
+        throw new GraphQLError("not authorized", {
+          extensions: { code: "not authorized" },
+        });
+      }
+      user.firstName = input.firstName || user.firstName;
+      user.lastName = input.lastName || user.lastName;
+      user.address = input.address || user.address;
+      user.phoneNumber = input.phoneNumber || user.phoneNumber;
+      user.birthDay = input.birthDay || user.birthDay;
+      user.profileImg = input.profileImg || user.profileImg;
+      user.coverImg = input.coverImg || user.coverImg;
+      user.gender = input.gender || user.gender;
+
+      return await userService.update(user);
+    },
   },
   Query: {
     currentUser: async (parent, {}, context) => {

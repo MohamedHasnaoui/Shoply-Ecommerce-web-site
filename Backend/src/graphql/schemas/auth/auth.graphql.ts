@@ -26,6 +26,17 @@ export const authSchema = gql`
     email: String!
     password: String!
   }
+  input UpdateUserInput {
+    id: Int!
+    firstName: String
+    lastName: String
+    address: String
+    phoneNumber: String
+    birthDay: DateTime
+    gender: Gender
+    profileImg: String
+    coverImg: String
+  }
   type User {
     id: Int!
     email: String!
@@ -56,5 +67,6 @@ export const authSchema = gql`
     verifyEmail(email: String!, token: String!): Boolean!
     addResetPasswordRequest(email: String!): Boolean!
     resetPassword(userId: Int!, token: String!, password: String!): Boolean!
+    updateUser(input: UpdateUserInput!): User!
   }
 `;

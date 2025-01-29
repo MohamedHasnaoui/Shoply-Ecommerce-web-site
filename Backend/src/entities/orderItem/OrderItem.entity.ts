@@ -6,7 +6,7 @@ import {
   Relation,
 } from "typeorm";
 import { Order, Product } from "../index.js";
-import { IsNumber, Min, IsEnum } from "class-validator";
+import { IsNumber, Min, IsEnum, IsDate, IsOptional } from "class-validator";
 import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class OrderItem {
@@ -27,6 +27,17 @@ export class OrderItem {
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative." })
   price: number;
+
+  @Column({ default: new Date() })
+  @IsDate({ message: "Invalid date format." })
+  @IsOptional()
+  createdAt: Date;
+
+  @Column({ default: new Date() })
+  @IsDate({ message: "Invalid date format." })
+  @IsOptional()
+  updatedAt: Date;
+
   @ManyToOne(() => Order, (order: Order) => order.orderItems)
   order: Relation<Order>;
 

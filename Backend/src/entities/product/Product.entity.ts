@@ -7,7 +7,14 @@ import {
   ManyToOne,
 } from "typeorm";
 import { CartItem, OrderItem, Category, Seller, Review } from "../index.js";
-import { IsInt, IsNumber, IsString, Max, Min } from "class-validator";
+import {
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from "class-validator";
 
 @Entity()
 export class Product {
@@ -18,6 +25,7 @@ export class Product {
   name: string;
 
   @Column()
+  @IsOptional()
   reference: string;
 
   @Column()

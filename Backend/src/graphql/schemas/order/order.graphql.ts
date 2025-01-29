@@ -30,4 +30,22 @@ export const orderSchema = gql`
     VISA
     PAYPAL
   }
+  type OrderItem {
+    id: Int!
+    product: Product!
+    quantity: Int!
+    price: Float!
+    status: OrderItemStatus!
+    createdAt: String!
+    updatedAt: String!
+  }
+  type Order {
+    id: Int!
+    status: OrderStatus!
+    totalAmount: Float!
+    orderItems: [OrderItem]!
+    buyer: User!
+    createdAt: String!
+    updatedAt: String!
+  }
 `;

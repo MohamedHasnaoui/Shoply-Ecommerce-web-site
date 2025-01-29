@@ -23,7 +23,6 @@ export class OrderService {
     const payment = await paymentService.findOneById(paymentId);
     const order = this.orderRepository.create({
       buyer: user,
-      orderDate: new Date(),
       status: OrderStatus.Pending,
       totalAmount: 0,
       payment,
@@ -79,6 +78,7 @@ export class OrderService {
     }
     order.status = orderStatut;
     order.totalAmount = totalPrice;
+    order.updatedAt = new Date();
     await this.orderRepository.update({ id: order.id }, order);
     return order;
   }

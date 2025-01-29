@@ -9,20 +9,24 @@ import {
   JoinColumn,
 } from "typeorm";
 import { OrderItem, Payment, Buyer } from "../index.js";
-import { IsNumber, IsDate, Min, IsString, IsEnum } from "class-validator";
+import {
+  IsNumber,
+  IsDate,
+  Min,
+  IsString,
+  IsEnum,
+  IsOptional,
+} from "class-validator";
 import { OrderStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  @IsDate({ message: "Invalid date format." })
-  orderDate: Date;
-
-  @Column()
+  @Column({ type: "float8", default: 0 })
   @IsNumber()
   @Min(0, { message: "Total of amount cannot be negative." })
+  @IsOptional()
   totalAmount: number;
 
   @Column()
@@ -34,6 +38,16 @@ export class Order {
   status: OrderStatus;
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.order)
   orderItems: Relation<OrderItem>[];
+
+  @Column({ default: new Date() })
+  @IsDate({ message: "Invalid date format." })
+  @IsOptional()
+  createdAt: Date;
+
+  @Column({ default: new Date() })
+  @IsDate({ message: "Invalid date format." })
+  @IsOptional()
+  updatedAt: Date;
 
   @OneToOne(() => Payment)
   @JoinColumn()
