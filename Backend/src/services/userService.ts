@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entities/index.js";
-import { SignupIpnut } from "../graphql/types/resolvers-types";
+import { SignupIpnut } from "../graphql/types/resolvers-types.js";
 import bcrypt from "bcrypt";
 import { validateOrReject, ValidationError } from "class-validator";
 import { GraphQLError } from "graphql";
@@ -18,7 +18,6 @@ export class UserService {
 
   async create(signupInput: SignupIpnut) {
     const user = await this.findOneByEmail(signupInput.email);
-    console.log("inside create");
     if (user) {
       throw new GraphQLError("user already exist in the database", {
         extensions: { code: "BAD USER INPUTS" },
@@ -35,6 +34,10 @@ export class UserService {
         extensions: { errors, code: "BAD USER INPUTS" },
       });
     }
+  }
+  async update(user: User) {
+    await this.userRepository.update({ id: user.id }, user);
+    return user;
   }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

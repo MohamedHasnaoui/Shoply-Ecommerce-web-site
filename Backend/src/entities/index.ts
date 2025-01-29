@@ -13,3 +13,4 @@ export * from "./seller/Seller.entity.js";
 export * from "./shoppingCart/ShoppingCart.entity.js";
 export * from "./wishList/WishList.entity.js";
 export * from "./review/review.entity.js";
+export * from "./verificationToken/VerificationToken.entity.js";

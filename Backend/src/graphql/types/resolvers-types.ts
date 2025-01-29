@@ -52,8 +52,23 @@ export type Mutation = {
   addCategory: Category;
   addProduct: Product;
   addProductToCategory: ResponseMessage;
+  addResetPasswordRequest: Scalars['Boolean']['output'];
+  resetPassword: Scalars['Boolean']['output'];
   signin: AuthResponse;
-  signup: AuthResponse;
+  signup: Scalars['Boolean']['output'];
+  verifyEmail: Scalars['Boolean']['output'];
+};
+
+
+export type MutationAddResetPasswordRequestArgs = {
+  email: Scalars['String']['input'];
+};
+
+
+export type MutationResetPasswordArgs = {
+  password: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 
@@ -79,6 +94,12 @@ export type MutationSigninArgs = {
 
 export type MutationSignupArgs = {
   input: SignupIpnut;
+};
+
+
+export type MutationVerifyEmailArgs = {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export enum OrderItemStatus {
@@ -177,6 +198,11 @@ export type SignupIpnut = {
   password: Scalars['String']['input'];
   role: Role;
 };
+
+export enum TokenType {
+  Email = 'EMAIL',
+  Password = 'PASSWORD'
+}
 
 export type User = {
   __typename?: 'User';
@@ -285,6 +311,7 @@ export type ResolversTypes = {
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  TokenType: TokenType;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -336,8 +363,11 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   addCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationAddCategoryArgs, 'input'>>;
   addProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationAddProductArgs, 'input'>>;
   addProductToCategory?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAddProductToCategoryArgs, 'productId'>>;
+  addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
+  resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
   signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
-  signup?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  signup?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
 };
 
 export type ProductResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
