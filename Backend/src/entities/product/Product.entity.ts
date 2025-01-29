@@ -28,9 +28,10 @@ export class Product {
   @IsOptional()
   reference: string;
 
-  @Column()
+  @Column({ type: "float8" })
   @IsNumber()
   price: number;
+
   @Column()
   @IsString()
   description: string;
@@ -41,6 +42,7 @@ export class Product {
 
   @Column()
   @IsInt()
+  @IsOptional()
   @Min(0) // Minimum rating value is 0
   @Max(5) // Maximum rating value is 5
   rating: number;
