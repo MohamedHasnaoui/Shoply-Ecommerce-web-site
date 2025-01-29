@@ -24,6 +24,18 @@ export type AuthResponse = {
   user: User;
 };
 
+export type Category = {
+  __typename?: 'Category';
+  description: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type CategoryInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
 export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE'
@@ -37,6 +49,9 @@ export type JwtPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addCategory: Category;
+  addProduct: Product;
+  addProductToCategory: ResponseMessage;
   addResetPasswordRequest: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
   signin: AuthResponse;
@@ -54,6 +69,21 @@ export type MutationResetPasswordArgs = {
   password: Scalars['String']['input'];
   token: Scalars['String']['input'];
   userId: Scalars['Int']['input'];
+};
+
+
+export type MutationAddCategoryArgs = {
+  input: CategoryInput;
+};
+
+
+export type MutationAddProductArgs = {
+  input: ProductInput;
+};
+
+
+export type MutationAddProductToCategoryArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -101,9 +131,53 @@ export enum PaymentType {
   Visa = 'VISA'
 }
 
+export type Product = {
+  __typename?: 'Product';
+  id: Scalars['Int']['output'];
+  images: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  quantity: Scalars['Int']['output'];
+  rating: Scalars['Int']['output'];
+  reference: Scalars['String']['output'];
+};
+
+export type ProductInput = {
+  images: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  quantity: Scalars['Int']['input'];
+  rating: Scalars['Int']['input'];
+  reference: Scalars['String']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  categories?: Maybe<Array<Maybe<Category>>>;
+  category?: Maybe<Category>;
   currentUser?: Maybe<User>;
+  product: Product;
+  productsByCategory?: Maybe<Array<Maybe<Product>>>;
+};
+
+
+export type QueryCategoryArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type QueryProductArgs = {
+  productId: Scalars['Int']['input'];
+};
+
+
+export type QueryProductsByCategoryArgs = {
+  categoryName: Scalars['String']['input'];
+};
+
+export type ResponseMessage = {
+  __typename?: 'ResponseMessage';
+  content: Scalars['String']['output'];
 };
 
 export enum Role {
@@ -218,7 +292,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   AuthResponse: ResolverTypeWrapper<AuthResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Category: ResolverTypeWrapper<Category>;
+  CategoryInput: CategoryInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Gender: Gender;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JwtPayload: ResolverTypeWrapper<JwtPayload>;
@@ -226,7 +303,10 @@ export type ResolversTypes = {
   OrderItemStatus: OrderItemStatus;
   OrderStatus: OrderStatus;
   PaymentType: PaymentType;
+  Product: ResolverTypeWrapper<Product>;
+  ProductInput: ProductInput;
   Query: ResolverTypeWrapper<{}>;
+  ResponseMessage: ResolverTypeWrapper<ResponseMessage>;
   Role: Role;
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
@@ -239,11 +319,17 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AuthResponse: AuthResponse;
   Boolean: Scalars['Boolean']['output'];
+  Category: Category;
+  CategoryInput: CategoryInput;
   DateTime: Scalars['DateTime']['output'];
+  Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
   JwtPayload: JwtPayload;
   Mutation: {};
+  Product: Product;
+  ProductInput: ProductInput;
   Query: {};
+  ResponseMessage: ResponseMessage;
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: Scalars['String']['output'];
@@ -253,6 +339,13 @@ export type ResolversParentTypes = {
 export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
   jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CategoryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -267,6 +360,9 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationAddCategoryArgs, 'input'>>;
+  addProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationAddProductArgs, 'input'>>;
+  addProductToCategory?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAddProductToCategoryArgs, 'productId'>>;
   addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
   signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
@@ -274,8 +370,28 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
 };
 
+export type ProductResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  images?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  rating?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  reference?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  categories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
+  category?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryCategoryArgs, 'name'>>;
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryProductArgs, 'productId'>>;
+  productsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryProductsByCategoryArgs, 'categoryName'>>;
+};
+
+export type ResponseMessageResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -295,10 +411,13 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
 
 export type Resolvers<ContextType = MyContext> = {
   AuthResponse?: AuthResponseResolvers<ContextType>;
+  Category?: CategoryResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   JwtPayload?: JwtPayloadResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  ResponseMessage?: ResponseMessageResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 
