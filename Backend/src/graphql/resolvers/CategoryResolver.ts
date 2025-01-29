@@ -4,7 +4,7 @@ import { Resolvers } from "../types/resolvers-types";
 
 export const CategoryResolver: Resolvers = {
   Mutation: {
-    addCategory: async (parent, { input }, context) => {
+    createCategory: async (parent, { input }, context) => {
       try {
         const category = await categoryService.create(input);
 
@@ -28,13 +28,7 @@ export const CategoryResolver: Resolvers = {
     },
   },
   Query: {
-    categories: async (parent, args, context) => {
-      if (!context.currentUser) {
-        throw new GraphQLError("CANNOT GET CATEGORIES", {
-          extensions: { code: "UNAUTHORISED" },
-        });
-      }
-
+    getAllCategories: async (parent, args, context) => {
       const categories = await categoryService.getAllCategories();
       if (!categories || categories.length === 0) {
         throw new GraphQLError("No categories available", {
@@ -44,14 +38,8 @@ export const CategoryResolver: Resolvers = {
 
       return categories;
     },
-    category: async (parent, args, context) => {
-      if (!context.currentUser) {
-        throw new GraphQLError("CANNOT GET CATEGORIES", {
-          extensions: { code: "UNAUTHORISED" },
-        });
-      }
-
-      const category = await categoryService.getCategoryByName(args.name);
+    getCategory: async (parent, args, context) => {
+      const category = await categoryService.findById(args.id);
       if (!category) {
         throw new GraphQLError("Category not found", {
           extensions: { code: "NOT_FOUND" },

@@ -12,27 +12,6 @@ export const productSchema = gql`
     quantity: Int!
     price: Float!
   }
-  type Category {
-    id: Int!
-    name: String!
-    description: String!
-  }
-
-  type Query {
-    categories: [Category]
-    category(name: String!): Category
-    productsByCategory(categoryName: String!): [Product]
-    product(productId: Int!): Product!
-  }
-
-  input CategoryInput {
-    name: String!
-    description: String!
-  }
-
-  type ResponseMessage {
-    content: String!
-  }
 
   input ProductInput {
     name: String!
@@ -42,10 +21,11 @@ export const productSchema = gql`
     quantity: Int!
     price: Float!
   }
-
+  type Query {
+    getProductsByCategory(categoryId: Int!): [Product]
+    getProduct(id: Int!): Product!
+  }
   type Mutation {
-    addCategory(input: CategoryInput!): Category!
-    addProductToCategory(productId: Int!): ResponseMessage!
-    addProduct(input: ProductInput!): Product!
+    createProduct(input: ProductInput!): Product!
   }
 `;

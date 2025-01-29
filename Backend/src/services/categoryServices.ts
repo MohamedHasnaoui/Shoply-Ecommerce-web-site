@@ -7,21 +7,20 @@ import { appDataSource } from "../database/data-source.js";
 export class CategoryService {
   constructor(private categoryRepository: Repository<Category>) {}
 
-  async findCategoryById(id: number) {
+  async findById(id: number) {
     return await this.categoryRepository.findOneBy({ id });
   }
-  async findCategoryByName(name: string) {
+  async findByName(name: string) {
     return await this.categoryRepository.findOneBy({ name });
   }
 
   async create(categoryInput: CategoryInput) {
-    const category = await this.findCategoryByName(categoryInput.name);
+    const category = await this.findByName(categoryInput.name);
     if (category) {
       throw new GraphQLError("Category already exist!", {
         extensions: { code: "BAD CATEGORY NAME" },
       });
     }
-
     const newCategory = this.categoryRepository.create({ ...categoryInput });
     console.log(newCategory);
     try {
@@ -44,7 +43,7 @@ export class CategoryService {
     return await this.categoryRepository.find();
   }
   async getCategoryByName(name: string) {
-    const category = await this.findCategoryByName(name);
+    const category = await this.findByName(name);
     if (!category) {
       throw new GraphQLError("Category doesn't exists", {
         extensions: { code: "NOT EXIST" },
