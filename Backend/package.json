@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "typeorm": "typeorm-ts-node-commonjs",
     "generate": "graphql-codegen --config resolvers-types.ts",
     "compile": "npm run generate && tsc",
     "start": " nodemon -e ts --exec \"npm run compile && node ./dist/src/index.js\" "
@@ -24,6 +25,7 @@
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
+    "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
@@ -34,6 +36,7 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.9.0",
     "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   }
 }

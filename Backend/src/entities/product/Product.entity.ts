@@ -7,7 +7,14 @@ import {
   ManyToOne,
 } from "typeorm";
 import { CartItem, OrderItem, Category, Seller, Review } from "../index.js";
-import { IsInt, IsNumber, IsString, Max, Min } from "class-validator";
+import {
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from "class-validator";
 
 @Entity()
 export class Product {
@@ -20,9 +27,10 @@ export class Product {
   @Column()
   reference: string;
 
-  @Column()
+  @Column({ type: "float8" })
   @IsNumber()
   price: number;
+
   @Column()
   @IsString()
   description: string;
@@ -33,6 +41,7 @@ export class Product {
 
   @Column()
   @IsInt()
+  @IsOptional()
   @Min(0) // Minimum rating value is 0
   @Max(5) // Maximum rating value is 5
   rating: number;
