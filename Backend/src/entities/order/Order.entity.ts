@@ -6,6 +6,7 @@ import {
   OneToOne,
   ManyToOne,
   Relation,
+  JoinColumn,
 } from "typeorm";
 import { OrderItem, Payment, Buyer } from "../index.js";
 import { IsNumber, IsDate, Min, IsString, IsEnum } from "class-validator";
@@ -35,6 +36,7 @@ export class Order {
   orderItems: Relation<OrderItem>[];
 
   @OneToOne(() => Payment)
+  @JoinColumn()
   payment: Relation<Payment>;
 
   @ManyToOne(() => Buyer, (buyer) => buyer.orders)
