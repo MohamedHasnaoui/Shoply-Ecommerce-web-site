@@ -24,7 +24,6 @@ export class UserService {
       });
     }
     const newUser = this.userRepository.create({ ...signupInput });
-    console.log(newUser.email);
     try {
       await validateOrReject(newUser);
       newUser.password = await bcrypt.hash(newUser.password, 10);

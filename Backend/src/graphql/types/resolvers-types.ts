@@ -36,6 +36,16 @@ export type CategoryInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateProductInput = {
+  categoryId: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  images: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  quantity: Scalars['Int']['input'];
+  reference: Scalars['String']['input'];
+};
+
 export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE'
@@ -51,10 +61,14 @@ export type Mutation = {
   __typename?: 'Mutation';
   addResetPasswordRequest: Scalars['Boolean']['output'];
   createCategory: Category;
+  createOrder: Order;
   createProduct: Product;
+  removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
   signin: AuthResponse;
   signup: Scalars['Boolean']['output'];
+  updateOrderItemStatus: OrderItem;
+  updateProduct: Product;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
 };
@@ -70,8 +84,18 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreateOrderArgs = {
+  paymentId: Scalars['Int']['input'];
+};
+
+
 export type MutationCreateProductArgs = {
-  input: ProductInput;
+  input: CreateProductInput;
+};
+
+
+export type MutationRemoveProductArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -92,6 +116,17 @@ export type MutationSignupArgs = {
 };
 
 
+export type MutationUpdateOrderItemStatusArgs = {
+  orderItemId: Scalars['Int']['input'];
+  status: OrderItemStatus;
+};
+
+
+export type MutationUpdateProductArgs = {
+  input: UpdateProductInput;
+};
+
+
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
@@ -105,23 +140,23 @@ export type MutationVerifyEmailArgs = {
 export type Order = {
   __typename?: 'Order';
   buyer: User;
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   orderItems: Array<Maybe<OrderItem>>;
   status: OrderStatus;
   totalAmount: Scalars['Float']['output'];
-  updatedAt: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type OrderItem = {
   __typename?: 'OrderItem';
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   price: Scalars['Float']['output'];
   product: Product;
   quantity: Scalars['Int']['output'];
   status: OrderItemStatus;
-  updatedAt: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export enum OrderItemStatus {
@@ -164,27 +199,56 @@ export type Product = {
   reference: Scalars['String']['output'];
 };
 
-export type ProductInput = {
-  images: Array<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  price: Scalars['Float']['input'];
-  quantity: Scalars['Int']['input'];
-  rating: Scalars['Int']['input'];
-  reference: Scalars['String']['input'];
-};
-
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAllCategories?: Maybe<Array<Maybe<Category>>>;
+  getAllProducts?: Maybe<Array<Maybe<Product>>>;
   getCategory?: Maybe<Category>;
+  getMyOrders?: Maybe<Array<Maybe<Order>>>;
+  getOrder: Order;
+  getOrderItem: OrderItem;
+  getOrderItemsByBuyerId: Array<Maybe<OrderItem>>;
+  getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
 };
 
 
+export type QueryGetAllProductsArgs = {
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetCategoryArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetMyOrdersArgs = {
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetOrderArgs = {
+  orderId: Scalars['Int']['input'];
+};
+
+
+export type QueryGetOrderItemArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetOrderItemsByBuyerIdArgs = {
+  buyerId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetOrderItemsByOrderIdArgs = {
+  orderId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -195,6 +259,8 @@ export type QueryGetProductArgs = {
 
 export type QueryGetProductsByCategoryArgs = {
   categoryId: Scalars['Int']['input'];
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export enum Role {
@@ -220,6 +286,18 @@ export enum TokenType {
   Email = 'EMAIL',
   Password = 'PASSWORD'
 }
+
+export type UpdateProductInput = {
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  images?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  rating?: InputMaybe<Scalars['Int']['input']>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type UpdateUserInput = {
   address?: InputMaybe<Scalars['String']['input']>;
@@ -247,6 +325,11 @@ export type User = {
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
 };
+
+export enum RndType {
+  One = 'ONE',
+  Two = 'TWO'
+}
 
 
 
@@ -323,6 +406,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Category: ResolverTypeWrapper<Category>;
   CategoryInput: CategoryInput;
+  CreateProductInput: CreateProductInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Gender: Gender;
@@ -335,15 +419,16 @@ export type ResolversTypes = {
   OrderStatus: OrderStatus;
   PaymentType: PaymentType;
   Product: ResolverTypeWrapper<Product>;
-  ProductInput: ProductInput;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   TokenType: TokenType;
+  UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
+  rndType: RndType;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -352,6 +437,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Category: Category;
   CategoryInput: CategoryInput;
+  CreateProductInput: CreateProductInput;
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
@@ -360,11 +446,11 @@ export type ResolversParentTypes = {
   Order: Order;
   OrderItem: OrderItem;
   Product: Product;
-  ProductInput: ProductInput;
   Query: {};
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: Scalars['String']['output'];
+  UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
 };
@@ -395,33 +481,37 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
+  createOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'paymentId'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
+  removeProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveProductArgs, 'productId'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
   signin?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
   signup?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  updateOrderItemStatus?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<MutationUpdateOrderItemStatusArgs, 'orderItemId' | 'status'>>;
+  updateProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
 };
 
 export type OrderResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
   buyer?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   orderItems?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['OrderStatus'], ParentType, ContextType>;
   totalAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type OrderItemResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem']> = {
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['OrderItemStatus'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -439,7 +529,13 @@ export type ProductResolvers<ContextType = MyContext, ParentType extends Resolve
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getAllCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
+  getAllProducts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, Partial<QueryGetAllProductsArgs>>;
   getCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryGetCategoryArgs, 'id'>>;
+  getMyOrders?: Resolver<Maybe<Array<Maybe<ResolversTypes['Order']>>>, ParentType, ContextType, Partial<QueryGetMyOrdersArgs>>;
+  getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;
+  getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'id'>>;
+  getOrderItemsByBuyerId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByBuyerIdArgs>>;
+  getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
 };

@@ -13,19 +13,38 @@ export const productSchema = gql`
     price: Float!
   }
 
-  input ProductInput {
+  input CreateProductInput {
     name: String!
     reference: String!
+    description: String!
     images: [String!]!
-    rating: Int!
     quantity: Int!
     price: Float!
+    categoryId: Int!
+  }
+  input UpdateProductInput {
+    id: Int!
+    name: String
+    reference: String
+    description: String
+    images: [String]
+    rating: Int
+    quantity: Int
+    price: Float
+    categoryId: Int
   }
   type Query {
-    getProductsByCategory(categoryId: Int!): [Product]
+    getProductsByCategory(
+      categoryId: Int!
+      pageNb: Int
+      pageSize: Int
+    ): [Product]
+    getAllProducts(pageNb: Int, pageSize: Int): [Product]
     getProduct(id: Int!): Product!
   }
   type Mutation {
-    createProduct(input: ProductInput!): Product!
+    createProduct(input: CreateProductInput!): Product!
+    updateProduct(input: UpdateProductInput!): Product!
+    removeProduct(productId: Int!): Boolean!
   }
 `;

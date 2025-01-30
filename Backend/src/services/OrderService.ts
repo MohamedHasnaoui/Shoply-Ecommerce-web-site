@@ -1,15 +1,16 @@
 import { Repository } from "typeorm";
 import { Order } from "../entities";
 import { userService } from "./UserService";
-import {
-  Role,
-  OrderStatus,
-  OrderItemStatus,
-} from "../graphql/types/resolvers-types";
+
 import { GraphQLError } from "graphql";
 import { paymentService } from "./PaymentService";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";
+import {
+  OrderItemStatus,
+  Role,
+  OrderStatus,
+} from "../graphql/types/resolvers-types";
 
 export class OrderService {
   constructor(private orderRepository: Repository<Order>) {}
@@ -21,6 +22,11 @@ export class OrderService {
       });
     }
     const payment = await paymentService.findOneById(paymentId);
+    if (payment === null) {
+      throw new GraphQLError("Payment Not Found", {
+        extensions: { code: "INVALID_INPUTS" },
+      });
+    }
     const order = this.orderRepository.create({
       buyer: user,
       status: OrderStatus.Pending,
@@ -38,11 +44,9 @@ export class OrderService {
   }
   async update(order: Order) {
     const totalItems = order.orderItems.length;
-    let totalPrice = 0;
     let orderStatut = order.status;
     const orderStatusMap = new Map<OrderItemStatus, number>();
     for (const item of order.orderItems) {
-      totalPrice += item.price;
       orderStatusMap[item.status] = (orderStatusMap[item.status] ?? 0) + 1;
     }
     if (orderStatusMap.has(OrderItemStatus.Delivered)) {
@@ -77,13 +81,31 @@ export class OrderService {
       }
     }
     order.status = orderStatut;
-    order.totalAmount = totalPrice;
     order.updatedAt = new Date();
     await this.orderRepository.update({ id: order.id }, order);
     return order;
   }
-  async findOneById(orderId: number) {
-    return await this.orderRepository.findOneBy({ id: orderId });
+  async findOneById(id: number) {
+    return await this.orderRepository.findOne({
+      where: { id },
+      relations: { orderItems: true },
+    });
+  }
+  async findByBuyerId(id: number, pageNb?: number, pageSize?: number) {
+    if (pageNb && pageSize) {
+      return await this.orderRepository.find({
+        where: { buyer: { id } },
+        order: { createdAt: "ASC" },
+        relations: { orderItems: true },
+        skip: (pageNb - 1) * pageSize,
+        take: pageSize,
+      });
+    }
+    return await this.orderRepository.find({
+      where: { buyer: { id } },
+      order: { createdAt: "ASC" },
+      relations: { orderItems: true },
+    });
   }
 }
 

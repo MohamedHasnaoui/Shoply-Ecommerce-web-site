@@ -40,11 +40,11 @@ export class Product {
   @Min(0, { message: "Quantity cannot be negative" })
   quantity: number;
 
-  @Column()
+  @Column({ default: 0 })
   @IsInt()
-  @IsOptional()
   @Min(0) // Minimum rating value is 0
   @Max(5) // Maximum rating value is 5
+  @IsOptional()
   rating: number;
 
   @Column("jsonb")
