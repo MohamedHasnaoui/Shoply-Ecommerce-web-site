@@ -1,11 +1,11 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/UserService.js";
 import { Resolvers, TokenType } from "../types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
 import { emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
+import { userService } from "../../services/UserService.js";
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
   Mutation: {

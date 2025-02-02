@@ -8,6 +8,7 @@ import { ProductResolver } from "./resolvers/ProductResolver.js";
 import { productSchema } from "./schemas/product/product.graphql.js";
 import { categorySchema } from "./schemas/category/category.graphql.js";
 import { orderItemSchema } from "./schemas/orderItem/orderItem.graphql.js";
+import { reviewSchema } from "./schemas/review/review.graphql.js";
 export interface MyContext {
   currentUser?: JwtPayload;
 }
@@ -18,6 +19,7 @@ const typeDefsArray = [
   categorySchema,
   orderItemSchema,
   orderSchema,
+  reviewSchema,
 ];
 const resolversArray = [AuthResolver, CategoryResolver, ProductResolver];
 export const typeDefs = mergeTypeDefs(typeDefsArray);

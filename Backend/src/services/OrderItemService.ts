@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { OrderItem, Product } from "../entities";
+import { OrderItem } from "../entities";
 import { orderService } from "./OrderService";
 import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
@@ -44,15 +44,24 @@ export class OrderItemService {
   }
   async update(orderItem: OrderItem) {
     await this.orderItemRepository.update({ id: orderItem.id }, orderItem);
-    const order = orderService.update(orderItem.order);
-    return { orderItem, order };
+    await orderService.update(orderItem.order);
+    return orderItem;
   }
   async findOneById(id: number) {
-    await this.orderItemRepository.findOneBy({ id });
+    return await this.orderItemRepository.findOne({
+      where: { id },
+      relations: { product: { owner: true }, order: { buyer: true } },
+    });
   }
   async findBySellerId(sellerId: number) {
-    await this.orderItemRepository.find({
+    return await this.orderItemRepository.find({
       where: { product: { owner: { id: sellerId } } },
+      order: { createdAt: "DESC" },
+    });
+  }
+  async findByBuyerIdAndProductId(buyerId: number, productId: number) {
+    return await this.orderItemRepository.findOne({
+      where: { product: { id: productId }, order: { buyer: { id: buyerId } } },
       order: { createdAt: "DESC" },
     });
   }

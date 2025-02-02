@@ -26,7 +26,10 @@ export class Review {
   comment: string;
 
   @CreateDateColumn()
-  reviewDate: Date;
+  createdAt: Date;
+
+  @CreateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => Buyer, (buyer) => buyer.reviews)
   reviewer: Relation<Buyer>;

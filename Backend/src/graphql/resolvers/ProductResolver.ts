@@ -29,6 +29,11 @@ export const ProductResolver: Resolvers = {
         });
       }
       const product = await productService.findById(input.id);
+      if (product === null) {
+        throw new GraphQLError("Product Not Found", {
+          extensions: { code: "INVALID_INPUTS" },
+        });
+      }
       if (product.owner.id != context.currentUser.userId) {
         throw new GraphQLError("CANNOT UPDATE PRODUCT", {
           extensions: { code: "UNAUTHORISED" },

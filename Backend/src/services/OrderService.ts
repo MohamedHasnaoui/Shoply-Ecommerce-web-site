@@ -1,7 +1,6 @@
 import { Repository } from "typeorm";
 import { Order } from "../entities";
 import { userService } from "./UserService";
-
 import { GraphQLError } from "graphql";
 import { paymentService } from "./PaymentService";
 import { validateOrReject } from "class-validator";
@@ -75,10 +74,6 @@ export class OrderService {
       if (orderStatusMap[OrderItemStatus.Refunded] == totalItems) {
         orderStatut = OrderStatus.Refunded;
       }
-    } else if (orderStatusMap.has(OrderItemStatus.Returned)) {
-      if (orderStatusMap[OrderItemStatus.Returned] == totalItems) {
-        orderStatut = OrderStatus.Refunded;
-      }
     }
     order.status = orderStatut;
     order.updatedAt = new Date();
@@ -88,7 +83,7 @@ export class OrderService {
   async findOneById(id: number) {
     return await this.orderRepository.findOne({
       where: { id },
-      relations: { orderItems: true },
+      relations: { orderItems: true, buyer: true },
     });
   }
   async findByBuyerId(id: number, pageNb?: number, pageSize?: number) {

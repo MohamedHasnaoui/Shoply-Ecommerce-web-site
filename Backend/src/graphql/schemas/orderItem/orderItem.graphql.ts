@@ -7,7 +7,6 @@ export const orderItemSchema = gql`
     CONFIRMED
     SHIPPED
     DELIVERED
-    RETURNED
     REFUNDED
     FAILED
     CANCELLED
@@ -22,9 +21,9 @@ export const orderItemSchema = gql`
     updatedAt: DateTime!
   }
   type Query {
-    getOrderItem(id: Int!): OrderItem!
+    getOrderItem(OrderItemId: Int!): OrderItem!
     getOrderItemsByOrderId(orderId: Int): [OrderItem]!
-    getOrderItemsByBuyerId(buyerId: Int): [OrderItem]!
+    getOrderItemsBySellerId(sellerId: Int): [OrderItem]!
   }
   type Mutation {
     updateOrderItemStatus(
