@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { Resolvers, Role } from "../types/resolvers-types.js";
-import { userService } from "../../services/userService.js";
+import { userService } from "../../services/UserService.js";
 import { cartItemService } from "../../services/CartItemServices.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 

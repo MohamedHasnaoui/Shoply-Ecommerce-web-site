@@ -1,7 +1,6 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/userService.js";
+import { userService } from "../../services/UserService.js";
 import { Resolvers, Role, TokenType } from "../types/resolvers-types.js";
-
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";

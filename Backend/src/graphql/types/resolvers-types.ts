@@ -95,6 +95,7 @@ export type Mutation = {
   createCategory: Category;
   createOrder: Order;
   createProduct: Product;
+  createReview: Review;
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
@@ -132,6 +133,11 @@ export type MutationCreateOrderArgs = {
 
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
+};
+
+
+export type MutationCreateReviewArgs = {
+  input: CreateReviewInput;
 };
 
 
@@ -273,6 +279,7 @@ export type Query = {
   getOrderItemsBySellerId: Array<Maybe<OrderItem>>;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
+  getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
 };
 
@@ -557,6 +564,7 @@ export type ResolversParentTypes = {
   OrderItem: OrderItem;
   Product: Product;
   Query: {};
+  Review: Review;
   ShoppingCart: ShoppingCart;
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
@@ -604,6 +612,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   createOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'paymentId'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
+  createReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationCreateReviewArgs, 'input'>>;
   removeCartItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveCartItemArgs, 'idCartItem'>>;
   removeProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveProductArgs, 'productId'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
@@ -665,7 +674,19 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getOrderItemsBySellerId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsBySellerIdArgs>>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
+  getReviewsByProductId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Review']>>>, ParentType, ContextType, RequireFields<QueryGetReviewsByProductIdArgs, 'productId'>>;
   getShoppingCart?: Resolver<Maybe<ResolversTypes['ShoppingCart']>, ParentType, ContextType>;
+};
+
+export type ReviewResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
+  comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
+  rating?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  reviewer?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ShoppingCartResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ShoppingCart'] = ResolversParentTypes['ShoppingCart']> = {
@@ -701,6 +722,7 @@ export type Resolvers<ContextType = MyContext> = {
   OrderItem?: OrderItemResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Review?: ReviewResolvers<ContextType>;
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

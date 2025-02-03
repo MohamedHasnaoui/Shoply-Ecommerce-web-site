@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { Resolvers, Role } from "../types/resolvers-types.js";
 import { productService } from "../../services/productServices.js";
-import { userService } from "../../services/userService.js";
+import { userService } from "../../services/UserService.js";
 import { Seller } from "../../entities";
 import { categoryService } from "../../services/categoryServices.js";
 
