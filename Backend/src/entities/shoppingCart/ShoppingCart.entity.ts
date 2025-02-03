@@ -4,18 +4,25 @@ import {
   Column,
   OneToMany,
   Relation,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
-import { CartItem } from "../index.js";
+import { Buyer, CartItem } from "../index.js";
 import { IsNumber, Min } from "class-validator";
 @Entity()
 export class ShoppingCart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: "float8", default: 0.0 })
   @IsNumber()
   @Min(0, { message: "Total of Amount cannot be negative" })
-  toalAmount: number;
+  totalAmount: number;
+
+  @OneToOne(() => Buyer)
+  @JoinColumn()
+  buyer: Buyer;
+
   @OneToMany(() => CartItem, (cartItem: CartItem) => cartItem.shoppingCart)
   cartItems: Relation<CartItem>[];
 }

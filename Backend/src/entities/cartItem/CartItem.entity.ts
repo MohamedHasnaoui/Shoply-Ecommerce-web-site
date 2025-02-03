@@ -17,7 +17,7 @@ export class CartItem {
   @Min(0, { message: "Quantity cannot be negative." })
   quantity: number;
 
-  @Column()
+  @Column({ type: "float8" })
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative." })
   price: number;
