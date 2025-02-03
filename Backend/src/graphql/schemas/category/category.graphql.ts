@@ -7,6 +7,13 @@ export const categorySchema = gql`
     name: String!
     description: String!
   }
+
+  input CategoryUpdatedInput {
+    id: Int!
+    name: String
+    description: String
+  }
+
   input CategoryInput {
     name: String!
     description: String!
@@ -18,5 +25,6 @@ export const categorySchema = gql`
   }
   type Mutation {
     createCategory(input: CategoryInput!): Category!
+    updateCategory(input: CategoryUpdatedInput): Category!
   }
 `;

@@ -1,6 +1,9 @@
 import { Repository } from "typeorm";
 import { Category } from "../entities/index.js";
-import { CategoryInput } from "../graphql/types/resolvers-types";
+import {
+  CategoryInput,
+  CategoryUpdatedInput,
+} from "../graphql/types/resolvers-types";
 import { validateOrReject, ValidationError } from "class-validator";
 import { GraphQLError } from "graphql";
 import { appDataSource } from "../database/data-source.js";
@@ -50,6 +53,9 @@ export class CategoryService {
       });
     }
     return category;
+  }
+  async update(category: CategoryUpdatedInput) {
+    return await this.categoryRepository.update(category.id, category);
   }
 }
 

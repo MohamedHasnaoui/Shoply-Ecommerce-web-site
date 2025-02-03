@@ -26,6 +26,25 @@ export const CategoryResolver: Resolvers = {
         );
       }
     },
+    updateCategory: async (parent, { input }, context) => {
+      const updatedCategory = await categoryService.update(input);
+
+      if (!updatedCategory) {
+        throw new GraphQLError("Category update failed", {
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
+
+      const category = await categoryService.findById(input.id);
+
+      if (!category) {
+        throw new GraphQLError("Category not found after update", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+
+      return category;
+    },
   },
   Query: {
     getAllCategories: async (parent, args, context) => {

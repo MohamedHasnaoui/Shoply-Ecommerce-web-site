@@ -1,17 +1,25 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/UserService.js";
-import { Resolvers, TokenType } from "../types/resolvers-types.js";
+import { userService } from "../../services/userService.js";
+import { Resolvers, Role, TokenType } from "../types/resolvers-types.js";
+
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
 import { emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
+import { shoppingCartService } from "../../services/ShoppingCartService.js";
+import { Buyer } from "../../entities/index.js";
+
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
   Mutation: {
     signup: async (parent, { input }, context) => {
       const user = await userService.create(input);
       await emailUtil.sendVerificationEmail(user);
+      if (user.role === Role.Buyer) {
+        const id = await shoppingCartService.create(user as Buyer);
+        context.idShoppingCart = id;
+      }
       return true;
     },
     signin: async (parent, { input }, context) => {

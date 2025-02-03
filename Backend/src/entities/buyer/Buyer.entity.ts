@@ -5,22 +5,11 @@ import {
   OneToOne,
   Relation,
 } from "typeorm";
-import {
-  Order,
-  User,
-  ShoppingCart,
-  Conversation,
-  WishList,
-  Review,
-} from "../index.js";
+import { Order, User, Conversation, WishList, Review } from "../index.js";
 @ChildEntity()
 export class Buyer extends User {
   @OneToMany(() => Order, (order) => order.buyer)
   orders: Relation<Order>[];
-
-  @OneToOne(() => ShoppingCart)
-  @JoinColumn()
-  shopingCart: Relation<ShoppingCart>;
 
   @OneToMany(
     () => Conversation,

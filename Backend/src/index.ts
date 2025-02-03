@@ -16,6 +16,7 @@ await appDataSource.initialize();
 const { url } = await startStandaloneServer(server, {
   context: async ({ req, res }) => {
     let payload: JwtPayload | null;
+    let idShoppingCart: number | null = null;
     try {
       payload = jwt.verify(
         req.headers.authorization || "",
@@ -24,7 +25,7 @@ const { url } = await startStandaloneServer(server, {
     } catch (err) {
       payload = null;
     }
-    return { currentUser: payload };
+    return { currentUser: payload, idShoppingCart };
   },
   listen: { port },
 });

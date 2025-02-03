@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { VerificationToken } from "../entities/verificationToken/VerificationToken.entity.js";
-import { userService, UserService } from "./UserService.js";
+import { userService, UserService } from "./userService.js";
 import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";

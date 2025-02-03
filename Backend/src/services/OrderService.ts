@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { Order } from "../entities";
-import { userService } from "./UserService";
+import { userService } from "./userService.js";
 
 import { GraphQLError } from "graphql";
 import { paymentService } from "./PaymentService";
