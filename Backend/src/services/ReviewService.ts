@@ -1,13 +1,14 @@
 import { Repository } from "typeorm";
-import { Review } from "../entities";
+import { Review } from "../entities/index.js";
 import {
   CreateReviewInput,
   OrderItemStatus,
-} from "../graphql/types/resolvers-types";
-import { orderItemService } from "./OrderItemService";
+} from "../graphql/types/resolvers-types.js";
+import { orderItemService } from "./OrderItemService.js";
 import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
-import { appDataSource } from "../database/data-source";
+import { appDataSource } from "../database/data-source.js";
+import { productService } from "./productServices.js";
 
 export class ReviewService {
   constructor(private reviewRepository: Repository<Review>) {}
@@ -18,7 +19,7 @@ export class ReviewService {
       createReviewInput.productId
     );
     if (orderItem === null) {
-      throw new GraphQLError("UNHOTORIZED", {
+      throw new GraphQLError("You can not Review this product", {
         extensions: { Code: "UNHOTORIZED" },
       });
     }
@@ -27,7 +28,7 @@ export class ReviewService {
         extensions: { Code: "BAD_USER_INPUTS" },
       });
     }
-    const oldReview = this.findOneByProductIdAndBuyerId(
+    const oldReview = await this.findOneByProductIdAndBuyerId(
       createReviewInput.productId,
       buyerId
     );
@@ -36,15 +37,26 @@ export class ReviewService {
         extensions: { Code: "BAD_USER_INPUTS" },
       });
     }
+    const product = await productService.findById(createReviewInput.productId);
+    if (!product) {
+      throw new GraphQLError("Product not found", {
+        extensions: { Code: "BAD_USER_INPUTS" },
+      });
+    }
+    const nbReviews = await this.countByProductId(product.id);
+    product.rating += createReviewInput.rating / (nbReviews + 1);
+    product.rating = parseFloat(product.rating.toFixed(1));
     const review = this.reviewRepository.create({
       rating: createReviewInput.rating,
       comment: createReviewInput.comment,
-      product: { id: createReviewInput.productId },
+      product: product,
       reviewer: { id: buyerId },
     });
     try {
       validateOrReject(review);
-      return this.reviewRepository.save(review);
+      await this.reviewRepository.save(review);
+      await productService.update(product);
+      return review;
     } catch (errors) {
       throw new GraphQLError("validation error", {
         extensions: { errors, code: "BAD USER INPUTS" },
@@ -52,9 +64,16 @@ export class ReviewService {
     }
   }
   async update(review: Review) {
+    const originalReview = await this.findOneById(review.id);
+    const product = await productService.findById(review.product.id);
+    const nbRating = await this.countByProductId(product.id);
     try {
       validateOrReject(review);
-      await this.reviewRepository.update({ id: review.id }, review);
+      product.rating += (review.rating - originalReview.rating) / nbRating;
+      product.rating = parseFloat(product.rating.toFixed(1));
+      await this.reviewRepository.save(review);
+      await productService.update(product);
+      review.product = product;
       return review;
     } catch (errors) {
       throw new GraphQLError("validation error", {
@@ -65,11 +84,17 @@ export class ReviewService {
   async findOneById(id: number) {
     return await this.reviewRepository.findOne({
       where: { id },
-      relations: { reviewer: true },
+      relations: { reviewer: true, product: true },
     });
   }
   async findByProductId(productId: number) {
     return await this.reviewRepository.find({
+      where: { product: { id: productId } },
+      relations: { reviewer: true },
+    });
+  }
+  async countByProductId(productId: number) {
+    return await this.reviewRepository.count({
       where: { product: { id: productId } },
       relations: { reviewer: true },
     });
@@ -79,6 +104,15 @@ export class ReviewService {
       product: { id: productId },
       reviewer: { id: buyerId },
     });
+  }
+  async delete(review: Review) {
+    const product = await productService.findById(review.product.id);
+    const nbRating = await this.countByProductId(product.id);
+    product.rating -= review.rating / nbRating;
+    product.rating = parseFloat(product.rating.toFixed(1));
+    await this.reviewRepository.delete(review);
+    await productService.update(product);
+    return true;
   }
 }
 export const reviewService = new ReviewService(

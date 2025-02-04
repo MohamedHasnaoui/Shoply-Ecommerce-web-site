@@ -66,6 +66,25 @@ export const ProductResolver: Resolvers = {
       }
       return await productService.remove(product);
     },
+    incrementQuantity: async (parent, { addedQte, productId }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("CANNOT UPDATE PRODUCT", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      const product = await productService.findById(productId);
+      if (product === null) {
+        throw new GraphQLError("Product Not Found", {
+          extensions: { code: "INVALID_INPUTS" },
+        });
+      }
+      if (product.owner.id != context.currentUser.userId) {
+        throw new GraphQLError("CANNOT UPDATE PRODUCT", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      return await productService.incrementQuantity(productId, addedQte);
+    },
   },
   Query: {
     getProductsByCategory: async (parent, args, context) => {
@@ -77,6 +96,9 @@ export const ProductResolver: Resolvers = {
     },
     getAllProducts: async (parent, args, context) => {
       return productService.getAll(args.pageNb, args.pageSize);
+    },
+    getProduct: async (parent, { id }, context) => {
+      return await productService.findById(id);
     },
   },
 };

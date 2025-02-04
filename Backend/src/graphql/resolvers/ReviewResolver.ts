@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/UserService";
-import { Resolvers, Role } from "../types/resolvers-types";
-import { reviewService } from "../../services/ReviewService";
+import { userService } from "../../services/UserService.js";
+import { Resolvers, Role } from "../types/resolvers-types.js";
+import { reviewService } from "../../services/ReviewService.js";
 
 export const ReviewResolver: Resolvers = {
   Mutation: {
@@ -40,6 +40,25 @@ export const ReviewResolver: Resolvers = {
       review.rating = input.rating || review.rating;
       review.updatedAt = new Date();
       return await reviewService.update(review);
+    },
+    deleteReview: async (parent, { reviewId }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not Authorized", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      const review = await reviewService.findOneById(reviewId);
+      if (review === null) {
+        throw new GraphQLError("Review Not Found", {
+          extensions: { code: "INVALID_INPUTS" },
+        });
+      }
+      if (review.reviewer.id !== context.currentUser.userId) {
+        throw new GraphQLError("Not Authorized", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      return await reviewService.delete(review);
     },
   },
   Query: {

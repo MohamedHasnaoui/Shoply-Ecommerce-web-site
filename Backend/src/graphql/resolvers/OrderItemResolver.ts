@@ -1,14 +1,10 @@
 import { GraphQLError } from "graphql";
-import { orderItemService } from "../../services/OrderItemService";
-import {
-  OrderItemStatus,
-  OrderStatus,
-  Resolvers,
-} from "../types/resolvers-types";
-import { orderService } from "../../services/OrderService";
-import { productService } from "../../services/productServices";
+import { orderItemService } from "../../services/OrderItemService.js";
+import { OrderItemStatus, Resolvers } from "../types/resolvers-types.js";
+import { orderService } from "../../services/OrderService.js";
+import { productService } from "../../services/productServices.js";
 
-export const OrderReolver: Resolvers = {
+export const OrderItemReolver: Resolvers = {
   Mutation: {
     updateOrderItemStatus: async (parent, { orderItemId, status }, context) => {
       if (!context.currentUser) {
@@ -97,18 +93,13 @@ export const OrderReolver: Resolvers = {
       }
       return orderItem;
     },
-    getOrderItemsBySellerId: async (parent, { sellerId }, context) => {
+    getOrderItemsForSeller: async (parent, {}, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("Not Authorized", {
           extensions: { code: "UNAUTHORIZED" },
         });
       }
-      if (context.currentUser.userId !== sellerId) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
-        });
-      }
-      return await orderItemService.findBySellerId(sellerId);
+      return await orderItemService.findBySellerId(context.currentUser.userId);
     },
     getOrderItemsByOrderId: async (parent, { orderId }, context) => {
       if (!context.currentUser) {

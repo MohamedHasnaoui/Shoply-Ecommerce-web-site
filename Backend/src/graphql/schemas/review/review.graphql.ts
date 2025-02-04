@@ -28,5 +28,6 @@ export const reviewSchema = gql`
   type Mutation {
     createReview(input: CreateReviewInput!): Review!
     updateReview(input: UpdateReviewInput!): Review!
+    deleteReview(reviewId: Int!): Boolean
   }
 `;

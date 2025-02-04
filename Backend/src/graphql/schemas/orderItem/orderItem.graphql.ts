@@ -23,7 +23,7 @@ export const orderItemSchema = gql`
   type Query {
     getOrderItem(OrderItemId: Int!): OrderItem!
     getOrderItemsByOrderId(orderId: Int): [OrderItem]!
-    getOrderItemsBySellerId(sellerId: Int): [OrderItem]!
+    getOrderItemsForSeller: [OrderItem]!
   }
   type Mutation {
     updateOrderItemStatus(

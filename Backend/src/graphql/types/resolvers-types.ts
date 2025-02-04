@@ -39,7 +39,6 @@ export type CartItemInput = {
 
 export type CartItemUpdateInput = {
   id: Scalars['Int']['input'];
-  idProduct: Scalars['Int']['input'];
   quantity: Scalars['Int']['input'];
 };
 
@@ -96,6 +95,8 @@ export type Mutation = {
   createOrder: Order;
   createProduct: Product;
   createReview: Review;
+  deleteReview?: Maybe<Scalars['Boolean']['output']>;
+  incrementQuantity: Product;
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
@@ -138,6 +139,17 @@ export type MutationCreateProductArgs = {
 
 export type MutationCreateReviewArgs = {
   input: CreateReviewInput;
+};
+
+
+export type MutationDeleteReviewArgs = {
+  reviewId: Scalars['Int']['input'];
+};
+
+
+export type MutationIncrementQuantityArgs = {
+  addedQte: Scalars['Int']['input'];
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -276,7 +288,7 @@ export type Query = {
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
-  getOrderItemsBySellerId: Array<Maybe<OrderItem>>;
+  getOrderItemsForSeller: Array<Maybe<OrderItem>>;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
@@ -318,11 +330,6 @@ export type QueryGetOrderItemArgs = {
 
 export type QueryGetOrderItemsByOrderIdArgs = {
   orderId?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryGetOrderItemsBySellerIdArgs = {
-  sellerId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -613,6 +620,8 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   createOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'paymentId'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   createReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationCreateReviewArgs, 'input'>>;
+  deleteReview?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'reviewId'>>;
+  incrementQuantity?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationIncrementQuantityArgs, 'addedQte' | 'productId'>>;
   removeCartItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveCartItemArgs, 'idCartItem'>>;
   removeProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveProductArgs, 'productId'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
@@ -671,7 +680,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;
   getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'OrderItemId'>>;
   getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
-  getOrderItemsBySellerId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsBySellerIdArgs>>;
+  getOrderItemsForSeller?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
   getReviewsByProductId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Review']>>>, ParentType, ContextType, RequireFields<QueryGetReviewsByProductIdArgs, 'productId'>>;

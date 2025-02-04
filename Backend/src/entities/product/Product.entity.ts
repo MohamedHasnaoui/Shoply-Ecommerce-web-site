@@ -40,8 +40,7 @@ export class Product {
   @Min(0, { message: "Quantity cannot be negative" })
   quantity: number;
 
-  @Column({ default: 0 })
-  @IsInt()
+  @Column({ default: 0, type: "float8" })
   @Min(0) // Minimum rating value is 0
   @Max(5) // Maximum rating value is 5
   @IsOptional()

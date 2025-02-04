@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   Relation,
+  JoinColumn,
 } from "typeorm";
 import { Product, ShoppingCart } from "../index.js";
 import { IsNumber, Min } from "class-validator";
@@ -26,6 +27,7 @@ export class CartItem {
     (shoppingCart: ShoppingCart) => shoppingCart.cartItems
   )
   shoppingCart: Relation<ShoppingCart>;
+
   @ManyToOne(() => Product, (product: Product) => product.cartItems)
   product: Relation<Product>;
 }
