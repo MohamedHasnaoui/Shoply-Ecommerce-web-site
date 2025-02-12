@@ -10,9 +10,9 @@ logs/
 *.log.*
 
 # Environment Variables
-# .env
-# .env.local
-# .env.*.local
+.env
+.env.local
+.env.*.local
 
 # TypeScript
 *.tsbuildinfo
