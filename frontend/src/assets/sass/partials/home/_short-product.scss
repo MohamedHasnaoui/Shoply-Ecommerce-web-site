@@ -1,0 +1,29 @@
+/* ================================== short product Css Start ================================== */
+.underlined-line {
+    &::before, &::after {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 2px;
+        left: 0;
+        bottom: 0;
+        background-color: hsl(var(--white));
+    }
+    &::after {
+        width: 50%;
+        background-color: var(--main-600);
+    }
+}
+
+.short-product-list {
+    &.arrow-style-two {
+        .slick-arrow {
+            inset-inline-end: 16px;
+            inset-block-end: calc(100% + 52px);
+        } 
+        .slick-prev {
+            inset-inline-end: 50px;
+        }
+    }
+}
+/* ================================== short product Css End ================================== */

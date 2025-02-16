@@ -4,7 +4,7 @@ import { Resolvers, Role, TokenType } from "../types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
-import { emailUtil } from "../../../utils/EmailUtil.js";
+import { EmailUtil, emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Buyer } from "../../entities/index.js";
@@ -13,10 +13,20 @@ export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
   Mutation: {
     signup: async (parent, { input }, context) => {
-      const user = await userService.create(input);
-      await emailUtil.sendVerificationEmail(user);
-      if (user.role === Role.Buyer) {
-        const id = await shoppingCartService.create(user as Buyer);
+      const user = await userService.findOneByEmail(input.email);
+      if (user) {
+        if (!user.verified) {
+          await userService.remove(user);
+        } else {
+          throw new GraphQLError("user already exist in the database", {
+            extensions: { code: "BAD USER INPUTS" },
+          });
+        }
+      }
+      const newUser = await userService.create(input);
+      await emailUtil.sendVerificationEmail(newUser.email);
+      if (newUser.role === Role.Buyer) {
+        const id = await shoppingCartService.create(newUser as Buyer);
         context.idShoppingCart = id;
       }
       return true;
@@ -50,6 +60,11 @@ export const AuthResolver: Resolvers = {
       const user = await userService.findOneByEmail(email);
       if (!user) {
         throw new GraphQLError("Wrong Credentials", {
+          extensions: { code: "BAD USER INPUTS" },
+        });
+      }
+      if (user.verified) {
+        throw new GraphQLError("Already verified", {
           extensions: { code: "BAD USER INPUTS" },
         });
       }
@@ -145,6 +160,10 @@ export const AuthResolver: Resolvers = {
       user.gender = input.gender || user.gender;
 
       return await userService.update(user);
+    },
+    VerificationEmailRequest: async (parent, { email }, context) => {
+      await emailUtil.sendVerificationEmail(email);
+      return true;
     },
   },
   Query: {

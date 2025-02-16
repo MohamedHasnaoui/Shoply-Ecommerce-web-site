@@ -1,0 +1,61 @@
+/* ================================ Shop Page css Start =============================== */
+.list-grid-btns {
+    @media (max-width: 479px) {
+        display: none;
+    }
+}
+.list-grid-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 24px;
+}
+
+@media (min-width: 480px) {
+    .list-view {
+        grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+        .product-card {
+            display: flex;
+            align-items: center;
+            &__thumb {
+                max-width: 200px;
+                height: 100% !important;
+            }
+            &__content {
+                margin-top: 0 !important;
+                margin-left: 20px;
+                flex-grow: 1;
+            }
+        }
+    }
+}
+
+@media (max-width: 1199px) {
+    .shop-sidebar__box {
+        padding: 16px !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .shop-sidebar {
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        background-color: #fff;
+        z-index: 11;
+        left: 0;
+        border-radius: 0 !important;
+        overflow-y: auto;
+        width: 300px;
+        border-right: 1px solid var(--gray-100);
+        transform: translateX(-100%);
+        transition: .2s linear;
+        &.active {
+            transform: translateX(0);
+        }
+        &__box {
+            border-radius: 0 !important;
+            border: 0 !important;
+        }
+    }
+}
+/* ================================ Shop Page css End =============================== */

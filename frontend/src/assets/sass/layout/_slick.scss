@@ -1,0 +1,96 @@
+/* ================= Slick Arrow & Dots css Start ================ */ 
+.slick-initialized.slick-slider {
+  .slick-track {
+      display: flex;
+  }
+  .slick-slide {
+    cursor: grab;
+      height: auto;
+      margin: 0 10px;
+      > div {
+          height: 100%;
+          > div {
+            height: 100%;
+          }
+      }
+  }
+}
+
+/* Slick Slider Arrow */
+.slick-arrow {
+  width: 48px;
+  height: 48px;
+  @include md-screen {
+    width: 40px;
+    height: 40px;
+  }
+  @include sm-screen {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+
+/* Arrow Style Two */
+.arrow-center {
+  position: relative;
+  .slick-arrow {
+    position: absolute;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    inset-inline-start: 16px;
+    z-index: 2;
+    &.slick-next {
+      inset-inline-start: auto;
+      inset-inline-end: 16px;
+    }
+  }
+}
+
+.slick-arrows-style-three {
+  .slick-arrow {
+    visibility: hidden;
+    opacity: 0;
+  }
+  &:hover {
+    .slick-arrow {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+}
+
+/* Dots Css Start */ 
+.slick-dots {
+    text-align: center;
+    position: absolute;
+    inset-block-end: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    z-index: 1;
+    line-height: 1;
+    li {
+        display: inline-block;
+        display: flex;
+        button {
+            border: none;
+            background-color: hsl(var(--white)/.3 );
+            color: hsl(var(--white));;
+            margin: 0 3px;
+            width: 12px;
+            height: 12px;
+            border-radius: 1px;
+            border-radius: 50px;
+            text-indent: -9999px;
+            transition: .3s linear;
+        }
+        &.slick-active button {
+            width: 40px;  
+            background-color: hsl(var(--main-two));
+        }
+    }
+}
+/* Dots Css End */
+/* ================= Slick Arrow & Dots css Start ================ */ 

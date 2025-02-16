@@ -1,0 +1,32 @@
+/* ================================= Pagination Css Start =========================== */
+.pagination {
+    margin-block-start: 64px;
+    @include lg-screen {
+        margin-block-start: 48px;
+    }
+    @include md-screen {
+        margin-block-start: 40px;
+    }
+    @include sm-screen {
+        margin-block-start: 32px;
+    }
+    .page-item {
+        &.active {
+            .page-link {
+                background-color: var(--main-600) !important;
+                border-color: var(--main-600) !important;
+                color: hsl(var(--white)) !important;
+            }
+        }
+        .page-link {
+            box-shadow: none !important;   
+            &:hover, &:active, &:focus {
+                color: var(--main-600) !important;
+                background-color: var(--main-100) !important;
+                border-color: var(--main-300) !important;
+                
+            }
+        }
+    }
+}
+/* ================================= Pagination Css End =========================== */

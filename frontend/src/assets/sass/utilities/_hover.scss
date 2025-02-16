@@ -1,0 +1,43 @@
+/* Hover Classes Start */
+.item-hover {
+  &:hover {
+    .item-hover__text {
+      color: var(--main-600) !important;
+    }
+  }
+}
+.item-hover-two {
+  &:hover {
+    .item-hover__text {
+      color: var(--main-two-600) !important;
+    }
+  }
+}
+
+
+
+.on-hover-dropdown {
+    visibility: hidden;
+    opacity: 0;
+    margin-block-start: 16px;
+}
+
+.on-hover-item {
+    position: relative;
+    &:hover {
+        .on-hover-dropdown {
+            visibility: visible;
+            opacity: 1;
+            margin-block-start: 0;
+        }
+        > a {
+            &::before {
+                @media (min-width: 992px) {
+                    color: hsl(var(--main));
+                    transform: translateY(-50%) rotate(180deg);
+                }
+            }
+        }
+    }
+}
+/* Hover Classes End */

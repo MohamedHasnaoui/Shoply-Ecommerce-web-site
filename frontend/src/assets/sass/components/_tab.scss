@@ -1,0 +1,47 @@
+/* ================================= Tab Css Start =========================== */
+.common-tab {
+    margin-block-end: 20px;
+    gap: 8px;
+    .nav-item {
+        border-bottom: 0;
+        .nav-link {
+            color: var(--gray-500);
+            padding: 9px 24px !important;
+            background-color: transparent;
+            transition: .2s linear;
+            border: 1px solid var(--border-color);
+            position: relative;
+            font-weight: 400;
+            overflow: hidden;
+            border-radius: 50px;
+            font-size: 16px;
+            @include xl-screen {
+                padding: 6px 16px !important;
+                font-size: rem(14px);
+            }
+            &.active {
+                color: hsl(var(--white)) !important; 
+                border-color: var(--main-600) !important;
+                background-color: var(--main-600) !important;
+            }
+            &:hover {
+                color: var(--main-600);
+            }
+        }
+    }
+    &.style-two {
+        .nav-link {
+            border: 1px solid var(--gray-100);
+            color: var(--neutral-600);
+            &.active {
+                color: hsl(var(--white)) !important; 
+                border-color: var(--main-two-600) !important;
+                background-color: var(--main-two-600) !important;
+            }
+            &:hover {
+                color: var(--main-two-600);
+            }
+        }
+    }
+}
+/* ================================= Tab Css End =========================== */

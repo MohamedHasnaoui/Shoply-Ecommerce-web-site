@@ -1,0 +1,8 @@
+/* ================== Section Heading Css Start ========================= */
+.section-heading {
+    margin-bottom: 40px;
+    @include lg-screen {
+        margin-bottom: 24px;
+    }
+}
+/* ================== Section Heading Css End ========================= */

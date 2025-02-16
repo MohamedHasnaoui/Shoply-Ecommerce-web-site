@@ -1,0 +1,104 @@
+/* =========================== header top Css Start =============================== */
+.header-top {
+    &__right {
+        @include sm-screen {
+            width: 100%;
+            li {
+                &:last-child {
+                    margin-inline-start: auto;
+                }
+                &:nth-last-child(2) {
+                    margin-inline-end: 0 !important;
+                    padding-inline-end: 0 !important;
+                    &::before {
+                        display: none;
+                    }
+                }
+               
+            }
+        }
+        &.style-two {
+           > li {
+                padding-inline-end: 16px !important; 
+                margin-inline-end: 0 !important;
+                &:last-child {
+                    padding-inline-end: 0 !important;
+                }
+                &::before {
+                    display: none !important;
+                }
+                a {
+                    padding-inline-end: 20px;
+                    @include md-screen {
+                        color: #fff !important;
+                    }
+                    &::before {
+                        color: var(--heading-color) !important;
+                        font-size: 14px !important;
+                    }
+                }
+                > ul {
+                    inset-inline-end: auto !important;
+                    inset-inline-start: calc(-100% + -24px) !important;
+                    li a {
+                        @include md-screen {
+                            color: var(--neutral-600) !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include md-screen {
+    .border-right-item {
+        a {
+            font-size: 12px !important;
+        }
+    }
+}
+
+.border-right-item {
+    position: relative;
+    &:not(:last-child) {
+        margin-inline-end: 24px;
+        padding-inline-end: 24px;
+        @include xl-screen {
+            margin-inline-end: 16px !important;
+            padding-inline-end: 16px !important;
+        }
+        @include lg-screen {
+            margin-inline-end: 10px !important;
+            padding-inline-end: 10px !important;
+        }
+        &::before {
+            position: absolute;
+            content: "";
+            inset-block-start: 50%;
+            transform: translateY(-50%);
+            inset-inline-end: 0;
+            width: 1px;
+            height: 15px;
+            background-color: hsl(var(--white)/.3);
+        }
+    }
+    &-sm-space {
+        &:not(:last-child) {
+            margin-inline-end: 20px;
+            padding-inline-end: 20px;
+        }
+    }
+}
+/* Has Dropdown Css */
+.arrow-white {
+    > a {
+        padding-inline-end: 12px;
+        &::before {
+            color: hsl(var(--white)) !important; 
+            font-size: 8px;
+        }
+    }
+}
+
+/* =========================== header top Css End =============================== */

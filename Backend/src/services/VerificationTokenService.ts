@@ -19,7 +19,7 @@ export class VerificationTokenService {
     }
     const verificationToken = await this.findByUserId(user.id, type);
     if (verificationToken != null) {
-      return await this.verificationTokenRepository.remove(verificationToken);
+      await this.verificationTokenRepository.remove(verificationToken);
     }
     const newVerificationToken = this.verificationTokenRepository.create({
       token: token,

@@ -17,12 +17,6 @@ export class UserService {
   }
 
   async create(signupInput: SignupIpnut) {
-    const user = await this.findOneByEmail(signupInput.email);
-    if (user) {
-      throw new GraphQLError("user already exist in the database", {
-        extensions: { code: "BAD USER INPUTS" },
-      });
-    }
     const newUser = this.userRepository.create({ ...signupInput });
     try {
       await validateOrReject(newUser);
@@ -37,6 +31,10 @@ export class UserService {
   async update(user: User) {
     await this.userRepository.update({ id: user.id }, user);
     return user;
+  }
+  async remove(user: User) {
+    await this.userRepository.remove(user);
+    return true;
   }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

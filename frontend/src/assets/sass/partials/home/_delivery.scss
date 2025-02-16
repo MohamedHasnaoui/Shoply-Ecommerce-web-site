@@ -1,0 +1,10 @@
+.delivery {
+    &-section {
+        @media (min-width: 768px) {
+            margin-bottom: 28px;
+        }
+    }
+    &__man {
+        margin-bottom: -56px;
+    }
+}

@@ -1,0 +1,9 @@
+/* ====================== Popular Products Start ==================== */
+.popular-products {
+    .product-card {
+        @include sm-screen {
+            flex-direction: column;
+        }
+    }
+}
+/* ====================== Popular Products End ==================== */

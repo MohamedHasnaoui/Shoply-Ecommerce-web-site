@@ -1,0 +1,77 @@
+/* ========================== Count Down Css Start =============================== */
+.countdown-list {
+    gap: 20px;
+    @include xl-screen {
+        gap: 6px;
+    }
+    &__item {
+        background-color: hsl(var(--white));
+        padding: clampCal(6, 12, 1399, 1599) clampCal(8, 16, 1399, 1599);
+        border-radius: 8px;
+        position: relative;
+        @include xl-screen {
+            font-size: rem(12px) !important;
+        }
+        &:last-child {
+            &::before {
+                display: none;
+            }
+        }
+        &::before {
+            position: absolute;
+            content: ":";
+            inset-block-start: 50%;
+            inset-inline-end: -10px;
+            transform: translateY(-50%);
+            font-weight: 700;
+            @include xl-screen {
+                display: none;
+            }
+        }
+        &.colon-white {
+            &::before {
+                color: #fff;
+            }
+        }
+    }
+
+    &.style-two {
+        .countdown-list {
+            &__item {
+                background-color: var(--main-600);
+                color: #fff !important;
+                &::before {
+                    color: var(--main-600) !important;
+                }
+            }
+        }
+    }
+
+    &.style-three {
+        gap: 12px;
+        .countdown-list {
+            &__item {
+                background-color: var(--main-50);
+                font-size: 11px !important;
+                padding: 6px;
+                color: #1A1A1A !important;
+            }
+        }
+    }
+
+    &.style-four {
+        .countdown-list {
+            &__item {
+                width: 64px;
+                height: 64px;
+                align-items: center;
+                padding: 2px;
+                justify-content: center;
+                &::before {
+                    color: var(--neutral-600);
+                }
+            }
+        }
+    }
+}
+/* ========================== Count Down Css End =============================== */

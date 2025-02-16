@@ -1,0 +1,69 @@
+// width height
+@each $property, $value in $spaces {
+    .w-#{$property} {
+      width: $value !important;
+    }
+}
+
+.w {
+  &-300 {
+    width: 300px !important;
+  }
+  &-265 {
+    width: 265px !important;
+  }
+  &-unset {
+    width: unset !important;
+  }
+}
+
+@each $property, $value in $spaces {
+    .h-#{$property} {
+      height: $value !important;
+    }
+}
+.h-unset {
+  height: unset !important;
+}
+
+.max-h {
+  &-unset {
+    max-height: unset !important;
+  }
+  &-120 {
+    max-height: 120px !important;
+  }
+  &-200 {
+    max-height: 200px !important;
+  }
+  &-300 {
+    max-height: 300px !important;
+  }
+  &-400 {
+    max-height: 400px !important;
+  }
+  &-540 {
+    max-height: 540px !important;
+  }
+}
+
+.max-w {
+  &-unset {
+    max-width: unset !important;
+  }
+  &-120 {
+    max-width: 120px;
+  }
+  &-275 {
+    max-width: 275px;
+  }
+}
+
+
+.top-n6 {
+  inset-block-start: -6px;
+}
+
+.end-n4 {
+  inset-inline-end: -6px;
+}
