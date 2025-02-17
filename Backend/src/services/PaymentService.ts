@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Payment } from "../entities";
+import { Payment } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
 
 export class PaymentService {

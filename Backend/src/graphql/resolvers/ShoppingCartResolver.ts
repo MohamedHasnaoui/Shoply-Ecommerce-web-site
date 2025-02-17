@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Resolvers, Role } from "../types/resolvers-types.js";
-import { userService } from "../../services/userService.js";
+import { userService } from "../../services/UserService.js";
 
 export const ShoppingCartResolver: Resolvers = {
   Query: {

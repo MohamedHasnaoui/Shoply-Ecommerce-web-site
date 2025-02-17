@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   Relation,
+  JoinColumn,
 } from "typeorm";
 import { Order, Product } from "../index.js";
 import { IsNumber, Min, IsEnum, IsDate, IsOptional } from "class-validator";
@@ -23,7 +24,7 @@ export class OrderItem {
     message: "State of an order item must be Pending,Shipped or Delivered ",
   })
   status: OrderItemStatus;
-  @Column()
+  @Column({ type: "float8" })
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative." })
   price: number;
@@ -41,6 +42,10 @@ export class OrderItem {
   @ManyToOne(() => Order, (order: Order) => order.orderItems)
   order: Relation<Order>;
 
+  @Column()
+  productId: number;
+
   @ManyToOne(() => Product, (product: Product) => product.orderItems)
+  @JoinColumn({ name: "productId" })
   product: Relation<Product>;
 }

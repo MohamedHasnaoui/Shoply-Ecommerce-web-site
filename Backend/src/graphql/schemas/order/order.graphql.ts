@@ -15,7 +15,6 @@ export const orderSchema = gql`
     PARTIALLYSHIPPED
     DELIVERED
     PARTIALLYDELIVERED
-    RETURNED
     REFUNDED
   }
 

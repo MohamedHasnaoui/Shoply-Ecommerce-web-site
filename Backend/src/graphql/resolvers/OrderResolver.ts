@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
-import { orderService } from "../../services/OrderService";
-import { Resolvers, Role } from "../types/resolvers-types";
-import { userService } from "../../services/userService.js";
+import { orderService } from "../../services/OrderService.js";
+import { Resolvers, Role } from "../types/resolvers-types.js";
+import { userService } from "../../services/UserService.js";
 
 export const OrderResolver: Resolvers = {
   Mutation: {

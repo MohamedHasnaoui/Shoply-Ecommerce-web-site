@@ -17,7 +17,6 @@ export const cartItemSchema = gql`
   input CartItemUpdateInput {
     id: Int!
     quantity: Int!
-    idProduct: Int!
   }
   type Query {
     getCartItem(idCartItem: Int!): CartItem!

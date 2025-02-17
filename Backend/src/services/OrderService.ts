@@ -1,16 +1,18 @@
 import { Repository } from "typeorm";
-import { Order } from "../entities";
-import { userService } from "./userService.js";
-
+import { Order } from "../entities/index.js";
+import { userService } from "./UserService.js";
 import { GraphQLError } from "graphql";
-import { paymentService } from "./PaymentService";
+import { paymentService } from "./PaymentService.js";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";
 import {
   OrderItemStatus,
   Role,
   OrderStatus,
-} from "../graphql/types/resolvers-types";
+} from "../graphql/types/resolvers-types.js";
+import { shoppingCartService } from "./ShoppingCartService.js";
+import { orderItemService } from "./OrderItemService.js";
+import { cartItemService } from "./CartItemServices.js";
 
 export class OrderService {
   constructor(private orderRepository: Repository<Order>) {}
@@ -27,15 +29,31 @@ export class OrderService {
         extensions: { code: "INVALID_INPUTS" },
       });
     }
+    const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
+      userId
+    );
     const order = this.orderRepository.create({
       buyer: user,
       status: OrderStatus.Pending,
-      totalAmount: 0,
+      totalAmount: shoppingCart.totalAmount,
       payment,
+      orderItems: [],
     });
+
     try {
       await validateOrReject(order);
-      return await this.orderRepository.save(order);
+      const returnedOrder = await this.orderRepository.save(order);
+      await Promise.all(
+        shoppingCart.cartItems.map(async (cartItem) => {
+          const orderItem = await orderItemService.create(
+            cartItem,
+            returnedOrder.id
+          );
+          returnedOrder.orderItems.push(orderItem);
+        })
+      );
+      await cartItemService.deleteAllByShoppingCartId(shoppingCart.id);
+      return returnedOrder;
     } catch (errors) {
       throw new GraphQLError("validation error", {
         extensions: { errors, code: "BAD USER INPUTS" },
@@ -47,48 +65,48 @@ export class OrderService {
     let orderStatut = order.status;
     const orderStatusMap = new Map<OrderItemStatus, number>();
     for (const item of order.orderItems) {
-      orderStatusMap[item.status] = (orderStatusMap[item.status] ?? 0) + 1;
+      orderStatusMap.set(
+        item.status,
+        (orderStatusMap.get(item.status) ?? 0) + 1
+      );
     }
     if (orderStatusMap.has(OrderItemStatus.Delivered)) {
       orderStatut = OrderStatus.Partiallydelivered;
-      if (orderStatusMap[OrderItemStatus.Delivered] == totalItems) {
+      if (orderStatusMap.get(OrderItemStatus.Delivered) === totalItems) {
         orderStatut = OrderStatus.Delivered;
       }
     } else if (orderStatusMap.has(OrderItemStatus.Shipped)) {
       orderStatut = OrderStatus.Partiallyshipped;
-      if (orderStatusMap[OrderItemStatus.Shipped] == totalItems) {
+      if (orderStatusMap.get(OrderItemStatus.Shipped) == totalItems) {
         orderStatut = OrderStatus.Shipped;
       }
     } else if (orderStatusMap.has(OrderItemStatus.Confirmed)) {
-      if (orderStatusMap[OrderItemStatus.Confirmed] == totalItems) {
+      if (orderStatusMap.get(OrderItemStatus.Confirmed) == totalItems) {
         orderStatut = OrderStatus.Confirmed;
       }
     } else if (orderStatusMap.has(OrderItemStatus.Cancelled)) {
-      if (orderStatusMap[OrderItemStatus.Cancelled] == totalItems) {
+      if (orderStatusMap.get(OrderItemStatus.Cancelled) == totalItems) {
         orderStatut = OrderStatus.Cancelled;
       }
     } else if (orderStatusMap.has(OrderItemStatus.Failed)) {
-      if (orderStatusMap[OrderItemStatus.Failed] == totalItems) {
-        orderStatut = OrderStatus.Failed;
-      }
-    } else if (orderStatusMap.has(OrderItemStatus.Refunded)) {
-      if (orderStatusMap[OrderItemStatus.Refunded] == totalItems) {
+      if (orderStatusMap.get(OrderItemStatus.Refunded) == totalItems) {
         orderStatut = OrderStatus.Refunded;
       }
-    } else if (orderStatusMap.has(OrderItemStatus.Returned)) {
-      if (orderStatusMap[OrderItemStatus.Returned] == totalItems) {
+    } else if (orderStatusMap.has(OrderItemStatus.Refunded)) {
+      if (orderStatusMap.get(OrderItemStatus.Refunded) == totalItems) {
         orderStatut = OrderStatus.Refunded;
       }
     }
     order.status = orderStatut;
+    console.log(order.status + " " + orderStatusMap);
     order.updatedAt = new Date();
-    await this.orderRepository.update({ id: order.id }, order);
+    await this.orderRepository.save(order);
     return order;
   }
   async findOneById(id: number) {
     return await this.orderRepository.findOne({
       where: { id },
-      relations: { orderItems: true },
+      relations: { orderItems: true, buyer: true },
     });
   }
   async findByBuyerId(id: number, pageNb?: number, pageSize?: number) {
@@ -96,16 +114,17 @@ export class OrderService {
       return await this.orderRepository.find({
         where: { buyer: { id } },
         order: { createdAt: "ASC" },
-        relations: { orderItems: true },
+        relations: { orderItems: { product: true } },
         skip: (pageNb - 1) * pageSize,
         take: pageSize,
       });
     }
-    return await this.orderRepository.find({
+    const res = await this.orderRepository.find({
       where: { buyer: { id } },
       order: { createdAt: "ASC" },
-      relations: { orderItems: true },
+      relations: { orderItems: { product: true } },
     });
+    return res;
   }
 }
 

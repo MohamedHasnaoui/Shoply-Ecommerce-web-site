@@ -46,5 +46,6 @@ export const productSchema = gql`
     createProduct(input: CreateProductInput!): Product!
     updateProduct(input: UpdateProductInput!): Product!
     removeProduct(productId: Int!): Boolean!
+    incrementQuantity(productId: Int!, addedQte: Int!): Product!
   }
 `;

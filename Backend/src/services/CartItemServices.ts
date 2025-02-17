@@ -76,44 +76,29 @@ export class CartItemService {
     }
   }
 
-  async update(cartItem: CartItemUpdateInput, buyerId: number) {
+  async update(cartItem: CartItemUpdateInput) {
     try {
       const cartItemRecp = await this.findOneById(cartItem.id);
+
       if (!cartItemRecp) {
-        console.error("CartItem Not Found!");
-        throw new GraphQLError("CartItem Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
-        });
-      }
-
-      const isProductExistInCartItem = await this.cartItemRepository.findOne({
-        where: { id: cartItem.id, product: { id: cartItem.idProduct } },
-        relations: ["product"],
-      });
-
-      if (!isProductExistInCartItem) {
         console.error("Product Not Found In cartItem");
         throw new GraphQLError("Product Not Found In CartItem", {
           extensions: { code: "INVALID_INPUTS" },
         });
       }
 
-      if (isProductExistInCartItem.product.quantity < cartItem.quantity) {
-        console.error(
-          "Product's Quantity is not enough!",
-          isProductExistInCartItem.product.quantity
-        );
-        throw new GraphQLError("Not Enough", {
+      if (cartItemRecp.product.quantity < cartItem.quantity) {
+        throw new GraphQLError("Product's Quantity is not enough!", {
           extensions: { code: "INVALID_INPUTS" },
         });
       }
 
       const price = parseFloat(
-        (isProductExistInCartItem.product.price * cartItem.quantity).toFixed(2)
+        (cartItemRecp.product.price * cartItem.quantity).toFixed(2)
       );
 
-      const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
-        buyerId
+      const shoppingCart = await shoppingCartService.findById(
+        cartItemRecp.shoppingCart.id
       );
       if (!shoppingCart) {
         console.error("ShoppingCart Not Found!");
@@ -128,12 +113,12 @@ export class CartItemService {
       shoppingCart.totalAmount = total;
 
       await shoppingCartService.update(shoppingCart);
-
-      return await this.cartItemRepository.save({
-        id: cartItem.id,
-        price: price,
-        quantity: cartItem.quantity,
+      cartItemRecp.price = price;
+      cartItemRecp.quantity = cartItem.quantity;
+      await this.cartItemRepository.save({
+        ...cartItemRecp,
       });
+      return cartItemRecp;
     } catch (error) {
       console.error("Error in updateCartItem:", error);
 
@@ -178,6 +163,15 @@ export class CartItemService {
       where: { product: { id } },
       relations: { shoppingCart: true, product: true },
     });
+  }
+  async deleteAllByShoppingCartId(shoppingCartId: number) {
+    await this.cartItemRepository.delete({
+      shoppingCart: { id: shoppingCartId },
+    });
+    const shoppingCart = await shoppingCartService.findById(shoppingCartId);
+    shoppingCart.totalAmount = 0;
+    await shoppingCartService.update(shoppingCart);
+    return true;
   }
 }
 
