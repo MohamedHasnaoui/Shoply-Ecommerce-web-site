@@ -9,6 +9,7 @@ import { emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Buyer } from "../../entities/index.js";
+import { whishListService } from "../../services/WhishListService.js";
 
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
@@ -18,7 +19,8 @@ export const AuthResolver: Resolvers = {
       await emailUtil.sendVerificationEmail(user);
       if (user.role === Role.Buyer) {
         const id = await shoppingCartService.create(user as Buyer);
-        context.idShoppingCart = id;
+        const idWishList = await whishListService.create(user as Buyer);
+        //context.idShoppingCart = id;
       }
       return true;
     },
@@ -35,11 +37,11 @@ export const AuthResolver: Resolvers = {
           extensions: { code: "INVALID INPUTS" },
         });
       }
-      if (!user.verified) {
-        throw new GraphQLError("Email not verified", {
-          extensions: { code: "EMAIL_NOT_VERIFIED" },
-        });
-      }
+      // if (!user.verified) {
+      //   throw new GraphQLError("Email not verified", {
+      //     extensions: { code: "EMAIL_NOT_VERIFIED" },
+      //   });
+      // }
       const jwtToken = jwt.sign(
         { email: input.email, userId: user.id },
         process.env.JWT_KEY!,

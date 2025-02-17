@@ -11,7 +11,11 @@ import { orderItemSchema } from "./schemas/orderItem/orderItem.graphql.js";
 import { cartItemSchema } from "./schemas/cartItem/cartItem.graphql.js";
 import { shoppingCartSchema } from "./schemas/shoppingCart/shoppingCart.graphql.js";
 import { ShoppingCartResolver } from "./resolvers/ShoppingCartResolver.js";
+import { PaymentResolver } from "./resolvers/PaymentResolver.js";
 import { CartItemResolver } from "./resolvers/CartItemResolver.js";
+import { paymentSchema } from "./schemas/payment/payment.graphql.js";
+import { wishListSchema } from "./schemas/wishList/wishList.graphql.js";
+import { WhishListResolver } from "./resolvers/WishListResolver.js";
 export interface MyContext {
   currentUser?: JwtPayload;
   idShoppingCart: number;
@@ -25,6 +29,8 @@ const typeDefsArray = [
   orderSchema,
   cartItemSchema,
   shoppingCartSchema,
+  paymentSchema,
+  wishListSchema,
 ];
 const resolversArray = [
   AuthResolver,
@@ -32,6 +38,8 @@ const resolversArray = [
   ProductResolver,
   ShoppingCartResolver,
   CartItemResolver,
+  PaymentResolver,
+  WhishListResolver,
 ];
 export const typeDefs = mergeTypeDefs(typeDefsArray);
 export const resolvers = mergeResolvers(resolversArray);

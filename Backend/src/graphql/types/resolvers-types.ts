@@ -84,11 +84,15 @@ export type JwtPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addProductToWishList: WishList;
   addResetPasswordRequest: Scalars['Boolean']['output'];
+  cancelShoppingCart: Scalars['Boolean']['output'];
   creatCartItem: CartItem;
+  creatPaymentIntent: PaymentSession;
   createCategory: Category;
   createOrder: Order;
   createProduct: Product;
+  deleteProductFromWishList: Scalars['Boolean']['output'];
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
@@ -100,6 +104,12 @@ export type Mutation = {
   updateProduct: Product;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
+  verifyPayment: Scalars['Boolean']['output'];
+};
+
+
+export type MutationAddProductToWishListArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -125,6 +135,11 @@ export type MutationCreateOrderArgs = {
 
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
+};
+
+
+export type MutationDeleteProductFromWishListArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -186,6 +201,11 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
 
+
+export type MutationVerifyPaymentArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
 export type Order = {
   __typename?: 'Order';
   buyer: User;
@@ -232,6 +252,12 @@ export enum OrderStatus {
   Shipped = 'SHIPPED'
 }
 
+export type PaymentSession = {
+  __typename?: 'PaymentSession';
+  sessionId: Scalars['String']['output'];
+  sessionUrl: Scalars['String']['output'];
+};
+
 export enum PaymentType {
   Paypal = 'PAYPAL',
   Visa = 'VISA'
@@ -264,6 +290,7 @@ export type Query = {
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
+  getWishList: WishList;
 };
 
 
@@ -390,6 +417,12 @@ export type User = {
   role?: Maybe<Role>;
 };
 
+export type WishList = {
+  __typename?: 'WishList';
+  id: Scalars['Int']['output'];
+  products?: Maybe<Array<Maybe<Product>>>;
+};
+
 export enum RndType {
   One = 'ONE',
   Two = 'TWO'
@@ -485,6 +518,7 @@ export type ResolversTypes = {
   OrderItem: ResolverTypeWrapper<OrderItem>;
   OrderItemStatus: OrderItemStatus;
   OrderStatus: OrderStatus;
+  PaymentSession: ResolverTypeWrapper<PaymentSession>;
   PaymentType: PaymentType;
   Product: ResolverTypeWrapper<Product>;
   Query: ResolverTypeWrapper<{}>;
@@ -497,6 +531,7 @@ export type ResolversTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
+  WishList: ResolverTypeWrapper<WishList>;
   rndType: RndType;
 };
 
@@ -518,6 +553,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Order: Order;
   OrderItem: OrderItem;
+  PaymentSession: PaymentSession;
   Product: Product;
   Query: {};
   ShoppingCart: ShoppingCart;
@@ -527,6 +563,7 @@ export type ResolversParentTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
+  WishList: WishList;
 };
 
 export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
@@ -561,11 +598,15 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addProductToWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType, RequireFields<MutationAddProductToWishListArgs, 'productId'>>;
   addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
+  cancelShoppingCart?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   creatCartItem?: Resolver<ResolversTypes['CartItem'], ParentType, ContextType, RequireFields<MutationCreatCartItemArgs, 'input'>>;
+  creatPaymentIntent?: Resolver<ResolversTypes['PaymentSession'], ParentType, ContextType>;
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   createOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'paymentId'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
+  deleteProductFromWishList?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductFromWishListArgs, 'productId'>>;
   removeCartItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveCartItemArgs, 'idCartItem'>>;
   removeProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveProductArgs, 'productId'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
@@ -577,6 +618,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   updateProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
+  verifyPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyPaymentArgs, 'sessionId'>>;
 };
 
 export type OrderResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
@@ -598,6 +640,12 @@ export type OrderItemResolvers<ContextType = MyContext, ParentType extends Resol
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['OrderItemStatus'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaymentSessionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentSession'] = ResolversParentTypes['PaymentSession']> = {
+  sessionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sessionUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -627,6 +675,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
   getShoppingCart?: Resolver<Maybe<ResolversTypes['ShoppingCart']>, ParentType, ContextType>;
+  getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
 };
 
 export type ShoppingCartResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ShoppingCart'] = ResolversParentTypes['ShoppingCart']> = {
@@ -651,6 +700,12 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WishListResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['WishList'] = ResolversParentTypes['WishList']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MyContext> = {
   AuthResponse?: AuthResponseResolvers<ContextType>;
   CartItem?: CartItemResolvers<ContextType>;
@@ -660,9 +715,11 @@ export type Resolvers<ContextType = MyContext> = {
   Mutation?: MutationResolvers<ContextType>;
   Order?: OrderResolvers<ContextType>;
   OrderItem?: OrderItemResolvers<ContextType>;
+  PaymentSession?: PaymentSessionResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  WishList?: WishListResolvers<ContextType>;
 };
 

@@ -4,8 +4,9 @@ import {
   Column,
   ManyToOne,
   Relation,
+  OneToOne,
 } from "typeorm";
-import { Order, Product } from "../index.js";
+import { Order, Product, Seller } from "../index.js";
 import { IsNumber, Min, IsEnum, IsDate, IsOptional } from "class-validator";
 import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
@@ -41,6 +42,7 @@ export class OrderItem {
   @ManyToOne(() => Order, (order: Order) => order.orderItems)
   order: Relation<Order>;
 
+  // @OneToOne(() => Seller)
   @ManyToOne(() => Product, (product: Product) => product.orderItems)
   product: Relation<Product>;
 }

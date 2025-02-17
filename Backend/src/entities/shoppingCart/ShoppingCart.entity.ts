@@ -14,9 +14,11 @@ export class ShoppingCart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "float8", default: 0.0 })
-  @IsNumber()
-  @Min(0, { message: "Total of Amount cannot be negative" })
+  @Column({ type: "float8", default: 0 })
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: "Total amount must be a valid number" }
+  )
   totalAmount: number;
 
   @OneToOne(() => Buyer)
