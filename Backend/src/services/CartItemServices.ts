@@ -11,7 +11,10 @@ export class CartItemService {
   constructor(private cartItemRepository: Repository<CartItem>) {}
 
   async create(idShoppingCart: number, productId: number, quantity: number) {
-    const IsExistingCart = await this.findByProductId(productId);
+    const IsExistingCart = await this.findByShoppingCartProductId(
+      idShoppingCart,
+      productId
+    );
     if (IsExistingCart) {
       return IsExistingCart;
     }
@@ -178,6 +181,16 @@ export class CartItemService {
       where: { product: { id } },
       relations: { shoppingCart: true, product: true },
     });
+  }
+
+  async findByShoppingCartProductId(shoppingCartId: number, productId: number) {
+    const cartItems = await this.cartItemRepository.find({
+      where: {
+        shoppingCart: { id: shoppingCartId },
+      },
+      relations: { shoppingCart: true, product: true },
+    });
+    return cartItems.find((cartItem) => cartItem.product.id === productId);
   }
 }
 

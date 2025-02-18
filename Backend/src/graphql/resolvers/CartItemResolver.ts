@@ -23,6 +23,9 @@ export const CartItemResolver: Resolvers = {
       const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
         user.id
       );
+      console.log(
+        "--------------Call getShoppingCartByBuyerId in createCartItem Resolver----------------"
+      );
       if (!shoppingCart) {
         throw new GraphQLError("Shopping Cart Not Found", {
           extensions: { code: "INVALID_INPUTS" },
@@ -33,6 +36,9 @@ export const CartItemResolver: Resolvers = {
         shoppingCart.id,
         input.idProduct,
         input.quantity
+      );
+      console.log(
+        "--------------Call cartItemService.create in createCartItem Resolver----------------"
       );
 
       if (!cartItem) {
