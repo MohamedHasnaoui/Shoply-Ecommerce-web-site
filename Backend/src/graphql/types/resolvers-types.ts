@@ -39,7 +39,6 @@ export type CartItemInput = {
 
 export type CartItemUpdateInput = {
   id: Scalars['Int']['input'];
-  idProduct: Scalars['Int']['input'];
   quantity: Scalars['Int']['input'];
 };
 
@@ -71,6 +70,12 @@ export type CreateProductInput = {
   reference: Scalars['String']['input'];
 };
 
+export type CreateReviewInput = {
+  comment: Scalars['String']['input'];
+  productId: Scalars['Int']['input'];
+  rating: Scalars['Int']['input'];
+};
+
 export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE'
@@ -92,7 +97,10 @@ export type Mutation = {
   createCategory: Category;
   createOrder: Order;
   createProduct: Product;
+  createReview: Review;
   deleteProductFromWishList: Scalars['Boolean']['output'];
+  deleteReview?: Maybe<Scalars['Boolean']['output']>;
+  incrementQuantity: Product;
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
@@ -102,6 +110,7 @@ export type Mutation = {
   updateCategory: Category;
   updateOrderItemStatus: OrderItem;
   updateProduct: Product;
+  updateReview: Review;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
   verifyPayment: Scalars['Boolean']['output'];
@@ -138,7 +147,23 @@ export type MutationCreateProductArgs = {
 };
 
 
+export type MutationCreateReviewArgs = {
+  input: CreateReviewInput;
+};
+
+
 export type MutationDeleteProductFromWishListArgs = {
+  productId: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteReviewArgs = {
+  reviewId: Scalars['Int']['input'];
+};
+
+
+export type MutationIncrementQuantityArgs = {
+  addedQte: Scalars['Int']['input'];
   productId: Scalars['Int']['input'];
 };
 
@@ -191,6 +216,11 @@ export type MutationUpdateProductArgs = {
 };
 
 
+export type MutationUpdateReviewArgs = {
+  input: UpdateReviewInput;
+};
+
+
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
@@ -235,7 +265,6 @@ export enum OrderItemStatus {
   Failed = 'FAILED',
   Pending = 'PENDING',
   Refunded = 'REFUNDED',
-  Returned = 'RETURNED',
   Shipped = 'SHIPPED'
 }
 
@@ -248,7 +277,6 @@ export enum OrderStatus {
   Partiallyshipped = 'PARTIALLYSHIPPED',
   Pending = 'PENDING',
   Refunded = 'REFUNDED',
-  Returned = 'RETURNED',
   Shipped = 'SHIPPED'
 }
 
@@ -285,10 +313,11 @@ export type Query = {
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getOrder: Order;
   getOrderItem: OrderItem;
-  getOrderItemsByBuyerId: Array<Maybe<OrderItem>>;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
+  getOrderItemsForSeller: Array<Maybe<OrderItem>>;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
+  getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getWishList: WishList;
 };
@@ -322,12 +351,7 @@ export type QueryGetOrderArgs = {
 
 
 export type QueryGetOrderItemArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type QueryGetOrderItemsByBuyerIdArgs = {
-  buyerId?: InputMaybe<Scalars['Int']['input']>;
+  OrderItemId: Scalars['Int']['input'];
 };
 
 
@@ -345,6 +369,22 @@ export type QueryGetProductsByCategoryArgs = {
   categoryId: Scalars['Int']['input'];
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetReviewsByProductIdArgs = {
+  productId: Scalars['Int']['input'];
+};
+
+export type Review = {
+  __typename?: 'Review';
+  comment: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  product: Product;
+  rating: Scalars['Int']['output'];
+  reviewer: User;
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export enum Role {
@@ -388,6 +428,13 @@ export type UpdateProductInput = {
   quantity?: InputMaybe<Scalars['Int']['input']>;
   rating?: InputMaybe<Scalars['Int']['input']>;
   reference?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateReviewInput = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['Int']['input'];
+  productId?: InputMaybe<Scalars['Int']['input']>;
+  rating?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UpdateUserInput = {
@@ -508,6 +555,7 @@ export type ResolversTypes = {
   CategoryInput: CategoryInput;
   CategoryUpdatedInput: CategoryUpdatedInput;
   CreateProductInput: CreateProductInput;
+  CreateReviewInput: CreateReviewInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Gender: Gender;
@@ -522,6 +570,7 @@ export type ResolversTypes = {
   PaymentType: PaymentType;
   Product: ResolverTypeWrapper<Product>;
   Query: ResolverTypeWrapper<{}>;
+  Review: ResolverTypeWrapper<Review>;
   Role: Role;
   ShoppingCart: ResolverTypeWrapper<ShoppingCart>;
   SignInInput: SignInInput;
@@ -529,6 +578,7 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   TokenType: TokenType;
   UpdateProductInput: UpdateProductInput;
+  UpdateReviewInput: UpdateReviewInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   WishList: ResolverTypeWrapper<WishList>;
@@ -546,6 +596,7 @@ export type ResolversParentTypes = {
   CategoryInput: CategoryInput;
   CategoryUpdatedInput: CategoryUpdatedInput;
   CreateProductInput: CreateProductInput;
+  CreateReviewInput: CreateReviewInput;
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
@@ -556,11 +607,13 @@ export type ResolversParentTypes = {
   PaymentSession: PaymentSession;
   Product: Product;
   Query: {};
+  Review: Review;
   ShoppingCart: ShoppingCart;
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: Scalars['String']['output'];
   UpdateProductInput: UpdateProductInput;
+  UpdateReviewInput: UpdateReviewInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   WishList: WishList;
@@ -606,7 +659,10 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
   createOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<MutationCreateOrderArgs, 'paymentId'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
+  createReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationCreateReviewArgs, 'input'>>;
   deleteProductFromWishList?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductFromWishListArgs, 'productId'>>;
+  deleteReview?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteReviewArgs, 'reviewId'>>;
+  incrementQuantity?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationIncrementQuantityArgs, 'addedQte' | 'productId'>>;
   removeCartItem?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveCartItemArgs, 'idCartItem'>>;
   removeProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveProductArgs, 'productId'>>;
   resetPassword?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
@@ -616,6 +672,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, Partial<MutationUpdateCategoryArgs>>;
   updateOrderItemStatus?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<MutationUpdateOrderItemStatusArgs, 'orderItemId' | 'status'>>;
   updateProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
+  updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationUpdateReviewArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
   verifyPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyPaymentArgs, 'sessionId'>>;
@@ -669,13 +726,25 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryGetCategoryArgs, 'id'>>;
   getMyOrders?: Resolver<Maybe<Array<Maybe<ResolversTypes['Order']>>>, ParentType, ContextType, Partial<QueryGetMyOrdersArgs>>;
   getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;
-  getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'id'>>;
-  getOrderItemsByBuyerId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByBuyerIdArgs>>;
+  getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'OrderItemId'>>;
   getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
+  getOrderItemsForSeller?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
+  getReviewsByProductId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Review']>>>, ParentType, ContextType, RequireFields<QueryGetReviewsByProductIdArgs, 'productId'>>;
   getShoppingCart?: Resolver<Maybe<ResolversTypes['ShoppingCart']>, ParentType, ContextType>;
   getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
+};
+
+export type ReviewResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
+  comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
+  rating?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  reviewer?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ShoppingCartResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ShoppingCart'] = ResolversParentTypes['ShoppingCart']> = {
@@ -718,6 +787,7 @@ export type Resolvers<ContextType = MyContext> = {
   PaymentSession?: PaymentSessionResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Review?: ReviewResolvers<ContextType>;
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   WishList?: WishListResolvers<ContextType>;

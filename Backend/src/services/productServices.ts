@@ -29,8 +29,7 @@ export class ProductServices {
   }
 
   async update(product: Product) {
-    await this.productRepository.update({ id: product.id }, product);
-    return product;
+    return await this.productRepository.save(product);
   }
 
   async remove(product: Product) {
@@ -41,7 +40,7 @@ export class ProductServices {
   async findById(id: number) {
     return await this.productRepository.findOne({
       where: { id },
-      relations: ["orderItems"],
+      relations: { owner: true },
     });
   }
 
@@ -67,6 +66,16 @@ export class ProductServices {
       });
     }
     return await this.productRepository.find();
+  }
+  async incrementQuantity(productId: number, quantity: number) {
+    const product = await this.findById(productId);
+    if (product === null) {
+      throw new GraphQLError("Product not found", {
+        extensions: { code: "BAD USER INPUTS" },
+      });
+    }
+    product.quantity += quantity;
+    return await this.update(product);
   }
 }
 

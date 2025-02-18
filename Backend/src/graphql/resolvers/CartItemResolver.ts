@@ -23,9 +23,7 @@ export const CartItemResolver: Resolvers = {
       const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
         user.id
       );
-      console.log(
-        "--------------Call getShoppingCartByBuyerId in createCartItem Resolver----------------"
-      );
+
       if (!shoppingCart) {
         throw new GraphQLError("Shopping Cart Not Found", {
           extensions: { code: "INVALID_INPUTS" },
@@ -63,7 +61,7 @@ export const CartItemResolver: Resolvers = {
         });
       }
 
-      return await cartItemService.update(input, user.id);
+      return await cartItemService.update(input);
     },
     removeCartItem: async (parent, { idCartItem }, context) => {
       if (!context.currentUser) {

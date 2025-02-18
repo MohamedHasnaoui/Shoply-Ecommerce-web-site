@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { Buyer, CartItem } from "../index.js";
-import { IsNumber, Min } from "class-validator";
+import { IsNumber, IsOptional, Min } from "class-validator";
 @Entity()
 export class ShoppingCart {
   @PrimaryGeneratedColumn()
