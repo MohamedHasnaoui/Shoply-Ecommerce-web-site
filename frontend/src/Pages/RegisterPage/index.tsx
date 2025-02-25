@@ -61,9 +61,9 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setsubmitError(null);
-    setLoading(true);
     if (validate()) {
       try{
+      setLoading(true); 
       const response = await authService.register(formState);
       setSignUpEmail(formState.email);
       navigate("/verify-email");

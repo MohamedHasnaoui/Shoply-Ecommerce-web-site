@@ -34,6 +34,7 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/client-preset": "^4.6.2",
     "@types/jquery": "^3.5.32",
+    "@types/node": "^22.13.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/react-redux": "^7.1.34",
