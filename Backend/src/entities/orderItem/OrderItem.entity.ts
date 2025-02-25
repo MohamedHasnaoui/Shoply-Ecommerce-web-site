@@ -6,7 +6,7 @@ import {
   Relation,
   JoinColumn,
 } from "typeorm";
-import { Order, Product } from "../index.js";
+import { Order, Product, Seller } from "../index.js";
 import { IsNumber, Min, IsEnum, IsDate, IsOptional } from "class-validator";
 import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
 @Entity()
@@ -45,6 +45,7 @@ export class OrderItem {
   @Column()
   productId: number;
 
+  // @OneToOne(() => Seller)
   @ManyToOne(() => Product, (product: Product) => product.orderItems)
   @JoinColumn({ name: "productId" })
   product: Relation<Product>;

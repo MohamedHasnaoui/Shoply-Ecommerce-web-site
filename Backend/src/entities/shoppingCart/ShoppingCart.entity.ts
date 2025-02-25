@@ -15,9 +15,10 @@ export class ShoppingCart {
   id: number;
 
   @Column({ type: "float8", default: 0 })
-  @IsNumber()
-  @Min(0, { message: "Total of Amount cannot be negative" })
-  @IsOptional()
+  @IsNumber(
+    { allowNaN: false, allowInfinity: false },
+    { message: "Total amount must be a valid number" }
+  )
   totalAmount: number;
 
   @OneToOne(() => Buyer, { onDelete: "CASCADE" })

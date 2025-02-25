@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { Order } from "../entities/index.js";
-import { userService } from "./UserService.js";
+import { userService } from "./userService.js";
 import { GraphQLError } from "graphql";
 import { paymentService } from "./PaymentService.js";
 import { validateOrReject } from "class-validator";

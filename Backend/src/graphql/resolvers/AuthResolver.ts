@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/UserService.js";
+import { userService } from "../../services/userService.js";
 import { Resolvers, Role, TokenType } from "../types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
@@ -8,6 +8,7 @@ import { EmailUtil, emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Buyer } from "../../entities/index.js";
+import { whishListService } from "../../services/WhishListService.js";
 
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
@@ -28,6 +29,7 @@ export const AuthResolver: Resolvers = {
       if (newUser.role === Role.Buyer) {
         const id = await shoppingCartService.create(newUser as Buyer);
         context.idShoppingCart = id;
+        const idWishList = await whishListService.create(user as Buyer);
       }
       return true;
     },
@@ -44,11 +46,11 @@ export const AuthResolver: Resolvers = {
           extensions: { code: "INVALID INPUTS" },
         });
       }
-      if (!user.verified) {
-        throw new GraphQLError("Email not verified", {
-          extensions: { code: "EMAIL_NOT_VERIFIED" },
-        });
-      }
+      // if (!user.verified) {
+      //   throw new GraphQLError("Email not verified", {
+      //     extensions: { code: "EMAIL_NOT_VERIFIED" },
+      //   });
+      // }
       const jwtToken = jwt.sign(
         { email: input.email, userId: user.id },
         process.env.JWT_KEY!,

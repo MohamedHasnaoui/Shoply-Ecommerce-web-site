@@ -10,4 +10,7 @@ export const shoppingCartSchema = gql`
   type Query {
     getShoppingCart: ShoppingCart
   }
+  type Mutation {
+    cancelShoppingCart: Boolean!
+  }
 `;

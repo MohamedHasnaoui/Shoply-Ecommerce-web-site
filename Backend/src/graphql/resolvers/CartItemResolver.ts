@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { Resolvers, Role } from "../types/resolvers-types.js";
-import { userService } from "../../services/UserService.js";
+import { userService } from "../../services/userService.js";
 import { cartItemService } from "../../services/CartItemServices.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 
@@ -23,6 +23,7 @@ export const CartItemResolver: Resolvers = {
       const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
         user.id
       );
+
       if (!shoppingCart) {
         throw new GraphQLError("Shopping Cart Not Found", {
           extensions: { code: "INVALID_INPUTS" },
@@ -33,6 +34,9 @@ export const CartItemResolver: Resolvers = {
         shoppingCart.id,
         input.idProduct,
         input.quantity
+      );
+      console.log(
+        "--------------Call cartItemService.create in createCartItem Resolver----------------"
       );
 
       if (!cartItem) {

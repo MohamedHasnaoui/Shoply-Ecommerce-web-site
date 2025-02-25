@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { userService } from "../../services/UserService.js";
+import { userService } from "../../services/userService.js";
 import { Resolvers, Role } from "../types/resolvers-types.js";
 import { reviewService } from "../../services/ReviewService.js";
 

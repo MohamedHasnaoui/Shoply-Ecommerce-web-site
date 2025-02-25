@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Resolvers, Role } from "../types/resolvers-types.js";
-import { userService } from "../../services/UserService.js";
+import { userService } from "../../services/userService.js";
 
 export const ShoppingCartResolver: Resolvers = {
   Query: {
@@ -35,6 +35,31 @@ export const ShoppingCartResolver: Resolvers = {
       }
 
       return shoppingCart;
+    },
+  },
+  Mutation: {
+    cancelShoppingCart: async (parent, args, context) => {
+      if (!context.currentUser || !context.currentUser.userId) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (!user) {
+        throw new GraphQLError("User not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+
+      if (user.role !== Role.Buyer) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      return await shoppingCartService.cancelShoppingCart(
+        context.currentUser.userId
+      );
     },
   },
 };

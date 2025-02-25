@@ -12,7 +12,11 @@ import { reviewSchema } from "./schemas/review/review.graphql.js";
 import { cartItemSchema } from "./schemas/cartItem/cartItem.graphql.js";
 import { shoppingCartSchema } from "./schemas/shoppingCart/shoppingCart.graphql.js";
 import { ShoppingCartResolver } from "./resolvers/ShoppingCartResolver.js";
+import { PaymentResolver } from "./resolvers/PaymentResolver.js";
 import { CartItemResolver } from "./resolvers/CartItemResolver.js";
+import { paymentSchema } from "./schemas/payment/payment.graphql.js";
+import { wishListSchema } from "./schemas/wishList/wishList.graphql.js";
+import { WhishListResolver } from "./resolvers/WishListResolver.js";
 import { OrderItemReolver } from "./resolvers/OrderItemResolver.js";
 import { OrderResolver } from "./resolvers/OrderResolver.js";
 import { ReviewResolver } from "./resolvers/ReviewResolver.js";
@@ -29,6 +33,8 @@ const typeDefsArray = [
   orderSchema,
   cartItemSchema,
   shoppingCartSchema,
+  paymentSchema,
+  wishListSchema,
   reviewSchema,
 ];
 const resolversArray = [
@@ -37,6 +43,8 @@ const resolversArray = [
   ProductResolver,
   ShoppingCartResolver,
   CartItemResolver,
+  PaymentResolver,
+  WhishListResolver,
   OrderResolver,
   OrderItemReolver,
   ReviewResolver,

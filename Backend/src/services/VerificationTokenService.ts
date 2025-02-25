@@ -4,7 +4,7 @@ import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";
 import { TokenType } from "../graphql/types/resolvers-types.js";
-import { userService } from "./UserService.js";
+import { userService } from "./userService.js";
 
 export class VerificationTokenService {
   constructor(
