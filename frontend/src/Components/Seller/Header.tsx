@@ -2,6 +2,7 @@ import { useState } from "react"
 
 interface propsType  {
   toggleSideBar: ()=> void
+  openQuickAccess: ()=>void;
 }
 export default function Header(props:propsType) {
 const [isInfoMenuOpen, setIsInfoMenuOpen] = useState(false)
@@ -245,7 +246,7 @@ return (
 
             {/* <!-- Toggle Side Overlay --> */}
             {/* <!-- Layout API, functionality initialized in Template._uiApiLayout() --> */}
-            <button type="button" className="btn btn-sm btn-alt-secondary" data-toggle="layout" data-action="side_overlay_toggle">
+            <button type="button" className="btn btn-sm btn-alt-secondary" onClick={props.openQuickAccess}>
               <i className="fa fa-fw fa-stream"></i>
             </button>
             {/* <!-- END Toggle Side Overlay --> */}

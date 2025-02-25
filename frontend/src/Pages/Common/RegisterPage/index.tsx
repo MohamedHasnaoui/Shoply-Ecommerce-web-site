@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { SignupMutationVariables, Role } from "../../generated";
-import { authService } from "../../services/auth";
+import { SignupMutationVariables, Role } from "../../../generated";
+import { authService } from "../../../services/auth";
 import $ from 'jquery'
 import select2 from 'select2';
 import { Dispatch } from "@reduxjs/toolkit";
-import { setSignupEmail } from "../../redux/slices/auth/authSlice";
-import { useAppDispatch } from "../../redux/hooks";
+import { setSignupEmail } from "../../../redux/slices/auth/authSlice";
+import { useAppDispatch } from "../../../redux/hooks";
 const actionDispatch = (dispatch:Dispatch)=>({
   setSignUpEmail:(email:string)=>dispatch(setSignupEmail(email))
 })

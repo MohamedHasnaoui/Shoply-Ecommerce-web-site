@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import { Dispatch } from "@reduxjs/toolkit";
-import { deleteSignupEmail } from "../../redux/slices/auth/authSlice";
-import { useAppDispatch } from "../../redux/hooks";
-import { authService } from "../../services/auth";
+import { deleteSignupEmail } from "../../../redux/slices/auth/authSlice";
+import { useAppDispatch } from "../../../redux/hooks";
+import { authService } from "../../../services/auth";
 const actionDispatch = (dispatch:Dispatch)=>({
   deleteSignupEmail:()=>dispatch(deleteSignupEmail())
 })

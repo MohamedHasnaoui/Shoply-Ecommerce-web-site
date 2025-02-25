@@ -27,6 +27,7 @@
     "react-redux": "^9.2.0",
     "react-select": "^5.10.0",
     "select2": "^4.1.0-rc.0",
+    "simplebar-react": "^3.3.0",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {

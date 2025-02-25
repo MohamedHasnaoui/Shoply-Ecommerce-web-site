@@ -1,6 +1,9 @@
 import { useState } from "react"
 import avatar from "../../assets/sellerAssets/media/avatars/avatar15.jpg"
-export default function Sidebar() {
+interface propsType  {
+  closeSidebar: ()=> void
+}
+export default function Sidebar(props:propsType) {
   const [isOpenManageMenu, setIsOpenManageMenu] = useState(false)
   return (
       <nav id="sidebar">
@@ -26,7 +29,7 @@ export default function Sidebar() {
               <div>
                 {/* <!-- Close Sidebar, Visible only on mobile screens --> */}
                 {/* <!-- Layout API, functionality initialized in Template._uiApiLayout() --> */}
-                <button type="button" className="btn btn-sm btn-alt-danger d-lg-none" data-toggle="layout" data-action="sidebar_close">
+                <button type="button" className="btn btn-sm btn-alt-danger d-lg-none" onClick={props.closeSidebar}>
                   <i className="fa fa-fw fa-times"></i>
                 </button>
                 {/* <!-- END Close Sidebar --> */}

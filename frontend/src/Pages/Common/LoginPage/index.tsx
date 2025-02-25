@@ -1,10 +1,10 @@
 import {  useState } from "react";
 import {Link} from 'react-router'
-import {authService} from "../../services/auth"
-import { SignInInput, SigninMutation } from "../../generated";
+import {authService} from "../../../services/auth"
+import { SignInInput, SigninMutation } from "../../../generated";
 import { Dispatch } from "@reduxjs/toolkit";
-import { loginAction } from "../../redux/slices/auth/authSlice";
-import { useAppDispatch } from "../../redux/hooks";
+import { loginAction } from "../../../redux/slices/auth/authSlice";
+import { useAppDispatch } from "../../../redux/hooks";
 
 const actionDispatch = (dispatch:Dispatch)=>({
   loginUser:(auth:SigninMutation["signin"]["user"])=>dispatch(loginAction(auth))
