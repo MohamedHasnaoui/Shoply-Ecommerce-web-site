@@ -4,7 +4,6 @@ import {
   JoinTable,
   ManyToMany,
   OneToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from "typeorm";
@@ -16,7 +15,8 @@ export class WishList {
   id: number;
 
   @OneToOne(() => Buyer, { onDelete: "CASCADE" })
-  Buyer: Buyer;
+  @JoinTable()
+  buyer: Buyer;
   @ManyToMany(() => Product)
   @JoinTable()
   products: Relation<Product[]>;
