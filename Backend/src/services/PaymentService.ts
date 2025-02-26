@@ -5,6 +5,7 @@ import { appDataSource } from "../database/data-source.js";
 import { stripe } from "../../utils/Stripe.js";
 import { GraphQLError } from "graphql";
 import { shoppingCartService } from "./ShoppingCartService.js";
+import { PaymentType } from "../graphql/types/resolvers-types.js";
 export class PaymentService {
   constructor(
     private paymentRepository: Repository<Payment>,
@@ -128,6 +129,11 @@ export class PaymentService {
       if (!buyerId) {
         throw new GraphQLError("Identifiant acheteur introuvable");
       }
+      await this.paymentRepository.save({
+        paymentDate: new Date(),
+        paymentType: PaymentType.Visa,
+      });
+
       return true;
     } catch (error) {
       console.error("Erreur lors de la vérification du paiement", error);
