@@ -1,0 +1,32 @@
+
+/* ============= Footer Start Here ======================= */
+.footer {
+    margin-block-start: auto;
+    &-item-wrapper {
+        gap: clampCal(32, 44, 1199, 1899);
+    }
+    &-item-two-wrapper {
+        gap: clampCal(32, 90, 1199, 1899);
+    }
+    &-item {
+        &__logo {
+            margin-block-end: 20px;
+            a {
+                img {
+                    width: 100%;
+                    height: 100%;
+                    max-width: 190px;
+                    max-height: 64px;
+                }
+            }
+        }
+    }
+}
+
+.body-bottom-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+/* ============= Footer End Here ======================= */

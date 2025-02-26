@@ -1,0 +1,84 @@
+/* =========================== Accordion Css start ============================= */ 
+.common-accordion {
+    .accordion-item {
+        border: 1px solid var(--border-color);
+        background-color: hsl(var(--white)) !important;
+        border-radius: 8px;
+        overflow: hidden;
+        &:not(:last-child) {
+            margin-block-end:20px;
+        }
+    }
+    .accordion-header {
+        line-height: 1;
+    }
+    .accordion-body {
+        padding: 20px 30px;
+        
+        padding-block-start: 0;
+        @include msm-screen {
+            padding: 12px 20px;
+            padding-block-start: 0;
+        }
+    }
+    &:first-of-type .accordion-button.collapsed {
+        border-radius: 5px;  
+    }
+    &:last-of-type .accordion-button.collapsed {
+        border-radius: 5px;  
+    }
+    .accordion-button{
+        color: var(--heading-color);
+         
+        padding: 20px 30px;
+        padding-inline-end: 46px; 
+        font-weight: 600;
+        font-size: clampCal(16, 20);
+        font-family: var(--heading-font);
+        @include msm-screen {
+            padding: 12px 20px;
+            padding-inline-end: 36px;
+        }
+        &::after {
+            background-image: none;
+        }
+        &:focus {
+            box-shadow: none;
+        }
+        &:not(.collapsed) {
+            background-color: transparent !important;
+            box-shadow: none;
+            color: hsl(var(--main));
+            &::after {
+                background-image: none;
+                color: hsl(var(--main)); ; 
+            }
+        }
+        &[aria-expanded="true"], &[aria-expanded="false"] {
+            &::after {
+                font-family: "Phosphor";
+                font-weight: 900;
+                content: "\E136";
+                color: hsl(var(--main));
+                display: inline-block;
+                position: absolute;
+                inset-block-start: 50%;
+                transform: translateY(-50%);
+                inset-inline-end: 30px;
+                height: unset;
+                 
+                text-align: center;
+                @include msm-screen {
+                    inset-inline-end: 20px;
+                }
+            }
+        }
+        &[aria-expanded="false"] {
+            &::after {
+                content: "\f107";
+                color: hsl(var(--heading-color));
+            }
+        }
+    }
+}
+/* ================================= Accordion Css End =========================== */

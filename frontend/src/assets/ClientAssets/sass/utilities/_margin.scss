@@ -1,0 +1,120 @@
+/* ================================= Margin Css Start =========================== */
+@each $property, $value in $spaces {
+  .m-#{$property} {
+    margin: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .mx-#{$property} {
+    margin-inline: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .my-#{$property} {
+    margin-block: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .ms-#{$property} {
+    margin-inline-start: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .me-#{$property} {
+    margin-inline-end: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .mt-#{$property} {
+    margin-block-start: var(--size-#{$property}) !important;
+  }
+}
+
+@each $property, $value in $spaces {
+  .mb-#{$property} {
+    margin-block-end: var(--size-#{$property}) !important;
+  }
+}
+
+
+.mt-0 {
+  margin-block-start: 0!important;
+}
+
+.mb-0 {
+  margin-block-end: 0!important;
+}
+
+.ms-0 {
+  margin-inline-start: 0!important;
+}
+
+.me-0 {
+  margin-inline-end: 0!important;
+}
+
+.my-120 {
+  margin-block-start: 60px !important;
+  margin-block-end: 60px !important;
+  @media (min-width: 576px) {
+    margin-block-start: 80px !important;
+    margin-block-end: 80px !important;
+  }
+  @media (min-width: 992px) {
+    margin-block-start: 120px !important;
+    margin-block-end: 120px !important;
+  }
+}
+.mt-120 {
+    margin-block-start: 60px !important;
+    @media (min-width: 576px) {
+    margin-block-start: 80px !important;
+  }
+    @media (min-width: 992px) {
+    margin-block-start: 120px !important;
+  }
+}
+.mb-120 {
+    margin-block-end: 60px !important;
+    @media (min-width: 576px) {
+    margin-block-end: 80px !important;
+  }
+    @media (min-width: 992px) {
+    margin-block-end: 120px !important;
+  }
+}
+.my-60 {
+    margin-block-start: 30px !important;
+    margin-block-end: 30px !important;
+    @media (min-width: 576px) {
+    margin-block-start: 40px !important;
+    margin-block-end: 40px !important;
+  }
+    @media (min-width: 992px) {
+    margin-block-start: 60px !important;
+    margin-block-end: 60px !important;
+  }
+}
+.mt-60 {
+    margin-block-start: 30px !important;
+    @media (min-width: 576px) {
+    margin-block-start: 40px !important;
+  }
+    @media (min-width: 992px) {
+    margin-block-start: 60px !important;
+  }
+}
+  .mb-60 {
+    margin-block-end: 30px !important;
+    @media (min-width: 576px) {
+    margin-block-end: 40px !important;
+  }
+    @media (min-width: 992px) {
+    margin-block-end: 60px !important;
+  }
+}/* ================================= Margin Css End =========================== */

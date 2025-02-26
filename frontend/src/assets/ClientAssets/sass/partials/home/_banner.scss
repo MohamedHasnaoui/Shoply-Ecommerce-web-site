@@ -1,0 +1,134 @@
+/* ============================== Banner Css Start ========================== */
+.banner {
+    margin-top: 32px;
+
+    @include sm-screen {
+        margin-bottom: 32px;
+    }
+
+    .slick-slider {
+        position: unset;
+    }
+
+    .slick-initialized.slick-slider .slick-slide {
+        margin: 0;
+    }
+}
+
+.banner-item {
+    position: relative;
+    padding-block-start: clampCal(32, 100, 768, 1599);
+    padding-block-end: clampCal(32, 220, 768, 1599);
+    padding-inline-start: clampCal(16, 142, 992, 1599);
+    padding-inline-end: clampCal(16, 76, 992, 1599);
+    -webkit-mask-image: url("~/public/assets/images/bg/banner-bg2.png");
+    mask-image: url("~/public/assets/images/bg/banner-bg2.png");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    background: #D3EBC0;
+    mask-position: top;
+    mask-size: 100% 100%;
+    gap: clampCal(24, 72);
+
+    @include sm-screen {
+        mask-image: none;
+        overflow: unset !important;
+    }
+
+    &__title {
+        margin-block-end: clampCal(16, 60);
+
+        @include xxl-screen {
+            font-size: rem(56px);
+        }
+
+        @include lg-screen {
+            font-size: rem(46px);
+        }
+
+        @include md-screen {
+            font-size: rem(28px);
+        }
+
+        @include sm-screen {
+            font-size: rem(26px);
+        }
+    }
+
+    &__content {
+        max-width: 852px;
+
+        @include xxl-screen {
+            max-width: 750px;
+        }
+    }
+
+    &__thumb {
+        img {
+            @include msm-screen {
+                max-width: 350px;
+                width: 100%;
+            }
+        }
+    }
+}
+
+.banner-slider__inner {
+    @include msm-screen {
+        flex-wrap: wrap;
+    }
+}
+
+.scroll-down {
+    width: 94px;
+    height: 94px;
+    position: relative;
+    margin-bottom: 24px;
+    z-index: 2;
+
+    @include xl-screen {
+        width: 74px;
+        height: 74px;
+        margin-bottom: 16px;
+    }
+
+    @include sm-screen {
+        margin-bottom: -36px;
+    }
+
+    &::before {
+        position: absolute;
+        content: "";
+        width: 2px;
+        height: 32px;
+        border: 2px dashed hsl(var(--white) / .4);
+        top: 16px;
+        animation: upDown 2s linear infinite;
+
+        @include xl-screen {
+            top: 8px;
+        }
+    }
+
+    .icon {
+        animation: upDown 2s linear infinite;
+        font-size: rem(28px);
+        margin-top: 16px;
+    }
+}
+
+@keyframes upDown {
+    0% {
+        transform: translateY(10px);
+    }
+
+    50% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(10px);
+    }
+}
+
+/* ============================== Banner Css End ========================== */

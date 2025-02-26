@@ -7,14 +7,15 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from "typeorm";
-import { Product, Buyer } from "../index.js";
+import { Buyer, Product } from "../index.js";
 
 @Entity()
 export class WishList {
   @PrimaryGeneratedColumn()
   id: number;
-  @OneToOne(() => Buyer)
-  @JoinColumn()
+
+  @OneToOne(() => Buyer, { onDelete: "CASCADE" })
+  @JoinTable()
   buyer: Buyer;
   @ManyToMany(() => Product)
   @JoinTable()

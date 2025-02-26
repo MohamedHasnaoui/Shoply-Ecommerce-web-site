@@ -1,0 +1,9 @@
+/* ================================ Featured Products Css Start ============================ */
+.featured-products {
+    .product-card {
+        @include xsm-screen {
+            flex-direction: column;
+        }
+    }
+}
+/* ================================ Featured Products Css End ============================ */

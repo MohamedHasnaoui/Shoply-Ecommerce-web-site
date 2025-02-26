@@ -1,0 +1,16 @@
+/* ======================== promotional banner Css Start ============================== */
+.promotional-banner-item {
+    padding: clampCal(32, 84) 24px;
+    @include msm-screen {
+        padding: 24px 16px;
+    }
+    &__content {
+        max-width: 200px;
+    }
+    &__title {
+        @include xl-screen {
+            font-size: rem(24px) !important;
+        }
+    }
+}
+/* ======================== promotional banner Css End ============================== */

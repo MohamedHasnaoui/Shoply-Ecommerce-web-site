@@ -1,0 +1,53 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "generate": "graphql-codegen --config codegen.yml"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.13.0",
+    "@graphql-codegen/typescript": "^4.1.3",
+    "@graphql-codegen/typescript-operations": "^4.4.1",
+    "@graphql-codegen/typescript-react-query": "^6.1.0",
+    "@phosphor-icons/react": "^2.1.7",
+    "@reduxjs/toolkit": "^2.5.1",
+    "@tanstack/react-query": "^5.66.2",
+    "animate.css": "^4.1.1",
+    "bootstrap": "^5.3.3",
+    "graphql-request": "^7.1.2",
+    "jquery": "^3.7.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0",
+    "react-select": "^5.10.0",
+    "select2": "^4.1.0-rc.0",
+    "simplebar-react": "^3.3.0",
+    "slick-carousel": "^1.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/client-preset": "^4.6.2",
+    "@types/jquery": "^3.5.32",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-redux": "^7.1.34",
+    "@types/select2": "^4.0.63",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.19.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^15.14.0",
+    "sass": "^1.85.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.22.0",
+    "vite": "^6.1.0"
+  }
+}

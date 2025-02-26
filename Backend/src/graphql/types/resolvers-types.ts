@@ -89,6 +89,7 @@ export type JwtPayload = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  VerificationEmailRequest: Scalars['Boolean']['output'];
   addProductToWishList: WishList;
   addResetPasswordRequest: Scalars['Boolean']['output'];
   cancelShoppingCart: Scalars['Boolean']['output'];
@@ -114,6 +115,11 @@ export type Mutation = {
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
   verifyPayment: Scalars['Boolean']['output'];
+};
+
+
+export type MutationVerificationEmailRequestArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -651,6 +657,7 @@ export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends Reso
 };
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  VerificationEmailRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerificationEmailRequestArgs, 'email'>>;
   addProductToWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType, RequireFields<MutationAddProductToWishListArgs, 'productId'>>;
   addResetPasswordRequest?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAddResetPasswordRequestArgs, 'email'>>;
   cancelShoppingCart?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

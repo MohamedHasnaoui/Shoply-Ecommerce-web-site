@@ -1,0 +1,17 @@
+/* ========================== Cart Page Css Start ============================ */
+.table-product {
+    &__thumb {
+        max-width: 150px;
+        max-height: 150px;
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1;
+        img {
+            max-width: 75px;
+        }
+    }
+    &__content {
+
+    }
+}
+/* ========================== Cart Page Css End ============================ */

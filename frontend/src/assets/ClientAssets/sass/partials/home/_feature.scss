@@ -1,0 +1,108 @@
+/* ============================ Feature Section Css start =============================== */
+.feature {
+    margin-top: 32px;
+    .arrow-center {
+        &:hover {
+            .slick-arrow {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+        .slick-arrow {
+            transform: translateY(0);
+            margin-left: -28px;
+            border: 1px solid var(--gray-100);
+            visibility: hidden;
+            opacity: 0;
+            top: 54px;
+            &.slick-next {
+                margin-right: -20px;
+            }
+        }
+    }
+}
+
+.feature-item {
+    &-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+        gap: 16px;
+        .feature-item {
+            &:nth-child(10n + 1) {
+                .feature-item__thumb {
+                    background: #E8F9E9;
+                }
+            }
+            &:nth-child(10n + 2) {
+                .feature-item__thumb {
+                    background: #FCEDED;
+                }
+            }
+            &:nth-child(10n + 3) {
+                .feature-item__thumb {
+                    background: #F6EBF3;
+                }
+            }
+            &:nth-child(10n + 4) {
+                .feature-item__thumb {
+                    background: #FCF2E7;
+                }
+            }
+            &:nth-child(10n + 5) {
+                .feature-item__thumb {
+                    background: #F5FBE3;
+                }
+            }
+            &:nth-child(10n + 6) {
+                .feature-item__thumb {
+                    background: #E3FBE9;
+                }
+            }
+            &:nth-child(10n + 7) {
+                .feature-item__thumb {
+                    background: #E9E3FB;
+                }
+            }
+            &:nth-child(10n + 8) {
+                .feature-item__thumb {
+                    background: #ECF8F2;
+                }
+            }
+            &:nth-child(10n + 9) {
+                .feature-item__thumb {
+                    background: #F8F5E5;
+                }
+            }
+            &:nth-child(10n + 10) {
+                .feature-item__thumb {
+                    background: #F0F8E5;
+                }
+            }
+            &:nth-child(10n + 11) {
+                .feature-item__thumb {
+                    background: #ddd;
+                }
+            }
+        }
+    }
+    &__thumb {
+        max-width: 153px;
+        max-height: 153px;
+        background-color: var(--main-50);
+        aspect-ratio: 1;
+        margin: 0 auto;
+    }
+}
+
+.featured-products, .popular-products {
+    .product-card {
+        flex-direction: row;
+        align-items: unset;
+    }
+}
+.popular-products {
+    .product-card__thumb {
+        width: 120px !important;
+    }
+}
+/* ============================ Feature Section Css End =============================== */

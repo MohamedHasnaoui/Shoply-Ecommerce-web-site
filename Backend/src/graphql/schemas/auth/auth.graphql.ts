@@ -64,6 +64,7 @@ export const authSchema = gql`
   type Mutation {
     signup(input: SignupIpnut!): Boolean!
     signin(input: SignInInput!): AuthResponse!
+    VerificationEmailRequest(email: String!): Boolean!
     verifyEmail(email: String!, token: String!): Boolean!
     addResetPasswordRequest(email: String!): Boolean!
     resetPassword(userId: Int!, token: String!, password: String!): Boolean!

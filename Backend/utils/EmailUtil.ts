@@ -98,19 +98,15 @@ export class EmailUtil {
   `,
     });
   }
-  async sendVerificationEmail(user: User) {
+  async sendVerificationEmail(email: string) {
     const token = tokenUtil.generateTokenNumber(6);
     const emailInput: SendEmailInput = {
       emailTitle: "Welcome to Shoply",
       subject: "Email Confirmation",
       messageBody: `<p>Your Confirmation Password: <strong>${token}</strong></p>`,
-      RECIPIENT_EMAIL: user.email,
+      RECIPIENT_EMAIL: email,
     };
-    await verificationTokenService.createToken(
-      user.email,
-      token,
-      TokenType.Email
-    );
+    await verificationTokenService.createToken(email, token, TokenType.Email);
     await this.sendEmail(emailInput);
   }
   async sendResetPasswordEmail(user: User) {

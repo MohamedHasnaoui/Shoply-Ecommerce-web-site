@@ -46,5 +46,9 @@ export class UserService {
     await this.userRepository.update({ id: user.id }, user);
     return user;
   }
+  async remove(user: User) {
+    await this.userRepository.remove(user);
+    return true;
+  }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

@@ -1,0 +1,17 @@
+/* ======================= Checkout Css Start ============================= */
+.payment-item {
+    &__content {
+        display: none;
+        &::before {
+            position: absolute;
+            content: "";
+            width: 20px;
+            height: 14px;
+            background-color: var(--main-50);
+            left: 32px;
+            bottom: calc(100% + -1px);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+    }
+}
+/* ======================= Checkout Css End ============================= */

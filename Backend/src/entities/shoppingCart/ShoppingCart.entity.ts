@@ -21,7 +21,7 @@ export class ShoppingCart {
   )
   totalAmount: number;
 
-  @OneToOne(() => Buyer)
+  @OneToOne(() => Buyer, { onDelete: "CASCADE" })
   @JoinColumn()
   buyer: Buyer;
 

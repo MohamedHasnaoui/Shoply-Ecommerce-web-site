@@ -1,0 +1,66 @@
+/* ============================= Product Card Css Start ========================== */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    &__cart {   
+        @include xxl-screen {
+            font-size: 12px;
+            padding: 9px 12px !important;
+        }
+    }
+    &__badge {
+        border-radius: 16px 0 16px 0;
+    }
+    &__thumb {
+        height: 232px;
+        width: 100%;
+        transition: 0s !important;
+        img {
+            max-width: 160px;
+            width: 100%;
+        }
+    }
+
+    &.style-two {
+        flex-direction: row;
+        .product-card {
+            &__thumb {
+                width: 260px;
+                height: 190px;
+                @include md-screen {
+                    width: 190px;
+                }
+                @include msm-screen {
+                    width: 124px;
+                }
+            }
+        }
+    }
+}
+
+@include lg-screen {
+    .product-card {
+        &__thumb {
+            height: 160px;
+            img {
+                max-width: 120px;
+            }
+        }
+        &__content {
+            .product-card {
+                &__price span {
+                    font-size: rem(12px) !important;
+                }
+            }
+            .title .link {
+                font-size: rem(14px);
+            }
+            .text-xs {
+                font-size: rem(10px) !important;
+            }
+        }
+    }
+}
+/* ============================= Product Card Css End ========================== */

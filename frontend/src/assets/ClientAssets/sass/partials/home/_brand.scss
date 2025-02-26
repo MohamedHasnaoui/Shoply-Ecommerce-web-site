@@ -1,0 +1,13 @@
+/* ========================= Brand Css Start ======================== */
+.brand-item {
+    img {
+        max-width: 152px !important;
+        @include xl-screen {
+            max-width: 132px !important;
+        }
+        @include md-screen {
+            max-width: 86px !important;
+        }
+    }
+}
+/* ========================= Brand Css End ======================== */
