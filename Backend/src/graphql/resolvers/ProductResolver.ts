@@ -9,13 +9,13 @@ export const ProductResolver: Resolvers = {
   Mutation: {
     createProduct: async (parent, { input }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("CANNOT CREATE PRODUCT", {
+        throw new GraphQLError("UNAUTHORISED", {
           extensions: { code: "UNAUTHORISED" },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Seller) {
-        throw new GraphQLError("CANNOT CREATE PRODUCT", {
+        throw new GraphQLError("UNAUTHORISED", {
           extensions: { code: "UNAUTHORISED" },
         });
       }

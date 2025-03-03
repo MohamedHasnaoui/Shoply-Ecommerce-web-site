@@ -3,9 +3,9 @@ import { gql } from "graphql-tag";
 export const categorySchema = gql`
   #graphql
   type Category {
-    id: Int!
-    name: String!
-    description: String!
+    id: Int
+    name: String
+    description: String
   }
 
   input CategoryUpdatedInput {

@@ -5,13 +5,14 @@ import Register from "./Pages/Common/RegisterPage"
 import ProtectedRoute from './Components/common/ProtectedRoute'
 import OTPVerification from './Pages/Common/OTPVerificationPage'
 import SellerLayout from './layout/SellerLayout'
+import AddProduct from './Pages/Seller/addProductPage'
 function App() {
 
   return (
     <>
     <Routes>
-      <Route path='/' element={<SellerLayout />} >
-        
+      <Route element={<SellerLayout />} >
+        <Route path='/seller' element={<AddProduct />} />
       </Route>
       <Route element={<ClientLayout />}>
         <Route path="/login" element={<Login />} />

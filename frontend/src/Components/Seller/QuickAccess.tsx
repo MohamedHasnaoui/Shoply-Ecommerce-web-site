@@ -25,7 +25,7 @@ export default function QuickAccess(props:propsType) {
 
           {/* <!-- Close Side Overlay --> */}
           {/* <!-- Layout API, functionality initialized in Template._uiApiLayout() --> */}
-          <button type="button" className="btn btn-sm btn-alt-danger ms-auto" onClick={props.closeQuickAccess}>
+          <button type="button" className="btn btn-sm btn-alt-danger ms-auto" onClick={() => { props.closeQuickAccess() }}>
             <i className="fa fa-fw fa-times"></i>
           </button>
           {/* <!-- END Close Side Overlay --> */}

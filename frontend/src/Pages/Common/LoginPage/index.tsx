@@ -1,15 +1,17 @@
 import {  useState } from "react";
-import {Link} from 'react-router'
+import {Link, useNavigate} from 'react-router'
 import {authService} from "../../../services/auth"
-import { SignInInput, SigninMutation } from "../../../generated";
+import { Role, SignInInput, SigninMutation } from "../../../generated";
 import { Dispatch } from "@reduxjs/toolkit";
 import { loginAction } from "../../../redux/slices/auth/authSlice";
 import { useAppDispatch } from "../../../redux/hooks";
+import { client } from "../../../graphqlProvider";
 
 const actionDispatch = (dispatch:Dispatch)=>({
   loginUser:(auth:SigninMutation["signin"]["user"])=>dispatch(loginAction(auth))
 })
 const Login = () => {
+  const navigate = useNavigate();
   const {loginUser} = actionDispatch(useAppDispatch());
   
   const [formState, setFormState] = useState<SignInInput>({
@@ -35,9 +37,12 @@ const Login = () => {
       const response = await authService.login(formState);
       if(response.errors) setsubmitError(response.errors[0].message);
       if(response.data){
-         setData(response.data.signin);
-         loginUser(response.data.signin.user);
-         localStorage.setItem("jwt",response.data.signin.jwt)
+        const data = response.data.signin;
+         setData(data);
+         loginUser(data.user);
+         localStorage.setItem("jwt",data.jwt);
+         await client.resetStore()
+         if(data.user.role === Role.Seller) navigate("/seller")
       }
     } catch (err) {
       setsubmitError((err as Error).message);

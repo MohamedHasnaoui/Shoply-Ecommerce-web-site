@@ -1,5 +1,3 @@
-import { GraphQLClient } from 'graphql-request';
-import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -9,12 +7,24 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 
-function fetcher<TData, TVariables extends { [key: string]: any }>(client: GraphQLClient, query: string, variables?: TVariables, requestHeaders?: RequestInit['headers']) {
-  return async (): Promise<TData> => client.request({
-    document: query,
-    variables,
-    requestHeaders
-  });
+function fetcher<TData, TVariables>(endpoint: string, requestInit: RequestInit, query: string, variables?: TVariables) {
+  return async (): Promise<TData> => {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      ...requestInit,
+      body: JSON.stringify({ query, variables }),
+    });
+
+    const json = await res.json();
+
+    if (json.errors) {
+      const { message } = json.errors[0];
+
+      throw new Error(message);
+    }
+
+    return json.data;
+  }
 }
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -52,9 +62,9 @@ export type CartItemUpdateInput = {
 
 export type Category = {
   __typename?: 'Category';
-  description: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type CategoryInput = {
@@ -98,12 +108,16 @@ export type JwtPayload = {
 export type Mutation = {
   __typename?: 'Mutation';
   VerificationEmailRequest: Scalars['Boolean']['output'];
+  addProductToWishList: WishList;
   addResetPasswordRequest: Scalars['Boolean']['output'];
+  cancelShoppingCart: Scalars['Boolean']['output'];
   creatCartItem: CartItem;
+  creatPaymentIntent: PaymentSession;
   createCategory: Category;
   createOrder: Order;
   createProduct: Product;
   createReview: Review;
+  deleteProductFromWishList: Scalars['Boolean']['output'];
   deleteReview?: Maybe<Scalars['Boolean']['output']>;
   incrementQuantity: Product;
   removeCartItem: Scalars['Boolean']['output'];
@@ -118,11 +132,17 @@ export type Mutation = {
   updateReview: Review;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
+  verifyPayment: Scalars['Boolean']['output'];
 };
 
 
 export type MutationVerificationEmailRequestArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationAddProductToWishListArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -153,6 +173,11 @@ export type MutationCreateProductArgs = {
 
 export type MutationCreateReviewArgs = {
   input: CreateReviewInput;
+};
+
+
+export type MutationDeleteProductFromWishListArgs = {
+  productId: Scalars['Int']['input'];
 };
 
 
@@ -230,6 +255,11 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
 
+
+export type MutationVerifyPaymentArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
 export type Order = {
   __typename?: 'Order';
   buyer: User;
@@ -274,6 +304,12 @@ export enum OrderStatus {
   Shipped = 'SHIPPED'
 }
 
+export type PaymentSession = {
+  __typename?: 'PaymentSession';
+  sessionId: Scalars['String']['output'];
+  sessionUrl: Scalars['String']['output'];
+};
+
 export enum PaymentType {
   Paypal = 'PAYPAL',
   Visa = 'VISA'
@@ -303,10 +339,12 @@ export type Query = {
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: Array<Maybe<OrderItem>>;
+  getParamUploadImage: UploadCloud;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
+  getWishList: WishList;
 };
 
 
@@ -344,6 +382,11 @@ export type QueryGetOrderItemArgs = {
 
 export type QueryGetOrderItemsByOrderIdArgs = {
   orderId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetParamUploadImageArgs = {
+  folder: Scalars['String']['input'];
 };
 
 
@@ -436,6 +479,14 @@ export type UpdateUserInput = {
   profileImg?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UploadCloud = {
+  __typename?: 'UploadCloud';
+  apiKey: Scalars['String']['output'];
+  cloudName: Scalars['String']['output'];
+  signature: Scalars['String']['output'];
+  timestamp: Scalars['Int']['output'];
+};
+
 export type User = {
   __typename?: 'User';
   address?: Maybe<Scalars['String']['output']>;
@@ -449,6 +500,12 @@ export type User = {
   phoneNumber?: Maybe<Scalars['String']['output']>;
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
+};
+
+export type WishList = {
+  __typename?: 'WishList';
+  id: Scalars['Int']['output'];
+  products?: Maybe<Array<Maybe<Product>>>;
 };
 
 export enum RndType {
@@ -490,6 +547,25 @@ export type VerificationEmailRequestMutationVariables = Exact<{
 
 export type VerificationEmailRequestMutation = { __typename?: 'Mutation', VerificationEmailRequest: boolean };
 
+export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null } | null> | null };
+
+export type CreateProductMutationVariables = Exact<{
+  input: CreateProductInput;
+}>;
+
+
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number } };
+
+export type GetParamUploadImageQueryVariables = Exact<{
+  folder: Scalars['String']['input'];
+}>;
+
+
+export type GetParamUploadImageQuery = { __typename?: 'Query', getParamUploadImage: { __typename?: 'UploadCloud', signature: string, timestamp: number, cloudName: string, apiKey: string } };
+
 
 
 export const SigninDocument = `
@@ -517,14 +593,13 @@ export const useSigninMutation = <
       TError = unknown,
       TContext = unknown
     >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<SigninMutation, TError, SigninMutationVariables, TContext>,
-      headers?: RequestInit['headers']
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<SigninMutation, TError, SigninMutationVariables, TContext>
     ) => {
     
     return useMutation<SigninMutation, TError, SigninMutationVariables, TContext>(
       ['Signin'],
-      (variables?: SigninMutationVariables) => fetcher<SigninMutation, SigninMutationVariables>(client, SigninDocument, variables, headers)(),
+      (variables?: SigninMutationVariables) => fetcher<SigninMutation, SigninMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, SigninDocument, variables)(),
       options
     )};
 
@@ -538,14 +613,13 @@ export const useSignupMutation = <
       TError = unknown,
       TContext = unknown
     >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<SignupMutation, TError, SignupMutationVariables, TContext>,
-      headers?: RequestInit['headers']
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<SignupMutation, TError, SignupMutationVariables, TContext>
     ) => {
     
     return useMutation<SignupMutation, TError, SignupMutationVariables, TContext>(
       ['Signup'],
-      (variables?: SignupMutationVariables) => fetcher<SignupMutation, SignupMutationVariables>(client, SignupDocument, variables, headers)(),
+      (variables?: SignupMutationVariables) => fetcher<SignupMutation, SignupMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, SignupDocument, variables)(),
       options
     )};
 
@@ -571,15 +645,14 @@ export const useCurrentUserQuery = <
       TData = CurrentUserQuery,
       TError = unknown
     >(
-      client: GraphQLClient,
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
       variables?: CurrentUserQueryVariables,
-      options?: UseQueryOptions<CurrentUserQuery, TError, TData>,
-      headers?: RequestInit['headers']
+      options?: UseQueryOptions<CurrentUserQuery, TError, TData>
     ) => {
     
     return useQuery<CurrentUserQuery, TError, TData>(
       variables === undefined ? ['CurrentUser'] : ['CurrentUser', variables],
-      fetcher<CurrentUserQuery, CurrentUserQueryVariables>(client, CurrentUserDocument, variables, headers),
+      fetcher<CurrentUserQuery, CurrentUserQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CurrentUserDocument, variables),
       options
     )};
 
@@ -593,14 +666,13 @@ export const useVerifyEmailMutation = <
       TError = unknown,
       TContext = unknown
     >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<VerifyEmailMutation, TError, VerifyEmailMutationVariables, TContext>,
-      headers?: RequestInit['headers']
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<VerifyEmailMutation, TError, VerifyEmailMutationVariables, TContext>
     ) => {
     
     return useMutation<VerifyEmailMutation, TError, VerifyEmailMutationVariables, TContext>(
       ['VerifyEmail'],
-      (variables?: VerifyEmailMutationVariables) => fetcher<VerifyEmailMutation, VerifyEmailMutationVariables>(client, VerifyEmailDocument, variables, headers)(),
+      (variables?: VerifyEmailMutationVariables) => fetcher<VerifyEmailMutation, VerifyEmailMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerifyEmailDocument, variables)(),
       options
     )};
 
@@ -614,13 +686,90 @@ export const useVerificationEmailRequestMutation = <
       TError = unknown,
       TContext = unknown
     >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<VerificationEmailRequestMutation, TError, VerificationEmailRequestMutationVariables, TContext>,
-      headers?: RequestInit['headers']
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<VerificationEmailRequestMutation, TError, VerificationEmailRequestMutationVariables, TContext>
     ) => {
     
     return useMutation<VerificationEmailRequestMutation, TError, VerificationEmailRequestMutationVariables, TContext>(
       ['VerificationEmailRequest'],
-      (variables?: VerificationEmailRequestMutationVariables) => fetcher<VerificationEmailRequestMutation, VerificationEmailRequestMutationVariables>(client, VerificationEmailRequestDocument, variables, headers)(),
+      (variables?: VerificationEmailRequestMutationVariables) => fetcher<VerificationEmailRequestMutation, VerificationEmailRequestMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerificationEmailRequestDocument, variables)(),
+      options
+    )};
+
+export const GetAllCategoriesDocument = `
+    query GetAllCategories {
+  getAllCategories {
+    id
+    name
+  }
+}
+    `;
+
+export const useGetAllCategoriesQuery = <
+      TData = GetAllCategoriesQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAllCategoriesQueryVariables,
+      options?: UseQueryOptions<GetAllCategoriesQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAllCategoriesQuery, TError, TData>(
+      variables === undefined ? ['GetAllCategories'] : ['GetAllCategories', variables],
+      fetcher<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllCategoriesDocument, variables),
+      options
+    )};
+
+export const CreateProductDocument = `
+    mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    id
+    name
+    reference
+    images
+    rating
+    quantity
+    price
+  }
+}
+    `;
+
+export const useCreateProductMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateProductMutation, TError, CreateProductMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<CreateProductMutation, TError, CreateProductMutationVariables, TContext>(
+      ['CreateProduct'],
+      (variables?: CreateProductMutationVariables) => fetcher<CreateProductMutation, CreateProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreateProductDocument, variables)(),
+      options
+    )};
+
+export const GetParamUploadImageDocument = `
+    query GetParamUploadImage($folder: String!) {
+  getParamUploadImage(folder: $folder) {
+    signature
+    timestamp
+    cloudName
+    apiKey
+  }
+}
+    `;
+
+export const useGetParamUploadImageQuery = <
+      TData = GetParamUploadImageQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetParamUploadImageQueryVariables,
+      options?: UseQueryOptions<GetParamUploadImageQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetParamUploadImageQuery, TError, TData>(
+      ['GetParamUploadImage', variables],
+      fetcher<GetParamUploadImageQuery, GetParamUploadImageQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetParamUploadImageDocument, variables),
       options
     )};

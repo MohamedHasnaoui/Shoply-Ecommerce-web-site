@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { startStandaloneServer } from "@apollo/server/standalone";
 import { expressMiddleware } from "@apollo/server/express4";
 import { MyContext } from "./graphql/index.js";
 import { typeDefs, resolvers } from "./graphql/index.js";

@@ -44,9 +44,9 @@ export type CartItemUpdateInput = {
 
 export type Category = {
   __typename?: 'Category';
-  description: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type CategoryInput = {
@@ -321,6 +321,7 @@ export type Query = {
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: Array<Maybe<OrderItem>>;
+  getParamUploadImage: UploadCloud;
   getProduct: Product;
   getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
@@ -363,6 +364,11 @@ export type QueryGetOrderItemArgs = {
 
 export type QueryGetOrderItemsByOrderIdArgs = {
   orderId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetParamUploadImageArgs = {
+  folder: Scalars['String']['input'];
 };
 
 
@@ -453,6 +459,14 @@ export type UpdateUserInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
   profileImg?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UploadCloud = {
+  __typename?: 'UploadCloud';
+  apiKey: Scalars['String']['output'];
+  cloudName: Scalars['String']['output'];
+  signature: Scalars['String']['output'];
+  timestamp: Scalars['Int']['output'];
 };
 
 export type User = {
@@ -586,6 +600,7 @@ export type ResolversTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateReviewInput: UpdateReviewInput;
   UpdateUserInput: UpdateUserInput;
+  UploadCloud: ResolverTypeWrapper<UploadCloud>;
   User: ResolverTypeWrapper<User>;
   WishList: ResolverTypeWrapper<WishList>;
   rndType: RndType;
@@ -621,6 +636,7 @@ export type ResolversParentTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateReviewInput: UpdateReviewInput;
   UpdateUserInput: UpdateUserInput;
+  UploadCloud: UploadCloud;
   User: User;
   WishList: WishList;
 };
@@ -640,9 +656,9 @@ export type CartItemResolvers<ContextType = MyContext, ParentType extends Resolv
 };
 
 export type CategoryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -736,6 +752,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'OrderItemId'>>;
   getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
   getOrderItemsForSeller?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
+  getParamUploadImage?: Resolver<ResolversTypes['UploadCloud'], ParentType, ContextType, RequireFields<QueryGetParamUploadImageArgs, 'folder'>>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
   getReviewsByProductId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Review']>>>, ParentType, ContextType, RequireFields<QueryGetReviewsByProductIdArgs, 'productId'>>;
@@ -758,6 +775,14 @@ export type ShoppingCartResolvers<ContextType = MyContext, ParentType extends Re
   cartItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['CartItem']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   totalAmount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UploadCloudResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UploadCloud'] = ResolversParentTypes['UploadCloud']> = {
+  apiKey?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  cloudName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  signature?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -796,6 +821,7 @@ export type Resolvers<ContextType = MyContext> = {
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
+  UploadCloud?: UploadCloudResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   WishList?: WishListResolvers<ContextType>;
 };

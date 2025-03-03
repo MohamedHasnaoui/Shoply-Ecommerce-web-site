@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { RootState } from "../../../redux/store";
 import { Dispatch } from "@reduxjs/toolkit";
 import { deleteSignupEmail } from "../../../redux/slices/auth/authSlice";
@@ -10,6 +10,7 @@ const actionDispatch = (dispatch:Dispatch)=>({
   deleteSignupEmail:()=>dispatch(deleteSignupEmail())
 })
 const OTPVerification = () => {
+  const navigate = useNavigate();
   const {deleteSignupEmail} = actionDispatch(useAppDispatch());
   const email = useSelector((state:RootState)=>state.auth.signupEmail);
   console.log(email,"e");
@@ -63,8 +64,8 @@ const OTPVerification = () => {
       console.log("Verifying OTP:", otpString);
       console.log(email!,otpString);
       await authService.verifyEmail(email!,otpString);
-      // On success, navigate to next step or dashboard
-     // navigate("/dashboard");
+      deleteSignupEmail();
+      navigate("/dashboard");
     } catch (err) {
       setError((err as Error).message || "Failed to verify OTP");
     } finally {
