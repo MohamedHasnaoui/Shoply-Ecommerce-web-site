@@ -317,6 +317,8 @@ export enum PaymentType {
 
 export type Product = {
   __typename?: 'Product';
+  category: Category;
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   images: Array<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -326,29 +328,46 @@ export type Product = {
   reference: Scalars['String']['output'];
 };
 
+export type ProductsStatistics = {
+  __typename?: 'ProductsStatistics';
+  countAvailable: Scalars['Int']['output'];
+  countOutOfStock: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
   getAllCategories?: Maybe<Array<Maybe<Category>>>;
-  getAllProducts?: Maybe<Array<Maybe<Product>>>;
+  getAllMyProducts: ProductPageAndCountOfAll;
+  getAllProducts: ProductPageAndCountOfAll;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
+  getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: Array<Maybe<OrderItem>>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
-  getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getWishList: WishList;
 };
 
 
+export type QueryGetAllMyProductsArgs = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetAllProductsArgs = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -392,13 +411,6 @@ export type QueryGetParamUploadImageArgs = {
 
 export type QueryGetProductArgs = {
   id: Scalars['Int']['input'];
-};
-
-
-export type QueryGetProductsByCategoryArgs = {
-  categoryId: Scalars['Int']['input'];
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -508,6 +520,12 @@ export type WishList = {
   products?: Maybe<Array<Maybe<Product>>>;
 };
 
+export type ProductPageAndCountOfAll = {
+  __typename?: 'productPageAndCountOfAll';
+  count: Scalars['Int']['output'];
+  products: Array<Product>;
+};
+
 export enum RndType {
   One = 'ONE',
   Two = 'TWO'
@@ -558,6 +576,21 @@ export type CreateProductMutationVariables = Exact<{
 
 
 export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number } };
+
+export type GetAllMyProductsQueryVariables = Exact<{
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'productPageAndCountOfAll', count: number, products: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', name?: string | null } }> } };
+
+export type GetMyProductsStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyProductsStatisticsQuery = { __typename?: 'Query', getMyProductsStatistics: { __typename?: 'ProductsStatistics', countAvailable: number, countOutOfStock: number } };
 
 export type GetParamUploadImageQueryVariables = Exact<{
   folder: Scalars['String']['input'];
@@ -745,6 +778,71 @@ export const useCreateProductMutation = <
     return useMutation<CreateProductMutation, TError, CreateProductMutationVariables, TContext>(
       ['CreateProduct'],
       (variables?: CreateProductMutationVariables) => fetcher<CreateProductMutation, CreateProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreateProductDocument, variables)(),
+      options
+    )};
+
+export const GetAllMyProductsDocument = `
+    query GetAllMyProducts($available: Boolean, $categoryId: Int, $pageNb: Int, $pageSize: Int) {
+  getAllMyProducts(
+    available: $available
+    categoryId: $categoryId
+    pageNb: $pageNb
+    pageSize: $pageSize
+  ) {
+    products {
+      id
+      name
+      reference
+      images
+      rating
+      quantity
+      price
+      category {
+        name
+      }
+      createdAt
+    }
+    count
+  }
+}
+    `;
+
+export const useGetAllMyProductsQuery = <
+      TData = GetAllMyProductsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAllMyProductsQueryVariables,
+      options?: UseQueryOptions<GetAllMyProductsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAllMyProductsQuery, TError, TData>(
+      variables === undefined ? ['GetAllMyProducts'] : ['GetAllMyProducts', variables],
+      fetcher<GetAllMyProductsQuery, GetAllMyProductsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllMyProductsDocument, variables),
+      options
+    )};
+
+export const GetMyProductsStatisticsDocument = `
+    query GetMyProductsStatistics {
+  getMyProductsStatistics {
+    countAvailable
+    countOutOfStock
+  }
+}
+    `;
+
+export const useGetMyProductsStatisticsQuery = <
+      TData = GetMyProductsStatisticsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetMyProductsStatisticsQueryVariables,
+      options?: UseQueryOptions<GetMyProductsStatisticsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetMyProductsStatisticsQuery, TError, TData>(
+      variables === undefined ? ['GetMyProductsStatistics'] : ['GetMyProductsStatistics', variables],
+      fetcher<GetMyProductsStatisticsQuery, GetMyProductsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetMyProductsStatisticsDocument, variables),
       options
     )};
 

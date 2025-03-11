@@ -22,3 +22,42 @@ export const CREATE_PRODUCT_MUTATION = gql`
     }
   }
 `;
+export const GET_MY_PRODUCTS = gql`
+  query GetAllMyProducts(
+    $available: Boolean
+    $categoryId: Int
+    $pageNb: Int
+    $pageSize: Int
+  ) {
+    getAllMyProducts(
+      available: $available
+      categoryId: $categoryId
+      pageNb: $pageNb
+      pageSize: $pageSize
+    ) {
+      products {
+        id
+        name
+        reference
+        images
+        rating
+        quantity
+        price
+        category {
+          name
+        }
+        createdAt
+      }
+      count
+    }
+  }
+`;
+
+export const GET_PRODUCTS_STOCK_COUNTS = gql`
+  query GetMyProductsStatistics {
+    getMyProductsStatistics {
+      countAvailable
+      countOutOfStock
+    }
+  }
+`;

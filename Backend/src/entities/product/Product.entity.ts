@@ -40,6 +40,14 @@ export class Product {
   @Min(0, { message: "Quantity cannot be negative" })
   quantity: number;
 
+  @Column({ default: new Date() })
+  @IsOptional()
+  createdAt: Date;
+
+  @Column({ default: new Date() })
+  @IsOptional()
+  cpdatedAt: Date;
+
   @Column({ default: 0, type: "float8" })
   @Min(0) // Minimum rating value is 0
   @Max(5) // Maximum rating value is 5

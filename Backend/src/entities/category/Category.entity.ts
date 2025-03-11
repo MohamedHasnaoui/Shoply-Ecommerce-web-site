@@ -13,7 +13,7 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
   // Validate that name is a non-empty string and has a minimum length
-  @Column()
+  @Column({ unique: true })
   @IsString()
   @IsNotEmpty()
   @Length(3, 50) // Name must be between 3 and 50 characters

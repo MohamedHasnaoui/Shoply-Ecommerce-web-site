@@ -11,6 +11,8 @@ export const productSchema = gql`
     rating: Int!
     quantity: Int!
     price: Float!
+    category: Category!
+    createdAt: DateTime!
   }
 
   input CreateProductInput {
@@ -33,14 +35,31 @@ export const productSchema = gql`
     price: Float
     categoryId: Int
   }
+  type productPageAndCountOfAll {
+    products: [Product!]!
+    count: Int!
+  }
+  type ProductsStatistics {
+    countAvailable: Int!
+    countOutOfStock: Int!
+  }
   type Query {
-    getProductsByCategory(
-      categoryId: Int!
+    getAllProducts(
+      available: Boolean
+      categoryId: Int
       pageNb: Int
       pageSize: Int
-    ): [Product]
-    getAllProducts(pageNb: Int, pageSize: Int): [Product]
+    ): productPageAndCountOfAll!
+    getAllMyProducts(
+      available: Boolean
+      categoryId: Int
+      pageNb: Int
+      pageSize: Int
+    ): productPageAndCountOfAll!
+
     getProduct(id: Int!): Product!
+
+    getMyProductsStatistics: ProductsStatistics!
   }
   type Mutation {
     createProduct(input: CreateProductInput!): Product!
