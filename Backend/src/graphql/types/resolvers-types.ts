@@ -299,6 +299,8 @@ export enum PaymentType {
 
 export type Product = {
   __typename?: 'Product';
+  category: Category;
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   images: Array<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -308,29 +310,46 @@ export type Product = {
   reference: Scalars['String']['output'];
 };
 
+export type ProductsStatistics = {
+  __typename?: 'ProductsStatistics';
+  countAvailable: Scalars['Int']['output'];
+  countOutOfStock: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
   getAllCategories?: Maybe<Array<Maybe<Category>>>;
-  getAllProducts?: Maybe<Array<Maybe<Product>>>;
+  getAllMyProducts: ProductPageAndCountOfAll;
+  getAllProducts: ProductPageAndCountOfAll;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
+  getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: Array<Maybe<OrderItem>>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
-  getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getWishList: WishList;
 };
 
 
+export type QueryGetAllMyProductsArgs = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetAllProductsArgs = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -374,13 +393,6 @@ export type QueryGetParamUploadImageArgs = {
 
 export type QueryGetProductArgs = {
   id: Scalars['Int']['input'];
-};
-
-
-export type QueryGetProductsByCategoryArgs = {
-  categoryId: Scalars['Int']['input'];
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -490,6 +502,12 @@ export type WishList = {
   products?: Maybe<Array<Maybe<Product>>>;
 };
 
+export type ProductPageAndCountOfAll = {
+  __typename?: 'productPageAndCountOfAll';
+  count: Scalars['Int']['output'];
+  products: Array<Product>;
+};
+
 export enum RndType {
   One = 'ONE',
   Two = 'TWO'
@@ -589,6 +607,7 @@ export type ResolversTypes = {
   PaymentSession: ResolverTypeWrapper<PaymentSession>;
   PaymentType: PaymentType;
   Product: ResolverTypeWrapper<Product>;
+  ProductsStatistics: ResolverTypeWrapper<ProductsStatistics>;
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<Review>;
   Role: Role;
@@ -603,6 +622,7 @@ export type ResolversTypes = {
   UploadCloud: ResolverTypeWrapper<UploadCloud>;
   User: ResolverTypeWrapper<User>;
   WishList: ResolverTypeWrapper<WishList>;
+  productPageAndCountOfAll: ResolverTypeWrapper<ProductPageAndCountOfAll>;
   rndType: RndType;
 };
 
@@ -627,6 +647,7 @@ export type ResolversParentTypes = {
   OrderItem: OrderItem;
   PaymentSession: PaymentSession;
   Product: Product;
+  ProductsStatistics: ProductsStatistics;
   Query: {};
   Review: Review;
   ShoppingCart: ShoppingCart;
@@ -639,6 +660,7 @@ export type ResolversParentTypes = {
   UploadCloud: UploadCloud;
   User: User;
   WishList: WishList;
+  productPageAndCountOfAll: ProductPageAndCountOfAll;
 };
 
 export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
@@ -730,6 +752,8 @@ export type PaymentSessionResolvers<ContextType = MyContext, ParentType extends 
 };
 
 export type ProductResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
+  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   images?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -740,21 +764,28 @@ export type ProductResolvers<ContextType = MyContext, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ProductsStatisticsResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ProductsStatistics'] = ResolversParentTypes['ProductsStatistics']> = {
+  countAvailable?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  countOutOfStock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getAllCartItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['CartItem']>>>, ParentType, ContextType>;
   getAllCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
-  getAllProducts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, Partial<QueryGetAllProductsArgs>>;
+  getAllMyProducts?: Resolver<ResolversTypes['productPageAndCountOfAll'], ParentType, ContextType, Partial<QueryGetAllMyProductsArgs>>;
+  getAllProducts?: Resolver<ResolversTypes['productPageAndCountOfAll'], ParentType, ContextType, Partial<QueryGetAllProductsArgs>>;
   getCartItem?: Resolver<ResolversTypes['CartItem'], ParentType, ContextType, RequireFields<QueryGetCartItemArgs, 'idCartItem'>>;
   getCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryGetCategoryArgs, 'id'>>;
   getMyOrders?: Resolver<Maybe<Array<Maybe<ResolversTypes['Order']>>>, ParentType, ContextType, Partial<QueryGetMyOrdersArgs>>;
+  getMyProductsStatistics?: Resolver<ResolversTypes['ProductsStatistics'], ParentType, ContextType>;
   getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;
   getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'OrderItemId'>>;
   getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
   getOrderItemsForSeller?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType>;
   getParamUploadImage?: Resolver<ResolversTypes['UploadCloud'], ParentType, ContextType, RequireFields<QueryGetParamUploadImageArgs, 'folder'>>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
-  getProductsByCategory?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, RequireFields<QueryGetProductsByCategoryArgs, 'categoryId'>>;
   getReviewsByProductId?: Resolver<Maybe<Array<Maybe<ResolversTypes['Review']>>>, ParentType, ContextType, RequireFields<QueryGetReviewsByProductIdArgs, 'productId'>>;
   getShoppingCart?: Resolver<Maybe<ResolversTypes['ShoppingCart']>, ParentType, ContextType>;
   getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
@@ -807,6 +838,12 @@ export type WishListResolvers<ContextType = MyContext, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ProductPageAndCountOfAllResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['productPageAndCountOfAll'] = ResolversParentTypes['productPageAndCountOfAll']> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = MyContext> = {
   AuthResponse?: AuthResponseResolvers<ContextType>;
   CartItem?: CartItemResolvers<ContextType>;
@@ -818,11 +855,13 @@ export type Resolvers<ContextType = MyContext> = {
   OrderItem?: OrderItemResolvers<ContextType>;
   PaymentSession?: PaymentSessionResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
+  ProductsStatistics?: ProductsStatisticsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
   UploadCloud?: UploadCloudResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   WishList?: WishListResolvers<ContextType>;
+  productPageAndCountOfAll?: ProductPageAndCountOfAllResolvers<ContextType>;
 };
 

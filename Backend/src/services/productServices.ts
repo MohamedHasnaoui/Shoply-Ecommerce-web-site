@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Equal, MoreThan, Not, Repository } from "typeorm";
 import { Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
 import { CreateProductInput } from "../graphql/types/resolvers-types.js";
@@ -40,33 +40,82 @@ export class ProductServices {
   async findById(id: number) {
     return await this.productRepository.findOne({
       where: { id },
-      relations: { owner: true },
+      relations: { owner: true, category: true },
     });
   }
 
-  async getByCategory(categoryId: number, pageNb?: number, pageSize?: number) {
-    if (pageNb && pageSize) {
-      return await this.productRepository.find({
-        order: { id: "DESC" },
-        where: { category: { id: categoryId } },
-        take: pageSize,
-        skip: (pageNb - 1) * pageSize,
-      });
-    }
-    return await this.productRepository.find({
-      where: { category: { id: categoryId } },
+  async getAll(
+    categId?: number,
+    available?: boolean,
+    pageNb?: number,
+    pageSize?: number
+  ) {
+    const products = await this.productRepository.find({
+      order: { createdAt: "DESC" },
+      where: {
+        category: categId !== undefined ? { id: categId } : undefined,
+        quantity:
+          available === undefined
+            ? undefined
+            : available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+      take: !pageSize || !pageNb ? Number.MAX_SAFE_INTEGER : pageSize,
+      skip: !pageSize || !pageNb ? 0 : (pageNb - 1) * pageSize,
+      relations: { category: true },
     });
+    const count = await this.productRepository.count({
+      where: {
+        category: categId !== undefined ? { id: categId } : undefined,
+        quantity:
+          available === undefined
+            ? undefined
+            : available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+    });
+    return { products, count };
   }
-  async getAll(pageNb?: number, pageSize?: number) {
-    if (pageNb && pageSize) {
-      return await this.productRepository.find({
-        order: { id: "DESC" },
-        take: pageSize,
-        skip: (pageNb - 1) * pageSize,
-      });
-    }
-    return await this.productRepository.find();
+  async getAllBySellerId(
+    sellerId: number,
+    categId?: number,
+    available?: boolean,
+    pageNb?: number,
+    pageSize?: number
+  ) {
+    const products = await this.productRepository.find({
+      order: { createdAt: "DESC" },
+      where: {
+        owner: { id: sellerId },
+        category: categId !== undefined ? { id: categId } : undefined,
+        quantity:
+          available === undefined
+            ? undefined
+            : available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+      take: !pageSize || !pageNb ? Number.MAX_SAFE_INTEGER : pageSize,
+      skip: !pageSize || !pageNb ? 0 : (pageNb - 1) * pageSize,
+      relations: { category: true },
+    });
+    const count = await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        category: categId !== undefined ? { id: categId } : undefined,
+        quantity:
+          available === undefined
+            ? undefined
+            : available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+    });
+    return { products, count };
   }
+
   async incrementQuantity(productId: number, quantity: number) {
     const product = await this.findById(productId);
     if (product === null) {
@@ -76,6 +125,22 @@ export class ProductServices {
     }
     product.quantity += quantity;
     return await this.update(product);
+  }
+  async countAvailable(sellerId: number) {
+    return await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        quantity: MoreThan(0),
+      },
+    });
+  }
+  async countOutOfStock(sellerId: number) {
+    return await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        quantity: Equal(0),
+      },
+    });
   }
 }
 
