@@ -30,7 +30,9 @@
     "react-dropzone": "^14.3.8",
     "react-redux": "^9.2.0",
     "react-router": "^7.2.0",
+    "react-router-dom": "^7.3.0",
     "react-select": "^5.10.0",
+    "react-slider": "^2.0.6",
     "select2": "^4.1.0-rc.0",
     "simplebar-react": "^3.3.0",
     "slick-carousel": "^1.8.1"
@@ -44,6 +46,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/react-redux": "^7.1.34",
+    "@types/react-slider": "^1.3.6",
     "@types/select2": "^4.0.63",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.19.0",

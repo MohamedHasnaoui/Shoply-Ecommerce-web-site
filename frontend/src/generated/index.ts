@@ -552,6 +552,15 @@ export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null } | null> | null };
 
+export type GetProductsByCategoryQueryVariables = Exact<{
+  categoryId: Scalars['Int']['input'];
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetProductsByCategoryQuery = { __typename?: 'Query', getProductsByCategory?: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number } | null> | null };
+
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
 }>;
@@ -717,6 +726,39 @@ export const useGetAllCategoriesQuery = <
     return useQuery<GetAllCategoriesQuery, TError, TData>(
       variables === undefined ? ['GetAllCategories'] : ['GetAllCategories', variables],
       fetcher<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllCategoriesDocument, variables),
+      options
+    )};
+
+export const GetProductsByCategoryDocument = `
+    query GetProductsByCategory($categoryId: Int!, $pageNb: Int, $pageSize: Int) {
+  getProductsByCategory(
+    categoryId: $categoryId
+    pageNb: $pageNb
+    pageSize: $pageSize
+  ) {
+    id
+    name
+    reference
+    images
+    rating
+    quantity
+    price
+  }
+}
+    `;
+
+export const useGetProductsByCategoryQuery = <
+      TData = GetProductsByCategoryQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetProductsByCategoryQueryVariables,
+      options?: UseQueryOptions<GetProductsByCategoryQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetProductsByCategoryQuery, TError, TData>(
+      ['GetProductsByCategory', variables],
+      fetcher<GetProductsByCategoryQuery, GetProductsByCategoryQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetProductsByCategoryDocument, variables),
       options
     )};
 
