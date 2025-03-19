@@ -115,11 +115,11 @@ export type Mutation = {
   creatPaymentIntent: PaymentSession;
   createCategory: Category;
   createOrder: Order;
-  createProduct: Product;
+  createProduct?: Maybe<Product>;
   createReview: Review;
   deleteProductFromWishList: Scalars['Boolean']['output'];
   deleteReview?: Maybe<Scalars['Boolean']['output']>;
-  incrementQuantity: Product;
+  incrementQuantity?: Maybe<Product>;
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
@@ -128,7 +128,7 @@ export type Mutation = {
   updateCartItem: CartItem;
   updateCategory: Category;
   updateOrderItemStatus: OrderItem;
-  updateProduct: Product;
+  updateProduct?: Maybe<Product>;
   updateReview: Review;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
@@ -317,6 +317,9 @@ export enum PaymentType {
 
 export type Product = {
   __typename?: 'Product';
+  category: Category;
+  createdAt: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
   id: Scalars['Int']['output'];
   images: Array<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -326,31 +329,56 @@ export type Product = {
   reference: Scalars['String']['output'];
 };
 
+export type ProductFilter = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductListResult = {
+  __typename?: 'ProductListResult';
+  count: Scalars['Int']['output'];
+  products: Array<Product>;
+};
+
+export type ProductsStatistics = {
+  __typename?: 'ProductsStatistics';
+  countAvailable: Scalars['Int']['output'];
+  countOutOfStock: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
   getAllCategories?: Maybe<Array<Maybe<Category>>>;
-  getAllProducts?: Maybe<Array<Maybe<Product>>>;
+  getAllMyProducts: ProductListResult;
+  getAllProducts: ProductListResult;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
+  getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: Array<Maybe<OrderItem>>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
-  getProductsByCategory?: Maybe<Array<Maybe<Product>>>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getWishList: WishList;
 };
 
 
+export type QueryGetAllMyProductsArgs = {
+  input?: InputMaybe<ProductFilter>;
+};
+
+
 export type QueryGetAllProductsArgs = {
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  input?: InputMaybe<ProductFilter>;
 };
 
 
@@ -392,13 +420,6 @@ export type QueryGetParamUploadImageArgs = {
 
 export type QueryGetProductArgs = {
   id: Scalars['Int']['input'];
-};
-
-
-export type QueryGetProductsByCategoryArgs = {
-  categoryId: Scalars['Int']['input'];
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -566,7 +587,40 @@ export type CreateProductMutationVariables = Exact<{
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number } };
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null } } | null };
+
+export type UpdateProductMutationVariables = Exact<{
+  input: UpdateProductInput;
+}>;
+
+
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null } } | null };
+
+export type GetProductQueryVariables = Exact<{
+  productId: Scalars['Int']['input'];
+}>;
+
+
+export type GetProductQuery = { __typename?: 'Query', getProduct: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null, name?: string | null } } };
+
+export type GetAllMyProductsQueryVariables = Exact<{
+  input?: InputMaybe<ProductFilter>;
+}>;
+
+
+export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', name?: string | null } }> } };
+
+export type GetMyProductsStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyProductsStatisticsQuery = { __typename?: 'Query', getMyProductsStatistics: { __typename?: 'ProductsStatistics', countAvailable: number, countOutOfStock: number } };
+
+export type RemoveProductMutationVariables = Exact<{
+  productId: Scalars['Int']['input'];
+}>;
+
+
+export type RemoveProductMutation = { __typename?: 'Mutation', removeProduct: boolean };
 
 export type GetParamUploadImageQueryVariables = Exact<{
   folder: Scalars['String']['input'];
@@ -770,8 +824,13 @@ export const CreateProductDocument = `
     reference
     images
     rating
+    description
     quantity
     price
+    category {
+      id
+    }
+    createdAt
   }
 }
     `;
@@ -787,6 +846,155 @@ export const useCreateProductMutation = <
     return useMutation<CreateProductMutation, TError, CreateProductMutationVariables, TContext>(
       ['CreateProduct'],
       (variables?: CreateProductMutationVariables) => fetcher<CreateProductMutation, CreateProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreateProductDocument, variables)(),
+      options
+    )};
+
+export const UpdateProductDocument = `
+    mutation UpdateProduct($input: UpdateProductInput!) {
+  updateProduct(input: $input) {
+    id
+    name
+    reference
+    images
+    rating
+    description
+    quantity
+    price
+    category {
+      id
+    }
+    createdAt
+  }
+}
+    `;
+
+export const useUpdateProductMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateProductMutation, TError, UpdateProductMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateProductMutation, TError, UpdateProductMutationVariables, TContext>(
+      ['UpdateProduct'],
+      (variables?: UpdateProductMutationVariables) => fetcher<UpdateProductMutation, UpdateProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateProductDocument, variables)(),
+      options
+    )};
+
+export const GetProductDocument = `
+    query GetProduct($productId: Int!) {
+  getProduct(id: $productId) {
+    id
+    name
+    reference
+    images
+    rating
+    description
+    quantity
+    price
+    category {
+      id
+      name
+    }
+    createdAt
+  }
+}
+    `;
+
+export const useGetProductQuery = <
+      TData = GetProductQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetProductQueryVariables,
+      options?: UseQueryOptions<GetProductQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetProductQuery, TError, TData>(
+      ['GetProduct', variables],
+      fetcher<GetProductQuery, GetProductQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetProductDocument, variables),
+      options
+    )};
+
+export const GetAllMyProductsDocument = `
+    query GetAllMyProducts($input: ProductFilter) {
+  getAllMyProducts(input: $input) {
+    products {
+      id
+      name
+      reference
+      images
+      rating
+      description
+      quantity
+      price
+      category {
+        name
+      }
+      createdAt
+    }
+    count
+  }
+}
+    `;
+
+export const useGetAllMyProductsQuery = <
+      TData = GetAllMyProductsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAllMyProductsQueryVariables,
+      options?: UseQueryOptions<GetAllMyProductsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAllMyProductsQuery, TError, TData>(
+      variables === undefined ? ['GetAllMyProducts'] : ['GetAllMyProducts', variables],
+      fetcher<GetAllMyProductsQuery, GetAllMyProductsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllMyProductsDocument, variables),
+      options
+    )};
+
+export const GetMyProductsStatisticsDocument = `
+    query GetMyProductsStatistics {
+  getMyProductsStatistics {
+    countAvailable
+    countOutOfStock
+  }
+}
+    `;
+
+export const useGetMyProductsStatisticsQuery = <
+      TData = GetMyProductsStatisticsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetMyProductsStatisticsQueryVariables,
+      options?: UseQueryOptions<GetMyProductsStatisticsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetMyProductsStatisticsQuery, TError, TData>(
+      variables === undefined ? ['GetMyProductsStatistics'] : ['GetMyProductsStatistics', variables],
+      fetcher<GetMyProductsStatisticsQuery, GetMyProductsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetMyProductsStatisticsDocument, variables),
+      options
+    )};
+
+export const RemoveProductDocument = `
+    mutation RemoveProduct($productId: Int!) {
+  removeProduct(productId: $productId)
+}
+    `;
+
+export const useRemoveProductMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<RemoveProductMutation, TError, RemoveProductMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<RemoveProductMutation, TError, RemoveProductMutationVariables, TContext>(
+      ['RemoveProduct'],
+      (variables?: RemoveProductMutationVariables) => fetcher<RemoveProductMutation, RemoveProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, RemoveProductDocument, variables)(),
       options
     )};
 

@@ -5,7 +5,10 @@ import { Category, CreateProductInput } from "../../../generated";
 import { productService } from "../../../services/product";
 import Select from 'react-select'
 import { uploadCloudService } from "../../../services/uploadCloud";
+import { useNavigate } from "react-router";
+import { client } from "../../../graphqlProvider";
 export default function AddProduct() {
+  const navigate = useNavigate();
   const [productCategories,setProductCategories] = useState<Array<Category | null>>([]);
   const [productInput,setProductInput] = useState<CreateProductInput>({
     categoryId:0,description:"",name:"",price:0,reference:"",images:[],quantity:0});
@@ -60,13 +63,15 @@ const [submitError,setSubmitError] = useState("");
       const imagesUrls = await uploadCloudService.uploadImages(acceptedFiles,"images/products");
       console.log({...productInput,images:imagesUrls});
       await productService.createProduct({...productInput,images:imagesUrls});
+      client.resetStore();
+      navigate("/product-list")
       }catch(err){
         setSubmitError((err as Error).message);
       }
       setCreateProductLoading(false);
     }
   }
-        
+    
   return (
     <main id="main-container">
         {/* <!-- Hero --> */}

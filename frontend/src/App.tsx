@@ -5,13 +5,22 @@ import Register from "./Pages/Common/RegisterPage";
 import ProtectedRoute from "./Components/common/ProtectedRoute";
 import OTPVerification from "./Pages/Common/OTPVerificationPage";
 import SellerLayout from "./layout/SellerLayout";
+import ProductListPage from "./Pages/Seller/productListPage";
 import AddProduct from "./Pages/Seller/addProductPage";
+import EditProductPage from "./Pages/Seller/editProductPage";
 function App() {
   return (
     <>
       <Routes>
-        <Route element={<SellerLayout />}>
-          <Route path="/seller" element={<AddProduct />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<SellerLayout />}>
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route
+              path="/edit-product/:productId"
+              element={<EditProductPage />}
+            />
+            <Route path="/product-list" element={<ProductListPage />} />
+          </Route>
         </Route>
         <Route element={<ClientLayout />}>
           <Route path="/login" element={<Login />} />

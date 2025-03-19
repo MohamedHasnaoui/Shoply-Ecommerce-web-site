@@ -1,9 +1,14 @@
 import { GraphQLError } from "graphql";
-import { Resolvers, Role } from "../types/resolvers-types.js";
+import {
+  ProductsStatistics,
+  Resolvers,
+  Role,
+} from "../types/resolvers-types.js";
 import { productService } from "../../services/productServices.js";
 import { userService } from "../../services/userService.js";
 import { Seller } from "../../entities";
 import { categoryService } from "../../services/categoryServices.js";
+import { GraphQLDateTime } from "graphql-scalars";
 
 export const ProductResolver: Resolvers = {
   Mutation: {
@@ -87,18 +92,47 @@ export const ProductResolver: Resolvers = {
     },
   },
   Query: {
-    getProductsByCategory: async (parent, args, context) => {
-      return await productService.getByCategory(
-        args.categoryId,
-        args.pageNb,
-        args.pageSize
-      );
-    },
-    getAllProducts: async (parent, args, context) => {
-      return productService.getAll(args.pageNb, args.pageSize);
+    getAllProducts: async (parent, { input }, context) => {
+      return await productService.getAll({ ...input });
     },
     getProduct: async (parent, { id }, context) => {
       return await productService.findById(id);
+    },
+    getAllMyProducts: async (parent, { input }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Seller) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      return await productService.getAllBySellerId(context.currentUser.userId, {
+        ...input,
+      });
+    },
+    getMyProductsStatistics: async (parent, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Seller) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: "UNAUTHORISED" },
+        });
+      }
+      const countAvailable = await productService.countAvailable(
+        context.currentUser.userId
+      );
+      const countOutOfStock = await productService.countOutOfStock(
+        context.currentUser.userId
+      );
+      return { countAvailable, countOutOfStock };
     },
   },
 };

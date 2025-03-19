@@ -41,7 +41,7 @@ const ProtectedRoute = () => {
   }, [loginAction, logoutAction]);
 
   if (loading) {
-    return <div>Loading...</div>; // Show a loading indicator while fetching user data
+    return <div></div>; // Show a loading indicator while fetching user data
   }
 
   if (error || !user) {

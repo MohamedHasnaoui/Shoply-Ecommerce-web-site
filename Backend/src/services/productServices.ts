@@ -1,7 +1,10 @@
-import { Repository } from "typeorm";
+import { Equal, Like, MoreThan, Not, Repository } from "typeorm";
 import { Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
-import { CreateProductInput } from "../graphql/types/resolvers-types.js";
+import {
+  CreateProductInput,
+  ProductFilter,
+} from "../graphql/types/resolvers-types.js";
 import { validateOrReject } from "class-validator";
 import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
@@ -19,10 +22,12 @@ export class ProductServices {
       category,
     });
     try {
+      console.log(product);
       validateOrReject(product);
+      console.log("product");
       return await this.productRepository.save(product);
     } catch (errors) {
-      throw new GraphQLError("validation error", {
+      throw new GraphQLError(errors, {
         extensions: { errors, code: "BAD USER INPUTS" },
       });
     }
@@ -40,33 +45,89 @@ export class ProductServices {
   async findById(id: number) {
     return await this.productRepository.findOne({
       where: { id },
-      relations: { owner: true },
+      relations: { owner: true, category: true },
     });
   }
 
-  async getByCategory(categoryId: number, pageNb?: number, pageSize?: number) {
-    if (pageNb && pageSize) {
-      return await this.productRepository.find({
-        order: { id: "DESC" },
-        where: { category: { id: categoryId } },
-        take: pageSize,
-        skip: (pageNb - 1) * pageSize,
-      });
-    }
-    return await this.productRepository.find({
-      where: { category: { id: categoryId } },
+  async getAll(input: ProductFilter) {
+    const products = await this.productRepository.find({
+      order: { createdAt: "DESC" },
+      where: {
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
+        quantity:
+          input.available === undefined
+            ? undefined
+            : input.available
+            ? MoreThan(0)
+            : Equal(0),
+        name: input.name ? Like(`%${input.name}%`) : undefined,
+      },
+      take:
+        !input.pageSize || !input.pageNb
+          ? Number.MAX_SAFE_INTEGER
+          : input.pageSize,
+      skip:
+        !input.pageSize || !input.pageNb
+          ? 0
+          : (input.pageNb - 1) * input.pageSize,
+      relations: { category: true },
     });
+    const count = await this.productRepository.count({
+      where: {
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
+        quantity:
+          input.available === undefined
+            ? undefined
+            : input.available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+    });
+    return { products, count };
   }
-  async getAll(pageNb?: number, pageSize?: number) {
-    if (pageNb && pageSize) {
-      return await this.productRepository.find({
-        order: { id: "DESC" },
-        take: pageSize,
-        skip: (pageNb - 1) * pageSize,
-      });
-    }
-    return await this.productRepository.find();
+  async getAllBySellerId(sellerId: number, input: ProductFilter) {
+    const products = await this.productRepository.find({
+      order: { createdAt: "DESC" },
+      where: {
+        owner: { id: sellerId },
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
+        quantity:
+          input.available === undefined
+            ? undefined
+            : input.available
+            ? MoreThan(0)
+            : Equal(0),
+        name: input.name ? Like(`%${input.name}%`) : undefined,
+      },
+      take:
+        !input.pageSize || !input.pageNb
+          ? Number.MAX_SAFE_INTEGER
+          : input.pageSize,
+      skip:
+        !input.pageSize || !input.pageNb
+          ? 0
+          : (input.pageNb - 1) * input.pageSize,
+      relations: { category: true },
+    });
+    const count = await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
+        quantity:
+          input.available === undefined
+            ? undefined
+            : input.available
+            ? MoreThan(0)
+            : Equal(0),
+      },
+    });
+    return { products, count };
   }
+
   async incrementQuantity(productId: number, quantity: number) {
     const product = await this.findById(productId);
     if (product === null) {
@@ -76,6 +137,22 @@ export class ProductServices {
     }
     product.quantity += quantity;
     return await this.update(product);
+  }
+  async countAvailable(sellerId: number) {
+    return await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        quantity: MoreThan(0),
+      },
+    });
+  }
+  async countOutOfStock(sellerId: number) {
+    return await this.productRepository.count({
+      where: {
+        owner: { id: sellerId },
+        quantity: Equal(0),
+      },
+    });
   }
 }
 
