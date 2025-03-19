@@ -92,18 +92,13 @@ export const ProductResolver: Resolvers = {
     },
   },
   Query: {
-    getAllProducts: async (parent, args, context) => {
-      return await productService.getAll(
-        args.categoryId,
-        args.available,
-        args.pageNb,
-        args.pageSize
-      );
+    getAllProducts: async (parent, { input }, context) => {
+      return await productService.getAll({ ...input });
     },
     getProduct: async (parent, { id }, context) => {
       return await productService.findById(id);
     },
-    getAllMyProducts: async (parent, args, context) => {
+    getAllMyProducts: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("UNAUTHORISED", {
           extensions: { code: "UNAUTHORISED" },
@@ -115,13 +110,9 @@ export const ProductResolver: Resolvers = {
           extensions: { code: "UNAUTHORISED" },
         });
       }
-      return await productService.getAllBySellerId(
-        context.currentUser.userId,
-        args.categoryId,
-        args.available,
-        args.pageNb,
-        args.pageSize
-      );
+      return await productService.getAllBySellerId(context.currentUser.userId, {
+        ...input,
+      });
     },
     getMyProductsStatistics: async (parent, args, context) => {
       if (!context.currentUser) {

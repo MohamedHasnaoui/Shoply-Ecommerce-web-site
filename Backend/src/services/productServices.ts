@@ -1,7 +1,10 @@
-import { Equal, MoreThan, Not, Repository } from "typeorm";
+import { Equal, Like, MoreThan, Not, Repository } from "typeorm";
 import { Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
-import { CreateProductInput } from "../graphql/types/resolvers-types.js";
+import {
+  CreateProductInput,
+  ProductFilter,
+} from "../graphql/types/resolvers-types.js";
 import { validateOrReject } from "class-validator";
 import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
@@ -19,10 +22,12 @@ export class ProductServices {
       category,
     });
     try {
+      console.log(product);
       validateOrReject(product);
+      console.log("product");
       return await this.productRepository.save(product);
     } catch (errors) {
-      throw new GraphQLError("validation error", {
+      throw new GraphQLError(errors, {
         extensions: { errors, code: "BAD USER INPUTS" },
       });
     }
@@ -44,71 +49,78 @@ export class ProductServices {
     });
   }
 
-  async getAll(
-    categId?: number,
-    available?: boolean,
-    pageNb?: number,
-    pageSize?: number
-  ) {
+  async getAll(input: ProductFilter) {
     const products = await this.productRepository.find({
       order: { createdAt: "DESC" },
       where: {
-        category: categId !== undefined ? { id: categId } : undefined,
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
         quantity:
-          available === undefined
+          input.available === undefined
             ? undefined
-            : available
+            : input.available
             ? MoreThan(0)
             : Equal(0),
+        name: input.name ? Like(`%${input.name}%`) : undefined,
       },
-      take: !pageSize || !pageNb ? Number.MAX_SAFE_INTEGER : pageSize,
-      skip: !pageSize || !pageNb ? 0 : (pageNb - 1) * pageSize,
+      take:
+        !input.pageSize || !input.pageNb
+          ? Number.MAX_SAFE_INTEGER
+          : input.pageSize,
+      skip:
+        !input.pageSize || !input.pageNb
+          ? 0
+          : (input.pageNb - 1) * input.pageSize,
       relations: { category: true },
     });
     const count = await this.productRepository.count({
       where: {
-        category: categId !== undefined ? { id: categId } : undefined,
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
         quantity:
-          available === undefined
+          input.available === undefined
             ? undefined
-            : available
+            : input.available
             ? MoreThan(0)
             : Equal(0),
       },
     });
     return { products, count };
   }
-  async getAllBySellerId(
-    sellerId: number,
-    categId?: number,
-    available?: boolean,
-    pageNb?: number,
-    pageSize?: number
-  ) {
+  async getAllBySellerId(sellerId: number, input: ProductFilter) {
     const products = await this.productRepository.find({
       order: { createdAt: "DESC" },
       where: {
         owner: { id: sellerId },
-        category: categId !== undefined ? { id: categId } : undefined,
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
         quantity:
-          available === undefined
+          input.available === undefined
             ? undefined
-            : available
+            : input.available
             ? MoreThan(0)
             : Equal(0),
+        name: input.name ? Like(`%${input.name}%`) : undefined,
       },
-      take: !pageSize || !pageNb ? Number.MAX_SAFE_INTEGER : pageSize,
-      skip: !pageSize || !pageNb ? 0 : (pageNb - 1) * pageSize,
+      take:
+        !input.pageSize || !input.pageNb
+          ? Number.MAX_SAFE_INTEGER
+          : input.pageSize,
+      skip:
+        !input.pageSize || !input.pageNb
+          ? 0
+          : (input.pageNb - 1) * input.pageSize,
       relations: { category: true },
     });
     const count = await this.productRepository.count({
       where: {
         owner: { id: sellerId },
-        category: categId !== undefined ? { id: categId } : undefined,
+        category:
+          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
         quantity:
-          available === undefined
+          input.available === undefined
             ? undefined
-            : available
+            : input.available
             ? MoreThan(0)
             : Equal(0),
       },

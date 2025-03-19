@@ -8,12 +8,23 @@ import {
   GetAllMyProductsQueryVariables,
   GetMyProductsStatisticsQuery,
   GetMyProductsStatisticsQueryVariables,
+  GetProductQuery,
+  GetProductQueryVariables,
+  ProductFilter,
+  RemoveProductMutation,
+  RemoveProductMutationVariables,
+  UpdateProductInput,
+  UpdateProductMutation,
+  UpdateProductMutationVariables,
 } from "../../generated";
 import {
   ALL_CATEG_ID_NAME,
   CREATE_PRODUCT_MUTATION,
+  DELETE_PRODUCT_MUTATION,
   GET_MY_PRODUCTS,
+  GET_PRODUCT_BY_ID,
   GET_PRODUCTS_STOCK_COUNTS,
+  UPDATE_PRODUCT_MUTATION,
 } from "../../graphql/product.graphql";
 import { client } from "../../graphqlProvider";
 
@@ -32,22 +43,74 @@ class ProductService {
     > = {
       mutation: CREATE_PRODUCT_MUTATION,
       variables: { input },
+      update: (cache, { data }) => {
+        if (data?.createProduct) {
+          const result = cache.readQuery<GetAllMyProductsQuery>({
+            query: GET_MY_PRODUCTS,
+          });
+          if (result) {
+            result.getAllMyProducts.products.push(data.createProduct);
+            result.getAllMyProducts.count++;
+            cache.writeQuery<GetAllMyProductsQuery>({
+              query: GET_MY_PRODUCTS,
+              data: { getAllMyProducts: result.getAllMyProducts },
+            });
+          }
+        }
+      },
     };
     const response = await client.mutate(options);
     return response;
   }
-  async getMyProducts(
-    categoryId?: number,
-    available?: boolean,
-    pageNb?: number,
-    pageSize?: number
-  ) {
+  async updateProduct(input: UpdateProductInput) {
+    const options: MutationOptions<
+      UpdateProductMutation,
+      UpdateProductMutationVariables
+    > = {
+      mutation: UPDATE_PRODUCT_MUTATION,
+      variables: { input },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async deleteProduct(productId: number) {
+    const options: MutationOptions<
+      RemoveProductMutation,
+      RemoveProductMutationVariables
+    > = {
+      mutation: DELETE_PRODUCT_MUTATION,
+      variables: { productId },
+      update: (cache, { data }) => {
+        if (data?.removeProduct) {
+          const result = cache.readQuery<GetAllMyProductsQuery>({
+            query: GET_MY_PRODUCTS,
+          });
+          console.log("res", result);
+          if (result) {
+            const updatedProducts = result.getAllMyProducts.products.filter(
+              (product) => product.id !== productId
+            );
+            result.getAllMyProducts.products = updatedProducts;
+            result.getAllMyProducts.count--;
+            console.log("up", result);
+            cache.writeQuery<GetAllMyProductsQuery>({
+              query: GET_MY_PRODUCTS,
+              data: { getAllMyProducts: result.getAllMyProducts },
+            });
+          }
+        }
+      },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async getMyProducts(input: ProductFilter) {
     const options: QueryOptions<
       GetAllMyProductsQueryVariables,
       GetAllMyProductsQuery
     > = {
       query: GET_MY_PRODUCTS,
-      variables: { pageNb, pageSize, available, categoryId },
+      variables: { input },
     };
     const response = await client.query(options);
     return response;
@@ -58,6 +121,15 @@ class ProductService {
       GetMyProductsStatisticsQuery
     > = {
       query: GET_PRODUCTS_STOCK_COUNTS,
+    };
+    const response = await client.query(options);
+    return response;
+  }
+
+  async getProductByID(productId: number) {
+    const options: QueryOptions<GetProductQueryVariables, GetProductQuery> = {
+      query: GET_PRODUCT_BY_ID,
+      variables: { productId },
     };
     const response = await client.query(options);
     return response;

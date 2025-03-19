@@ -7,6 +7,7 @@ import OTPVerification from './Pages/Common/OTPVerificationPage'
 import SellerLayout from './layout/SellerLayout'
 import ProductListPage from './Pages/Seller/productListPage'
 import AddProduct from './Pages/Seller/addProductPage'
+import EditProductPage from './Pages/Seller/editProductPage'
 function App() {
 
   return (
@@ -15,7 +16,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<SellerLayout />} >
           <Route path='/add-product' element={<AddProduct />} />
-          <Route path='/seller' element={<ProductListPage />} />
+          <Route path='/edit-product/:productId' element={<EditProductPage />} />
+          <Route path='/product-list' element={<ProductListPage />} />
         </Route>
       </Route>
       <Route element={<ClientLayout />}>

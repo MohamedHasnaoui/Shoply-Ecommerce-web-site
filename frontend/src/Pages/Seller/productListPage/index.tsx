@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import backgroundimg from "../../../assets/sellerAssets/media/photos/photo26@2x.jpg"
 import { productService } from "../../../services/product"
 import { Category, Product } from "../../../generated"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import Loading from "../../../Components/Seller/Loading"
 
 const ProductListPage = () => {
   const [availableProductsCount,setAvailableProductsCount] = useState(0); 
@@ -18,22 +19,27 @@ const ProductListPage = () => {
   }
   const [selectedStatus,setSelectedStatus] = useState<productStatus | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
+  const [productNameFilter,setProductNameFilter] = useState<string|undefined>(undefined)
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchMyProducts = async () => {
       const response = await productService.getMyProducts(
-        selectedCategory?.id ?? undefined,
-        !selectedStatus ? undefined : selectedStatus === productStatus.AVAILABLE,
-        pageNb,
-        pageSz
+        {
+          name: productNameFilter,
+          available: selectedStatus ? (selectedStatus===productStatus.AVAILABLE) : undefined,
+          categoryId: selectedCategory?.id,
+          pageNb,
+          pageSize:pageSz
+        }
       );
       if(response.data?.getAllMyProducts){
-        setMyProducts(response.data.getAllMyProducts.products)
+        setMyProducts(response.data.getAllMyProducts.products as Array<Product>);
         setCountFilteredProducts(response.data.getAllMyProducts.count);
       } 
     }
     fetchMyProducts();
   }
-  ,[selectedCategory,selectedStatus,pageNb,pageSz,productStatus])
+  ,[selectedCategory,selectedStatus,pageNb,pageSz,productStatus,productNameFilter])
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       const response = await productService.getCatgories();
@@ -73,6 +79,9 @@ const ProductListPage = () => {
     setSelectedStatus(status);
     setIsSatusFilterOpen(false);
    }
+   const handleProductEditLink = (productId:number) => {
+    navigate("/edit-product/"+productId)
+   }
    const incrementPageNb = ()=>{
     const totalPages = Math.ceil((countFilteredProducts)/pageSz);
       if(pageNb < totalPages) setPageNb(pageNb+1);
@@ -80,23 +89,29 @@ const ProductListPage = () => {
    const decremnetPageNb = () => {
     if(pageNb > 1) setPageNb(pageNb-1);
    }
+   const [searchString, setSearchString] = useState<string>("");
+   const handleSearchSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setProductNameFilter(searchString);
+    setPageNb(1);
+   }
   const displayProducts = myProducts.map((product,index) => {
     return (
       <tr key={index}>
         <td>
-          <a className="fw-semibold" href="be_pages_ecom_product_edit.html">PID.{product.id}</a>
+          <button className="fw-semibold btn btn-link" onClick={()=>handleProductEditLink(product.id)}>PID.{product.id}</button>
         </td>
-        <td className="d-none d-sm-table-cell">
-          {product.quantity ? <span className="badge bg-success">{productStatus.AVAILABLE}</span>:<span className="badge bg-danger">{productStatus.OUT_OF_STOCK}</span> }
+        <td>
+          <button className="fw-semibold" style={{border:"none",background:"none"}}>{product.name}</button>
+        </td>
+        <td className="d-none d-md-table-cell">
+          <p >{product.category.name}</p>
         </td>
         <td className="d-none d-sm-table-cell">
           {new Date(product.createdAt).toLocaleDateString("fr-FR") }
         </td>
-        <td>
-          <a href="be_pages_ecom_product_edit.html">{product.name}</a>
-        </td>
-        <td className="d-none d-md-table-cell">
-          <a href="be_pages_ecom_products.html">{product.category.name}</a>
+        <td style={{fontSize:18}} className="d-none d-sm-table-cell">
+          {product.quantity ? <span className="badge bg-success">{productStatus.AVAILABLE}</span>:<span className="badge bg-danger">{productStatus.OUT_OF_STOCK}</span> }
         </td>
         <td className="text-end">{product.price} DH</td>
       </tr>
@@ -109,6 +124,9 @@ const ProductListPage = () => {
       </button>
     )
   })
+  if(!myProducts){
+    return <Loading />
+  }  
   return (
     <main id="main-container">
         {/* <!-- Hero --> */}
@@ -258,10 +276,10 @@ const ProductListPage = () => {
           <div className="block block-rounded">
             <div className="block-content bg-body-light">
               {/* <!-- Search --> */}
-              <form>
+              <form onSubmit={handleSearchSubmit}>
                 <div className="mb-4">
                   <div className="input-group">
-                    <input type="text" className="form-control" placeholder="Search products.." />
+                    <input type="text" className="form-control" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} value={searchString} placeholder="Search products.." />
                     <button type="submit" className="btn btn-primary">
                       <i className="fa fa-search"></i>
                     </button>
@@ -276,11 +294,11 @@ const ProductListPage = () => {
                 <thead>
                   <tr>
                     <th style={{width:100}}>ID</th>
-                    <th className="d-none d-sm-table-cell">Status</th>
-                    <th className="d-none d-sm-table-cell">Submitted</th>
-                    <th>Product</th>
-                    <th className="d-none d-md-table-cell">Category</th>
-                    <th className="text-end">Value</th>
+                    <th className="d-none d-sm-table-cell">Name</th>
+                    <th className="d-none d-sm-table-cell">Category</th>
+                    <th>Submitted</th>
+                    <th className="d-none d-md-table-cell">Status</th>
+                    <th className="text-end">Price</th>
                   </tr>
                 </thead>
                 <tbody>
