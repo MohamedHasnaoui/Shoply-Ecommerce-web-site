@@ -101,18 +101,20 @@ const ProductListPage = () => {
         <td>
           <button className="fw-semibold btn btn-link" onClick={()=>handleProductEditLink(product.id)}>PID.{product.id}</button>
         </td>
-        <td>
-          <button className="fw-semibold" style={{border:"none",background:"none"}}>{product.name}</button>
+        <td className="text-center">
+          <button className="fw-semibold " style={{border:"none",background:"none"}}>{product.name}</button>
         </td>
-        <td className="d-none d-md-table-cell">
-          <p >{product.category.name}</p>
+        <td className="d-none d-md-table-cell text-center">
+          <p >{product.category?.name}</p>
         </td>
-        <td className="d-none d-sm-table-cell">
+        <td className="d-none d-sm-table-cell text-center">
           {new Date(product.createdAt).toLocaleDateString("fr-FR") }
         </td>
-        <td style={{fontSize:18}} className="d-none d-sm-table-cell">
+        <td style={{fontSize:18}} className="d-none d-sm-table-cell text-center">
           {product.quantity ? <span className="badge bg-success">{productStatus.AVAILABLE}</span>:<span className="badge bg-danger">{productStatus.OUT_OF_STOCK}</span> }
         </td>
+        <td className="text-center">{product.totalSales}</td>
+        <td className="text-center">{product.rating?.toFixed(1)}</td>
         <td className="text-end">{product.price} DH</td>
       </tr>
     )
@@ -294,10 +296,12 @@ const ProductListPage = () => {
                 <thead>
                   <tr>
                     <th style={{width:100}}>ID</th>
-                    <th className="d-none d-sm-table-cell">Name</th>
-                    <th className="d-none d-sm-table-cell">Category</th>
-                    <th>Submitted</th>
-                    <th className="d-none d-md-table-cell">Status</th>
+                    <th className="d-none d-sm-table-cell text-center">Name</th>
+                    <th className="d-none d-sm-table-cell text-center">Category</th>
+                    <th className="text-center">Submitted</th>
+                    <th className="d-none d-md-table-cell text-center">Status</th>
+                    <th className="text-center">Total Sales</th>
+                    <th className="text-center">rating</th>
                     <th className="text-end">Price</th>
                   </tr>
                 </thead>

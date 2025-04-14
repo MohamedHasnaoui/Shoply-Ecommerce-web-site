@@ -1,8 +1,9 @@
 import { GraphQLError } from "graphql";
 import { orderItemService } from "../../services/OrderItemService.js";
-import { OrderItemStatus, Resolvers } from "../types/resolvers-types.js";
+import { OrderItemStatus, Resolvers, Role } from "../types/resolvers-types.js";
 import { orderService } from "../../services/OrderService.js";
-import { productService } from "../../services/productServices.js";
+import { userService } from "../../services/userService.js";
+import { NextStatusBuyer, NextStatusSeller } from "../../entities/index.js";
 
 export const OrderItemReolver: Resolvers = {
   Mutation: {
@@ -18,61 +19,19 @@ export const OrderItemReolver: Resolvers = {
           extensions: { code: "INVALID_INPUTS" },
         });
       }
-      if (
-        orderItem.product.owner.id !== context.currentUser.userId &&
-        orderItem.order.buyer.id !== context.currentUser.userId
-      ) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
-        });
-      }
-      if (
-        orderItem.status === OrderItemStatus.Cancelled ||
-        orderItem.status === OrderItemStatus.Failed
-      ) {
-        throw new GraphQLError("Can Not Update The Status", {
-          extensions: { code: "INVALID_INPUTS" },
-        });
-      }
-      if (status === OrderItemStatus.Cancelled) {
-        if (orderItem.order.buyer.id !== context.currentUser.userId) {
-          throw new GraphQLError("Not Authorized", {
-            extensions: { code: "UNAUTHORIZED" },
-          });
-        }
-        if (orderItem.status != OrderItemStatus.Pending) {
-          throw new GraphQLError("Can Not Update The Status", {
-            extensions: { code: "INVALID_INPUTS" },
-          });
-        }
-      } else {
-        const sellerAllowedStatus = [
-          OrderItemStatus.Pending,
-          OrderItemStatus.Failed,
-          OrderItemStatus.Confirmed,
-          OrderItemStatus.Shipped,
-          OrderItemStatus.Delivered,
-          OrderItemStatus.Refunded,
-        ];
-        const newIndex = sellerAllowedStatus.findIndex((s) => s === status);
-        const oldIndex = sellerAllowedStatus.findIndex(
-          (s) => s === orderItem.status
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role == Role.Buyer) {
+        return await orderItemService.updateStatus(
+          orderItem,
+          status,
+          NextStatusBuyer
         );
-        if (newIndex <= oldIndex) {
-          throw new GraphQLError("Can Not Update The Status", {
-            extensions: { code: "INVALID_INPUTS" },
-          });
-        }
-      }
-      orderItem.status = status;
-      await orderItemService.update(orderItem);
-      if (
-        status === OrderItemStatus.Failed ||
-        status === OrderItemStatus.Cancelled
-      ) {
-        const product = orderItem.product;
-        product.quantity += orderItem.quantity;
-        await productService.update(product);
+      } else if (user.role == Role.Seller) {
+        return await orderItemService.updateStatus(
+          orderItem,
+          status,
+          NextStatusSeller
+        );
       }
       return orderItem;
     },
@@ -93,13 +52,16 @@ export const OrderItemReolver: Resolvers = {
       }
       return orderItem;
     },
-    getOrderItemsForSeller: async (parent, {}, context) => {
+    getOrderItemsForSeller: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("Not Authorized", {
           extensions: { code: "UNAUTHORIZED" },
         });
       }
-      return await orderItemService.findBySellerId(context.currentUser.userId);
+      return await orderItemService.findBySellerId(
+        context.currentUser.userId,
+        input
+      );
     },
     getOrderItemsByOrderId: async (parent, { orderId }, context) => {
       if (!context.currentUser) {
@@ -119,6 +81,34 @@ export const OrderItemReolver: Resolvers = {
         });
       }
       return order.orderItems;
+    },
+    getRecievedOrderItemsStatistics: async (parent, { period }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not Authorized", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      const countDelivered = await orderItemService.countBySellerAndStatus(
+        context.currentUser.userId,
+        [OrderItemStatus.Delivered],
+        period
+      );
+      const countCanceledOrFailed =
+        await orderItemService.countBySellerAndStatus(
+          context.currentUser.userId,
+          [OrderItemStatus.Cancelled, OrderItemStatus.Failed],
+          period
+        );
+      const countPending = await orderItemService.countBySellerAndStatus(
+        context.currentUser.userId,
+        [OrderItemStatus.Pending],
+        period
+      );
+      const all = await orderItemService.countAllBySeller(
+        context.currentUser.userId,
+        period
+      );
+      return { countDelivered, countCanceledOrFailed, countPending, all };
     },
   },
 };

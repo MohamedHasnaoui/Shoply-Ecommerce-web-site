@@ -40,7 +40,6 @@ export const  BasicModal = React.forwardRef((props:BasicModalProps, ref:React.Fo
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
-        onClose={handleClose}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{
@@ -51,9 +50,9 @@ export const  BasicModal = React.forwardRef((props:BasicModalProps, ref:React.Fo
       >
         <Fade in={open}>
           <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h2">
+            <h4 className='text-center'>
               {props.title}
-            </Typography>
+            </h4>
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
             {props.body}
             </Typography>

@@ -276,10 +276,25 @@ export type OrderItem = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   price: Scalars['Float']['output'];
-  product: Product;
+  product?: Maybe<Product>;
   quantity: Scalars['Int']['output'];
   status: OrderItemStatus;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type OrderItemFilter = {
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  period?: InputMaybe<PeriodFilter>;
+  status?: InputMaybe<OrderItemStatus>;
+};
+
+export type OrderItemStatistics = {
+  __typename?: 'OrderItemStatistics';
+  all?: Maybe<Scalars['Int']['output']>;
+  countCanceledOrFailed?: Maybe<Scalars['Int']['output']>;
+  countDelivered?: Maybe<Scalars['Int']['output']>;
+  countPending?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum OrderItemStatus {
@@ -291,6 +306,12 @@ export enum OrderItemStatus {
   Refunded = 'REFUNDED',
   Shipped = 'SHIPPED'
 }
+
+export type OrderItemsListResult = {
+  __typename?: 'OrderItemsListResult';
+  count: Scalars['Int']['output'];
+  orderItems: Array<OrderItem>;
+};
 
 export enum OrderStatus {
   Cancelled = 'CANCELLED',
@@ -315,18 +336,26 @@ export enum PaymentType {
   Visa = 'VISA'
 }
 
+export enum PeriodFilter {
+  Day = 'DAY',
+  Month = 'MONTH',
+  Week = 'WEEK',
+  Year = 'YEAR'
+}
+
 export type Product = {
   __typename?: 'Product';
-  category: Category;
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
+  category?: Maybe<Category>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  images: Array<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
-  price: Scalars['Float']['output'];
-  quantity: Scalars['Int']['output'];
-  rating: Scalars['Int']['output'];
-  reference: Scalars['String']['output'];
+  images?: Maybe<Array<Scalars['String']['output']>>;
+  name?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  quantity?: Maybe<Scalars['Int']['output']>;
+  rating?: Maybe<Scalars['Int']['output']>;
+  reference?: Maybe<Scalars['String']['output']>;
+  totalSales?: Maybe<Scalars['Int']['output']>;
 };
 
 export type ProductFilter = {
@@ -363,9 +392,10 @@ export type Query = {
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
-  getOrderItemsForSeller: Array<Maybe<OrderItem>>;
+  getOrderItemsForSeller: OrderItemsListResult;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
+  getRecievedOrderItemsStatistics: OrderItemStatistics;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getWishList: WishList;
@@ -413,6 +443,11 @@ export type QueryGetOrderItemsByOrderIdArgs = {
 };
 
 
+export type QueryGetOrderItemsForSellerArgs = {
+  input: OrderItemFilter;
+};
+
+
 export type QueryGetParamUploadImageArgs = {
   folder: Scalars['String']['input'];
 };
@@ -420,6 +455,11 @@ export type QueryGetParamUploadImageArgs = {
 
 export type QueryGetProductArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetRecievedOrderItemsStatisticsArgs = {
+  period?: InputMaybe<PeriodFilter>;
 };
 
 
@@ -568,6 +608,28 @@ export type VerificationEmailRequestMutationVariables = Exact<{
 
 export type VerificationEmailRequestMutation = { __typename?: 'Mutation', VerificationEmailRequest: boolean };
 
+export type GetOrderItemsForSellerQueryVariables = Exact<{
+  input: OrderItemFilter;
+}>;
+
+
+export type GetOrderItemsForSellerQuery = { __typename?: 'Query', getOrderItemsForSeller: { __typename?: 'OrderItemsListResult', count: number, orderItems: Array<{ __typename?: 'OrderItem', id: number, quantity: number, price: number, status: OrderItemStatus, createdAt: any, updatedAt: any, product?: { __typename?: 'Product', id: number, name?: string | null } | null }> } };
+
+export type UpdateOrderItemStatusMutationVariables = Exact<{
+  orderItemId: Scalars['Int']['input'];
+  status: OrderItemStatus;
+}>;
+
+
+export type UpdateOrderItemStatusMutation = { __typename?: 'Mutation', updateOrderItemStatus: { __typename?: 'OrderItem', id: number, quantity: number, price: number, status: OrderItemStatus, createdAt: any, updatedAt: any, product?: { __typename?: 'Product', id: number, name?: string | null } | null } };
+
+export type GetRecievedOrderItemsStatisticsQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetRecievedOrderItemsStatisticsQuery = { __typename?: 'Query', getRecievedOrderItemsStatistics: { __typename?: 'OrderItemStatistics', countPending?: number | null, countCanceledOrFailed?: number | null, countDelivered?: number | null, all?: number | null } };
+
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -578,28 +640,28 @@ export type CreateProductMutationVariables = Exact<{
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null } } | null };
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', id?: number | null } | null } | null };
 
 export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null } } | null };
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', id?: number | null } | null } | null };
 
 export type GetProductQueryVariables = Exact<{
   productId: Scalars['Int']['input'];
 }>;
 
 
-export type GetProductQuery = { __typename?: 'Query', getProduct: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null, name?: string | null } } };
+export type GetProductQuery = { __typename?: 'Query', getProduct: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null } };
 
 export type GetAllMyProductsQueryVariables = Exact<{
   input?: InputMaybe<ProductFilter>;
 }>;
 
 
-export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', name?: string | null } }> } };
+export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, totalSales?: number | null, category?: { __typename?: 'Category', name?: string | null } | null }> } };
 
 export type GetMyProductsStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -750,6 +812,98 @@ export const useVerificationEmailRequestMutation = <
       options
     )};
 
+export const GetOrderItemsForSellerDocument = `
+    query GetOrderItemsForSeller($input: OrderItemFilter!) {
+  getOrderItemsForSeller(input: $input) {
+    orderItems {
+      id
+      product {
+        id
+        name
+      }
+      quantity
+      price
+      status
+      createdAt
+      updatedAt
+    }
+    count
+  }
+}
+    `;
+
+export const useGetOrderItemsForSellerQuery = <
+      TData = GetOrderItemsForSellerQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetOrderItemsForSellerQueryVariables,
+      options?: UseQueryOptions<GetOrderItemsForSellerQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetOrderItemsForSellerQuery, TError, TData>(
+      ['GetOrderItemsForSeller', variables],
+      fetcher<GetOrderItemsForSellerQuery, GetOrderItemsForSellerQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetOrderItemsForSellerDocument, variables),
+      options
+    )};
+
+export const UpdateOrderItemStatusDocument = `
+    mutation UpdateOrderItemStatus($orderItemId: Int!, $status: OrderItemStatus!) {
+  updateOrderItemStatus(orderItemId: $orderItemId, status: $status) {
+    id
+    product {
+      id
+      name
+    }
+    quantity
+    price
+    status
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export const useUpdateOrderItemStatusMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateOrderItemStatusMutation, TError, UpdateOrderItemStatusMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateOrderItemStatusMutation, TError, UpdateOrderItemStatusMutationVariables, TContext>(
+      ['UpdateOrderItemStatus'],
+      (variables?: UpdateOrderItemStatusMutationVariables) => fetcher<UpdateOrderItemStatusMutation, UpdateOrderItemStatusMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateOrderItemStatusDocument, variables)(),
+      options
+    )};
+
+export const GetRecievedOrderItemsStatisticsDocument = `
+    query GetRecievedOrderItemsStatistics($period: PeriodFilter) {
+  getRecievedOrderItemsStatistics(period: $period) {
+    countPending
+    countCanceledOrFailed
+    countDelivered
+    all
+  }
+}
+    `;
+
+export const useGetRecievedOrderItemsStatisticsQuery = <
+      TData = GetRecievedOrderItemsStatisticsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetRecievedOrderItemsStatisticsQueryVariables,
+      options?: UseQueryOptions<GetRecievedOrderItemsStatisticsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetRecievedOrderItemsStatisticsQuery, TError, TData>(
+      variables === undefined ? ['GetRecievedOrderItemsStatistics'] : ['GetRecievedOrderItemsStatistics', variables],
+      fetcher<GetRecievedOrderItemsStatisticsQuery, GetRecievedOrderItemsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetRecievedOrderItemsStatisticsDocument, variables),
+      options
+    )};
+
 export const GetAllCategoriesDocument = `
     query GetAllCategories {
   getAllCategories {
@@ -891,6 +1045,7 @@ export const GetAllMyProductsDocument = `
         name
       }
       createdAt
+      totalSales
     }
     count
   }

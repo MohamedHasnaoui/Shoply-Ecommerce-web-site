@@ -1,16 +1,16 @@
 import { GraphQLError } from "graphql";
-import {
-  ProductsStatistics,
-  Resolvers,
-  Role,
-} from "../types/resolvers-types.js";
+import { Resolvers, Role } from "../types/resolvers-types.js";
 import { productService } from "../../services/productServices.js";
 import { userService } from "../../services/userService.js";
 import { Seller } from "../../entities";
 import { categoryService } from "../../services/categoryServices.js";
-import { GraphQLDateTime } from "graphql-scalars";
 
 export const ProductResolver: Resolvers = {
+  Product: {
+    totalSales: async (parent, {}, context) => {
+      return await productService.countTotalSales(parent.id);
+    },
+  },
   Mutation: {
     createProduct: async (parent, { input }, context) => {
       if (!context.currentUser) {

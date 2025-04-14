@@ -80,6 +80,7 @@ export const GET_MY_PRODUCTS = gql`
           name
         }
         createdAt
+        totalSales
       }
       count
     }

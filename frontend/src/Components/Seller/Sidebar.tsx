@@ -1,5 +1,6 @@
 import { useState } from "react"
 import avatar from "../../assets/sellerAssets/media/avatars/avatar15.jpg"
+import { Link } from "react-router"
 interface propsType  {
   closeSidebar: ()=> void
 }
@@ -105,14 +106,14 @@ export default function Sidebar(props:propsType) {
                             </a>
                           </li>
                           <li className="nav-main-item">
-                            <a className="nav-main-link" href="be_pages_ecom_products.html">
+                            <Link to={"/product-list"} className="nav-main-link">
                               <span className="nav-main-link-name">Products</span>
-                            </a>
+                            </Link>
                           </li>
                           <li className="nav-main-item">
-                            <a className="nav-main-link" href="be_pages_ecom_product_edit.html">
+                            <Link to={"/add-product"} className="nav-main-link">
                               <span className="nav-main-link-name">Product Edit</span>
-                            </a>
+                            </Link>
                           </li>
                           <li className="nav-main-item">
                             <a className="nav-main-link" href="be_pages_ecom_customer.html">

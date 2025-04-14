@@ -98,7 +98,6 @@ export class OrderService {
       }
     }
     order.status = orderStatut;
-    console.log(order.status + " " + orderStatusMap);
     order.updatedAt = new Date();
     await this.orderRepository.save(order);
     return order;

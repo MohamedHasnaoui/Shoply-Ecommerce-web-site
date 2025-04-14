@@ -8,6 +8,7 @@ import {
 import { validateOrReject } from "class-validator";
 import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
+import { orderItemService } from "./OrderItemService.js";
 
 export class ProductServices {
   constructor(private productRepository: Repository<Product>) {}
@@ -153,6 +154,9 @@ export class ProductServices {
         quantity: Equal(0),
       },
     });
+  }
+  async countTotalSales(productId: number) {
+    return await orderItemService.countByProductId(productId);
   }
 }
 

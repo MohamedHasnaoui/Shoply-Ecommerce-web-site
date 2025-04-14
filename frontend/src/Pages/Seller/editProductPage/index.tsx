@@ -39,7 +39,7 @@ const EditProductPage = () => {
     },[productId]);
 
     useEffect(()=>{
-        setSelectedCategory({label:productEdit?.category.name as string,value:productEdit?.category.id as number})
+        setSelectedCategory({label:productEdit?.category?.name as string,value:productEdit?.category?.id as number})
     },[productEdit?.category]);
 
   const { getRootProps, getInputProps,acceptedFiles } = useDropzone({});
@@ -56,13 +56,13 @@ const EditProductPage = () => {
   const categories : categType [] = productCategories.map((category) => {
     return {value:category?.id as number,label:category?.name as string}
   });
-  const productImages = productEdit?.images.map((url,key) => {
+  const productImages = productEdit?.images?.map((url,key) => {
     return <div className="col-sm-4 col-xl-3">
         <div className="options-container">
         <img className="img-fluid options-item" key={key} src={url} style={{margin:15}} />
         <div className="options-overlay bg-black-75">
             <div className="options-overlay-content">
-            <button className="btn btn-sm btn-alt-danger" onClick={()=>{setProductEdit({...productEdit,images:productEdit.images.filter((image)=>{return image!==url})})}}>
+            <button className="btn btn-sm btn-alt-danger" onClick={()=>{setProductEdit({...productEdit,images:productEdit?.images?.filter((image)=>{return image!==url})})}}>
                 <i className="fa fa-fw fa-times opacity-50 me-1"></i> Remove
             </button>
             </div>
@@ -86,7 +86,7 @@ const EditProductPage = () => {
       if (!productEdit?.price) newErrors.price = "Positive price is required";
       if (!productEdit?.quantity) newErrors.quantity = "Positive quantity is required";
       if (!selectedCategory) newErrors.category = "Category is required";
-      if (acceptedFiles.length===0 && productEdit?.images.length===0) newErrors.images = "You should at least have one image";
+      if (acceptedFiles.length===0 && productEdit?.images?.length===0) newErrors.images = "You should at least have one image";
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     }
@@ -99,7 +99,7 @@ const EditProductPage = () => {
         try {
         const imagesUrls = await uploadCloudService.uploadImages(acceptedFiles,"images/products");
         const {id,name,description,price,images,quantity,reference} = productEdit;
-        await productService.updateProduct({id,name,description,price,quantity,reference,categoryId:productEdit.category.id,images:imagesUrls.concat(images)})
+        await productService.updateProduct({id,name,description,price,quantity,reference,categoryId:productEdit.category?.id,images:imagesUrls.concat(images? images : [])});
         client.resetStore();
         navigate("/product-list")
         }catch(err){
@@ -199,7 +199,7 @@ const EditProductPage = () => {
                     <div className="block-content block-content-full">
                       <div className="mb-4">
                         <label className="form-label" htmlFor="ecom-product-name">Name</label>
-                        <input type="text" className="form-control" id="ecom-product-name" placeholder="Name" value={productEdit?.name} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,name:e.target.value})} />
+                        <input type="text" className="form-control" id="ecom-product-name" placeholder="Name" value={productEdit?.name ?? ""} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,name:e.target.value})} />
                         {errors.name && <p className="text-danger">{errors.name}</p>}
                       </div>
                       <div className="mb-4">
@@ -209,12 +209,12 @@ const EditProductPage = () => {
                       </div>
                       <div className="mb-4">
                         <label className="form-label" htmlFor="ecom-product-name">Reference</label>
-                        <input type="text" className="form-control" id="ecom-product-name" placeholder="Product Reference" value={productEdit?.reference} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,reference:e.target.value})}/>
+                        <input type="text" className="form-control" id="ecom-product-name" placeholder="Product Reference" value={productEdit?.reference ?? ""} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,reference:e.target.value})}/>
                         {errors.reference && <p className="text-danger">{errors.reference}</p>}
                       </div>
                       <div className="mb-4">
                         <label className="form-label" htmlFor="ecom-product-description-short">Description</label>
-                        <textarea className="form-control" id="ecom-product-description-short" placeholder="Description visible on preview.." rows={6} value={productEdit?.description} onChange={(e:React.ChangeEvent<HTMLTextAreaElement>) => setProductEdit({...productEdit,description:e.target.value})}/>
+                        <textarea className="form-control" id="ecom-product-description-short" placeholder="Description visible on preview.." rows={6} value={productEdit?.description ?? ""} onChange={(e:React.ChangeEvent<HTMLTextAreaElement>) => setProductEdit({...productEdit,description:e.target.value})}/>
                         {errors.description && <p className="text-danger">{errors.description}</p>}
                       </div>
                       <div className="mb-4">
@@ -225,7 +225,7 @@ const EditProductPage = () => {
                               <span className="input-group-text">
                                 <i className="fa fa-fw fa-archive"></i>
                               </span>
-                              <input type="number" className="form-control" id="ecom-product-stock" placeholder="0" value={productEdit.quantity} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,quantity:parseInt(e.target.value)})} />
+                              <input type="number" className="form-control" id="ecom-product-stock" placeholder="0" value={productEdit.quantity ?? ""} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,quantity:parseInt(e.target.value)})} />
                             </div>
                           </div>
                         </div>
@@ -239,7 +239,7 @@ const EditProductPage = () => {
                               <span className="input-group-text">
                                 <i className="fa fa-fw fa-dollar-sign"></i>
                               </span>
-                              <input type="number" className="form-control" id="ecom-product-price" name="ecom-product-price" placeholder="Price in USD.." value={productEdit.price} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,price:parseFloat(e.target.value)})} />
+                              <input type="number" className="form-control" id="ecom-product-price" name="ecom-product-price" placeholder="Price in USD.." value={productEdit.price?? ""} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setProductEdit({...productEdit,price:parseFloat(e.target.value)})} />
                             </div>
                           </div>
                         </div>

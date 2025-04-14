@@ -9,6 +9,37 @@ import {
 import { Order, Product, Seller } from "../index.js";
 import { IsNumber, Min, IsEnum, IsDate, IsOptional } from "class-validator";
 import { OrderItemStatus } from "../../graphql/types/resolvers-types.js";
+
+export const NextStatusSeller: Record<OrderItemStatus, OrderItemStatus[]> = {
+  [OrderItemStatus.Pending]: [
+    OrderItemStatus.Confirmed,
+    OrderItemStatus.Shipped,
+    OrderItemStatus.Delivered,
+    OrderItemStatus.Failed,
+  ],
+  [OrderItemStatus.Confirmed]: [
+    OrderItemStatus.Shipped,
+    OrderItemStatus.Delivered,
+    OrderItemStatus.Failed,
+  ],
+  [OrderItemStatus.Shipped]: [
+    OrderItemStatus.Delivered,
+    OrderItemStatus.Failed,
+  ],
+  [OrderItemStatus.Delivered]: [],
+  [OrderItemStatus.Cancelled]: [],
+  [OrderItemStatus.Failed]: [],
+  [OrderItemStatus.Refunded]: [],
+};
+export const NextStatusBuyer: Record<OrderItemStatus, OrderItemStatus[]> = {
+  [OrderItemStatus.Pending]: [OrderItemStatus.Cancelled],
+  [OrderItemStatus.Confirmed]: [OrderItemStatus.Cancelled],
+  [OrderItemStatus.Shipped]: [],
+  [OrderItemStatus.Delivered]: [OrderItemStatus.Refunded],
+  [OrderItemStatus.Cancelled]: [],
+  [OrderItemStatus.Failed]: [],
+  [OrderItemStatus.Refunded]: [],
+};
 @Entity()
 export class OrderItem {
   @PrimaryGeneratedColumn()

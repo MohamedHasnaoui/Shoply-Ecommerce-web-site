@@ -5,15 +5,16 @@ export const productSchema = gql`
 
   type Product {
     id: Int!
-    name: String!
-    reference: String!
-    images: [String!]!
-    rating: Int!
-    description: String!
-    quantity: Int!
-    price: Float!
-    category: Category!
-    createdAt: DateTime!
+    name: String
+    reference: String
+    images: [String!]
+    rating: Int
+    description: String
+    quantity: Int
+    price: Float
+    category: Category
+    createdAt: DateTime
+    totalSales: Int
   }
 
   input CreateProductInput {

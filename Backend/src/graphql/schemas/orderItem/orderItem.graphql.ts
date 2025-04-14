@@ -13,17 +13,40 @@ export const orderItemSchema = gql`
   }
   type OrderItem {
     id: Int!
-    product: Product!
+    product: Product
     quantity: Int!
     price: Float!
     status: OrderItemStatus!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
+  enum PeriodFilter {
+    DAY
+    WEEK
+    MONTH
+    YEAR
+  }
+  input OrderItemFilter {
+    period: PeriodFilter
+    status: OrderItemStatus
+    pageNb: Int
+    pageSize: Int
+  }
+  type OrderItemsListResult {
+    orderItems: [OrderItem!]!
+    count: Int!
+  }
+  type OrderItemStatistics {
+    countPending: Int
+    countCanceledOrFailed: Int
+    countDelivered: Int
+    all: Int
+  }
   type Query {
     getOrderItem(OrderItemId: Int!): OrderItem!
     getOrderItemsByOrderId(orderId: Int): [OrderItem]!
-    getOrderItemsForSeller: [OrderItem]!
+    getOrderItemsForSeller(input: OrderItemFilter!): OrderItemsListResult!
+    getRecievedOrderItemsStatistics(period: PeriodFilter): OrderItemStatistics!
   }
   type Mutation {
     updateOrderItemStatus(

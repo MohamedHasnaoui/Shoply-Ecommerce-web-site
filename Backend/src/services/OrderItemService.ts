@@ -1,12 +1,18 @@
-import { Repository } from "typeorm";
+import { In, MoreThanOrEqual, Repository } from "typeorm";
 import { CartItem, OrderItem } from "../entities/index.js";
 import { orderService } from "./OrderService.js";
 import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
-import { OrderItemStatus } from "../graphql/types/resolvers-types.js";
+import {
+  OrderItemFilter,
+  OrderItemsListResult,
+  OrderItemStatus,
+  PeriodFilter,
+} from "../graphql/types/resolvers-types.js";
 import { appDataSource } from "../database/data-source.js";
 import { productService } from "./productServices.js";
 import { cartItemService } from "./CartItemServices.js";
+import { dateUtil } from "../../utils/dateUtil.js";
 
 export class OrderItemService {
   constructor(private orderItemRepository: Repository<OrderItem>) {}
@@ -70,17 +76,85 @@ export class OrderItemService {
       relations: { product: { owner: true }, order: { buyer: true } },
     });
   }
-  async findBySellerId(sellerId: number) {
-    return await this.orderItemRepository.find({
-      where: { product: { owner: { id: sellerId } } },
+  async findBySellerId(
+    sellerId: number,
+    input: OrderItemFilter
+  ): Promise<OrderItemsListResult> {
+    const date = dateUtil.getStartDateOfPeriod(input.period);
+    const orderItems = await this.orderItemRepository.find({
+      where: {
+        product: { owner: { id: sellerId } },
+        status: input.status,
+        createdAt:
+          input?.period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
       relations: { product: true },
       order: { createdAt: "DESC" },
+      take: input.pageNb ? input?.pageSize : undefined,
+      skip:
+        input.pageNb && input.pageSize
+          ? (input?.pageNb - 1) * input?.pageSize
+          : undefined,
     });
+    const count = await this.orderItemRepository.count({
+      where: {
+        product: { owner: { id: sellerId } },
+        status: input.status,
+        createdAt:
+          input?.period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+      relations: { product: true },
+      order: { id: "DESC" },
+    });
+    return { orderItems, count };
   }
   async findByBuyerIdAndProductId(buyerId: number, productId: number) {
     return await this.orderItemRepository.findOne({
       where: { product: { id: productId }, order: { buyer: { id: buyerId } } },
       order: { createdAt: "DESC" },
+    });
+  }
+  async countByProductId(productId: number) {
+    return await this.orderItemRepository.count({
+      where: { product: { id: productId } },
+    });
+  }
+  async updateStatus(
+    orderItem: OrderItem,
+    status: OrderItemStatus,
+    NextStatus: Record<OrderItemStatus, OrderItemStatus[]>
+  ) {
+    if (NextStatus[orderItem.status].includes(status)) {
+      orderItem.status = status;
+      orderItem.updatedAt = new Date();
+      return await this.update(orderItem);
+    } else {
+      throw new GraphQLError("You Can Not Update To This Status", {
+        extensions: { code: "INVALID_INPUTS" },
+      });
+    }
+  }
+  async countBySellerAndStatus(
+    sellerId: number,
+    statusArray: OrderItemStatus[],
+    period?: PeriodFilter
+  ) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    return this.orderItemRepository.count({
+      where: {
+        product: { owner: { id: sellerId } },
+        status: In(statusArray),
+        updatedAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+    });
+  }
+  async countAllBySeller(sellerId: number, period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    return this.orderItemRepository.count({
+      where: {
+        product: { owner: { id: sellerId } },
+        updatedAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
     });
   }
 }

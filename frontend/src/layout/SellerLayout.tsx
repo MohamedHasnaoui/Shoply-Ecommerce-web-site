@@ -33,8 +33,8 @@ export default function SellerLayout() {
     <>
     <div id="page-container" className={`enable-page-overlay side-scroll page-header-modern main-content-boxed ${isQuickAccessOpen? "side-overlay-o":""}  ${isSidebarOpen? "sidebar-o sidebar-o-xs":""}`}>
         <QuickAccess closeQuickAccess={closeQuickAccess} />
-        <Header openQuickAccess={openQuickAccess} toggleSideBar={changeSidebarState} />
         <Sidebar closeSidebar={closeSidebar} />
+        <Header openQuickAccess={openQuickAccess} toggleSideBar={changeSidebarState} />
         <Outlet />
     </div>
     </>
