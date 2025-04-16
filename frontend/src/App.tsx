@@ -9,6 +9,7 @@ import ProductListPage from './Pages/Seller/productListPage'
 import AddProduct from './Pages/Seller/addProductPage'
 import EditProductPage from './Pages/Seller/editProductPage'
 import OrdersSellerPage from './Pages/Seller/ordersPage'
+import SellerHomePage from './Pages/Seller/SellerHomePage'
 function App() {
 
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path='/edit-product/:productId' element={<EditProductPage />} />
           <Route path='/product-list' element={<ProductListPage />} />
           <Route path='/seller/orders' element={<OrdersSellerPage />} />
+          <Route path='/seller/home' element={<SellerHomePage />} />
         </Route>
       </Route>
       <Route element={<ClientLayout />}>

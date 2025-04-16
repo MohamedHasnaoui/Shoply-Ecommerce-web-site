@@ -41,12 +41,16 @@ export const orderItemSchema = gql`
     countCanceledOrFailed: Int
     countDelivered: Int
     all: Int
+    totalEarnings: Float
+    totalNewCustomers: Int
   }
   type Query {
     getOrderItem(OrderItemId: Int!): OrderItem!
     getOrderItemsByOrderId(orderId: Int): [OrderItem]!
     getOrderItemsForSeller(input: OrderItemFilter!): OrderItemsListResult!
     getRecievedOrderItemsStatistics(period: PeriodFilter): OrderItemStatistics!
+    getEarningByPeriod(period: PeriodFilter): [Float!]!
+    getOrdersByPeriod(period: PeriodFilter): [Float!]!
   }
   type Mutation {
     updateOrderItemStatus(

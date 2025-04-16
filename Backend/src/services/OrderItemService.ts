@@ -13,6 +13,7 @@ import { appDataSource } from "../database/data-source.js";
 import { productService } from "./productServices.js";
 import { cartItemService } from "./CartItemServices.js";
 import { dateUtil } from "../../utils/dateUtil.js";
+import { addDays, format, getMonth } from "date-fns";
 
 export class OrderItemService {
   constructor(private orderItemRepository: Repository<OrderItem>) {}
@@ -153,9 +154,124 @@ export class OrderItemService {
     return this.orderItemRepository.count({
       where: {
         product: { owner: { id: sellerId } },
-        updatedAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+        createdAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
       },
     });
+  }
+  async totalEarning(
+    sellerId: number,
+    period?: PeriodFilter
+  ): Promise<{ totalEarnings: number }> {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    console.log(date);
+    const res = await this.orderItemRepository
+      .createQueryBuilder("orderItem")
+      .select("COALESCE(SUM(orderItem.price), 0)", "totalEarnings")
+      .innerJoin("orderItem.product", "product")
+      .innerJoin("product.owner", "owner")
+      .where("owner.id = :sellerId", { sellerId })
+      .andWhere(period !== undefined ? "orderItem.updatedAt >= :date" : "1=1", {
+        date,
+      })
+      .andWhere("orderItem.status = :status", {
+        status: OrderItemStatus.Delivered,
+      })
+      .getRawOne();
+    console.log(res);
+    return res;
+  }
+  async totalNewCustomers(
+    sellerId: number,
+    period?: PeriodFilter
+  ): Promise<{ totalNewCustomers: number }> {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    return await this.orderItemRepository
+      .createQueryBuilder("orderItem")
+      .select("COUNT(DISTINCT buyer.id)", "totalNewCustomers")
+      .innerJoin("orderItem.product", "product")
+      .innerJoin("product.owner", "owner")
+      .innerJoin("orderItem.order", "order")
+      .innerJoin("order.buyer", "buyer")
+      .where("owner.id = :sellerId", { sellerId })
+      .andWhere(period !== undefined ? "orderItem.createdAt >= :date" : "1=1", {
+        date,
+      })
+      .andWhere("orderItem.status Not IN (:...status)", {
+        status: [OrderItemStatus.Failed, OrderItemStatus.Cancelled],
+      })
+      .getRawOne();
+  }
+  async getPeriodEarningList(
+    sellerId: number,
+    period: PeriodFilter
+  ): Promise<Array<number>> {
+    const startDate = dateUtil.getStartDateOfPeriod(period);
+    const endDate = dateUtil.getEndDateOfPeriod(period);
+    const earnings: { totalEarnings: number; date: Date }[] =
+      await this.orderItemRepository
+        .createQueryBuilder("orderItem")
+        .select("SUM(orderItem.price)", "totalEarnings")
+        .addSelect("DATE_TRUNC('day', orderItem.updatedAt)", "date")
+        .innerJoin("orderItem.product", "product")
+        .innerJoin("product.owner", "owner")
+        .where("owner.id = :sellerId", { sellerId })
+        .andWhere("orderItem.updatedAt >= :date", { date: startDate })
+        .andWhere("orderItem.status = :status", {
+          status: OrderItemStatus.Delivered,
+        })
+        .groupBy("date")
+        .orderBy("date", "ASC")
+        .getRawMany();
+    const dates = dateUtil.generateDateRange(startDate, addDays(endDate, -1));
+    console.log(startDate, endDate, dates);
+    const earningsMap = new Map<string, number>();
+    earnings.forEach((entry) => {
+      earningsMap.set(format(entry.date, "yyyy-MM-dd"), entry.totalEarnings);
+    });
+    if (period === PeriodFilter.Year) {
+      const result = Array(12).fill(0);
+      earnings.forEach((entry) => {
+        const month = getMonth(entry.date);
+        result[month] = entry.totalEarnings;
+      });
+      return result;
+    }
+    const finalResult = dates.map((date) => earningsMap.get(date) ?? 0);
+    return finalResult;
+  }
+  async getOrderCountPeriodList(
+    sellerId: number,
+    period: PeriodFilter
+  ): Promise<Array<number>> {
+    const startDate = dateUtil.getStartDateOfPeriod(period);
+    const endDate = dateUtil.getEndDateOfPeriod(period);
+    const orders: { totalOrders: number; date: Date }[] =
+      await this.orderItemRepository
+        .createQueryBuilder("orderItem")
+        .select("Count(*)", "totalOrders")
+        .addSelect("DATE_TRUNC('day', orderItem.createdAt)", "date")
+        .innerJoin("orderItem.product", "product")
+        .innerJoin("product.owner", "owner")
+        .where("owner.id = :sellerId", { sellerId })
+        .andWhere("orderItem.updatedAt >= :date", { date: startDate })
+        .groupBy("date")
+        .orderBy("date", "ASC")
+        .getRawMany();
+    const dates = dateUtil.generateDateRange(startDate, addDays(endDate, -1));
+    const ordersMap = new Map<string, number>();
+    orders.forEach((entry) => {
+      ordersMap.set(format(entry.date, "yyyy-MM-dd"), entry.totalOrders);
+    });
+    if (period === PeriodFilter.Year) {
+      const result = Array(12).fill(0);
+      orders.forEach((entry) => {
+        const month = getMonth(entry.date);
+        result[month] = entry.totalOrders;
+      });
+      return result;
+    }
+    const finalResult = dates.map((date) => ordersMap.get(date) ?? 0);
+    return finalResult;
   }
 }
 

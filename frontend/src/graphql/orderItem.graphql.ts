@@ -48,3 +48,23 @@ export const GET_RECIEVED_ORDER_ITEM_STATISTICS = gql`
     }
   }
 `;
+export const GENERAL_STATISTICS_QUERY = gql`
+  query GetGeneralOrderItemsStatistics($period: PeriodFilter) {
+    getRecievedOrderItemsStatistics(period: $period) {
+      countDelivered
+      all
+      totalEarnings
+      totalNewCustomers
+    }
+  }
+`;
+export const GET_EARNING_BY_PERIOD = gql`
+  query GetEarningByPeriod($period: PeriodFilter) {
+    getEarningByPeriod(period: $period)
+  }
+`;
+export const GET_ORDERS_BY_PERIOD = gql`
+  query GetOrdersByPeriod($period: PeriodFilter) {
+    getOrdersByPeriod(period: $period)
+  }
+`;

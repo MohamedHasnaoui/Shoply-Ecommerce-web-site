@@ -277,6 +277,8 @@ export type OrderItemStatistics = {
   countCanceledOrFailed?: Maybe<Scalars['Int']['output']>;
   countDelivered?: Maybe<Scalars['Int']['output']>;
   countPending?: Maybe<Scalars['Int']['output']>;
+  totalEarnings?: Maybe<Scalars['Float']['output']>;
+  totalNewCustomers?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum OrderItemStatus {
@@ -369,12 +371,14 @@ export type Query = {
   getAllProducts: ProductListResult;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
+  getEarningByPeriod: Array<Scalars['Float']['output']>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: OrderItemsListResult;
+  getOrdersByPeriod: Array<Scalars['Float']['output']>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
   getRecievedOrderItemsStatistics: OrderItemStatistics;
@@ -404,6 +408,11 @@ export type QueryGetCategoryArgs = {
 };
 
 
+export type QueryGetEarningByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
+};
+
+
 export type QueryGetMyOrdersArgs = {
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -427,6 +436,11 @@ export type QueryGetOrderItemsByOrderIdArgs = {
 
 export type QueryGetOrderItemsForSellerArgs = {
   input: OrderItemFilter;
+};
+
+
+export type QueryGetOrdersByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
 };
 
 
@@ -802,6 +816,8 @@ export type OrderItemStatisticsResolvers<ContextType = MyContext, ParentType ext
   countCanceledOrFailed?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   countDelivered?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   countPending?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  totalEarnings?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  totalNewCustomers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -852,12 +868,14 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getAllProducts?: Resolver<ResolversTypes['ProductListResult'], ParentType, ContextType, Partial<QueryGetAllProductsArgs>>;
   getCartItem?: Resolver<ResolversTypes['CartItem'], ParentType, ContextType, RequireFields<QueryGetCartItemArgs, 'idCartItem'>>;
   getCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryGetCategoryArgs, 'id'>>;
+  getEarningByPeriod?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType, Partial<QueryGetEarningByPeriodArgs>>;
   getMyOrders?: Resolver<Maybe<Array<Maybe<ResolversTypes['Order']>>>, ParentType, ContextType, Partial<QueryGetMyOrdersArgs>>;
   getMyProductsStatistics?: Resolver<ResolversTypes['ProductsStatistics'], ParentType, ContextType>;
   getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;
   getOrderItem?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<QueryGetOrderItemArgs, 'OrderItemId'>>;
   getOrderItemsByOrderId?: Resolver<Array<Maybe<ResolversTypes['OrderItem']>>, ParentType, ContextType, Partial<QueryGetOrderItemsByOrderIdArgs>>;
   getOrderItemsForSeller?: Resolver<ResolversTypes['OrderItemsListResult'], ParentType, ContextType, RequireFields<QueryGetOrderItemsForSellerArgs, 'input'>>;
+  getOrdersByPeriod?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType, Partial<QueryGetOrdersByPeriodArgs>>;
   getParamUploadImage?: Resolver<ResolversTypes['UploadCloud'], ParentType, ContextType, RequireFields<QueryGetParamUploadImageArgs, 'folder'>>;
   getProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<QueryGetProductArgs, 'id'>>;
   getRecievedOrderItemsStatistics?: Resolver<ResolversTypes['OrderItemStatistics'], ParentType, ContextType, Partial<QueryGetRecievedOrderItemsStatisticsArgs>>;

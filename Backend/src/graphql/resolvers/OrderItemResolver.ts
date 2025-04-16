@@ -108,7 +108,46 @@ export const OrderItemReolver: Resolvers = {
         context.currentUser.userId,
         period
       );
-      return { countDelivered, countCanceledOrFailed, countPending, all };
+      const { totalEarnings } = await orderItemService.totalEarning(
+        context.currentUser.userId,
+        period
+      );
+      const { totalNewCustomers } = await orderItemService.totalNewCustomers(
+        context.currentUser.userId,
+        period
+      );
+      return {
+        countDelivered,
+        countCanceledOrFailed,
+        countPending,
+        all,
+        totalEarnings,
+        totalNewCustomers,
+      };
+    },
+    getEarningByPeriod: async (parent, { period }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not Authorized", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      const totalEarnings = await orderItemService.getPeriodEarningList(
+        context.currentUser.userId,
+        period
+      );
+      return totalEarnings;
+    },
+    getOrdersByPeriod: async (parent, { period }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not Authorized", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+      const totalOrders = await orderItemService.getOrderCountPeriodList(
+        context.currentUser.userId,
+        period
+      );
+      return totalOrders;
     },
   },
 };

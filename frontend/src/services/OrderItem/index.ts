@@ -1,7 +1,13 @@
 import { QueryOptions, MutationOptions } from "@apollo/client";
 import {
+  GetEarningByPeriodQuery,
+  GetEarningByPeriodQueryVariables,
+  GetGeneralOrderItemsStatisticsQuery,
+  GetGeneralOrderItemsStatisticsQueryVariables,
   GetOrderItemsForSellerQuery,
   GetOrderItemsForSellerQueryVariables,
+  GetOrdersByPeriodQuery,
+  GetOrdersByPeriodQueryVariables,
   GetRecievedOrderItemsStatisticsQuery,
   GetRecievedOrderItemsStatisticsQueryVariables,
   OrderItemFilter,
@@ -11,7 +17,10 @@ import {
   UpdateOrderItemStatusMutationVariables,
 } from "../../generated";
 import {
+  GENERAL_STATISTICS_QUERY,
+  GET_EARNING_BY_PERIOD,
   GET_ORDER_ITEMS_SELLER_QUERY,
+  GET_ORDERS_BY_PERIOD,
   GET_RECIEVED_ORDER_ITEM_STATISTICS,
   UPDATE_ORDERITEM_STATUS,
 } from "../../graphql/orderItem.graphql";
@@ -46,6 +55,40 @@ class OrderItemService {
       GetRecievedOrderItemsStatisticsQuery
     > = {
       query: GET_RECIEVED_ORDER_ITEM_STATISTICS,
+      variables: { period },
+    };
+    const response = await client.query(options);
+    return response;
+  }
+  async getGeneralStatistics(period: PeriodFilter | undefined) {
+    const options: QueryOptions<
+      GetGeneralOrderItemsStatisticsQueryVariables,
+      GetGeneralOrderItemsStatisticsQuery
+    > = {
+      query: GENERAL_STATISTICS_QUERY,
+      variables: { period },
+    };
+    const response = await client.query(options);
+    console.log(response);
+    return response;
+  }
+  async getEarningByPeriod(period: PeriodFilter) {
+    const options: QueryOptions<
+      GetEarningByPeriodQueryVariables,
+      GetEarningByPeriodQuery
+    > = {
+      query: GET_EARNING_BY_PERIOD,
+      variables: { period },
+    };
+    const response = await client.query(options);
+    return response;
+  }
+  async getCountOrdersByPeriod(period: PeriodFilter) {
+    const options: QueryOptions<
+      GetOrdersByPeriodQueryVariables,
+      GetOrdersByPeriodQuery
+    > = {
+      query: GET_ORDERS_BY_PERIOD,
       variables: { period },
     };
     const response = await client.query(options);

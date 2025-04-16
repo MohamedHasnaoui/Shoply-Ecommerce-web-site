@@ -295,6 +295,8 @@ export type OrderItemStatistics = {
   countCanceledOrFailed?: Maybe<Scalars['Int']['output']>;
   countDelivered?: Maybe<Scalars['Int']['output']>;
   countPending?: Maybe<Scalars['Int']['output']>;
+  totalEarnings?: Maybe<Scalars['Float']['output']>;
+  totalNewCustomers?: Maybe<Scalars['Int']['output']>;
 };
 
 export enum OrderItemStatus {
@@ -387,12 +389,14 @@ export type Query = {
   getAllProducts: ProductListResult;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
+  getEarningByPeriod: Array<Scalars['Float']['output']>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
   getOrderItem: OrderItem;
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: OrderItemsListResult;
+  getOrdersByPeriod: Array<Scalars['Float']['output']>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
   getRecievedOrderItemsStatistics: OrderItemStatistics;
@@ -422,6 +426,11 @@ export type QueryGetCategoryArgs = {
 };
 
 
+export type QueryGetEarningByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
+};
+
+
 export type QueryGetMyOrdersArgs = {
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
@@ -445,6 +454,11 @@ export type QueryGetOrderItemsByOrderIdArgs = {
 
 export type QueryGetOrderItemsForSellerArgs = {
   input: OrderItemFilter;
+};
+
+
+export type QueryGetOrdersByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
 };
 
 
@@ -629,6 +643,27 @@ export type GetRecievedOrderItemsStatisticsQueryVariables = Exact<{
 
 
 export type GetRecievedOrderItemsStatisticsQuery = { __typename?: 'Query', getRecievedOrderItemsStatistics: { __typename?: 'OrderItemStatistics', countPending?: number | null, countCanceledOrFailed?: number | null, countDelivered?: number | null, all?: number | null } };
+
+export type GetGeneralOrderItemsStatisticsQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetGeneralOrderItemsStatisticsQuery = { __typename?: 'Query', getRecievedOrderItemsStatistics: { __typename?: 'OrderItemStatistics', countDelivered?: number | null, all?: number | null, totalEarnings?: number | null, totalNewCustomers?: number | null } };
+
+export type GetEarningByPeriodQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetEarningByPeriodQuery = { __typename?: 'Query', getEarningByPeriod: Array<number> };
+
+export type GetOrdersByPeriodQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetOrdersByPeriodQuery = { __typename?: 'Query', getOrdersByPeriod: Array<number> };
 
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -901,6 +936,74 @@ export const useGetRecievedOrderItemsStatisticsQuery = <
     return useQuery<GetRecievedOrderItemsStatisticsQuery, TError, TData>(
       variables === undefined ? ['GetRecievedOrderItemsStatistics'] : ['GetRecievedOrderItemsStatistics', variables],
       fetcher<GetRecievedOrderItemsStatisticsQuery, GetRecievedOrderItemsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetRecievedOrderItemsStatisticsDocument, variables),
+      options
+    )};
+
+export const GetGeneralOrderItemsStatisticsDocument = `
+    query GetGeneralOrderItemsStatistics($period: PeriodFilter) {
+  getRecievedOrderItemsStatistics(period: $period) {
+    countDelivered
+    all
+    totalEarnings
+    totalNewCustomers
+  }
+}
+    `;
+
+export const useGetGeneralOrderItemsStatisticsQuery = <
+      TData = GetGeneralOrderItemsStatisticsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetGeneralOrderItemsStatisticsQueryVariables,
+      options?: UseQueryOptions<GetGeneralOrderItemsStatisticsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetGeneralOrderItemsStatisticsQuery, TError, TData>(
+      variables === undefined ? ['GetGeneralOrderItemsStatistics'] : ['GetGeneralOrderItemsStatistics', variables],
+      fetcher<GetGeneralOrderItemsStatisticsQuery, GetGeneralOrderItemsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetGeneralOrderItemsStatisticsDocument, variables),
+      options
+    )};
+
+export const GetEarningByPeriodDocument = `
+    query GetEarningByPeriod($period: PeriodFilter) {
+  getEarningByPeriod(period: $period)
+}
+    `;
+
+export const useGetEarningByPeriodQuery = <
+      TData = GetEarningByPeriodQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetEarningByPeriodQueryVariables,
+      options?: UseQueryOptions<GetEarningByPeriodQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetEarningByPeriodQuery, TError, TData>(
+      variables === undefined ? ['GetEarningByPeriod'] : ['GetEarningByPeriod', variables],
+      fetcher<GetEarningByPeriodQuery, GetEarningByPeriodQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetEarningByPeriodDocument, variables),
+      options
+    )};
+
+export const GetOrdersByPeriodDocument = `
+    query GetOrdersByPeriod($period: PeriodFilter) {
+  getOrdersByPeriod(period: $period)
+}
+    `;
+
+export const useGetOrdersByPeriodQuery = <
+      TData = GetOrdersByPeriodQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetOrdersByPeriodQueryVariables,
+      options?: UseQueryOptions<GetOrdersByPeriodQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetOrdersByPeriodQuery, TError, TData>(
+      variables === undefined ? ['GetOrdersByPeriod'] : ['GetOrdersByPeriod', variables],
+      fetcher<GetOrdersByPeriodQuery, GetOrdersByPeriodQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetOrdersByPeriodDocument, variables),
       options
     )};
 
