@@ -346,6 +346,7 @@ export type ProductFilter = {
   name?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+  rating?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductListResult = {
