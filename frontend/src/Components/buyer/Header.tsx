@@ -1,37 +1,48 @@
 import { useEffect, useState } from "react";
 import Logo from "../../assets/ClientAssets/images/logo/logo.png";
+import { useCategory } from "../../helpers/useCategory";
 import $ from "jquery";
 import select2 from "select2";
-
-import { Category } from "../../generated";
 import { productService } from "../../services/product";
-
+import { Category, Product } from "../../generated";
 const Header = () => {
   const [productCategories, setProductCategories] = useState<
     Array<Category | null>
   >([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1);
+  const {
+    selectedCategory,
+    setSelectedCategory,
+    productNameFilter,
+    setProductNameFilter,
+  } = useCategory();
 
-  const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedCategoryId(Number(event.target.value));
+  const [searchString, setSearchString] = useState<string>("");
+
+  const [categoryName, setCategoryName] = useState<string>("All Categories");
+  const handleCategoryClick = (category: Category | undefined) => {
+    setActiveIndexCat(-1);
+    setSelectedCategory(category);
+    setCategoryName(category?.name ?? "All Categories");
+    alert(`Category selected: ${category?.name}`);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setProductNameFilter(searchString);
+    console.log("Name:", productNameFilter);
   };
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchCategoryProducts = async () => {
       const response = await productService.getCatgories();
       if (response.data.getAllCategories) {
         setProductCategories(response.data.getAllCategories);
       }
     };
-    fetch();
-  }, []);
+    fetchCategoryProducts();
+  }, [selectedCategory, productNameFilter]);
 
-  const categories = productCategories.map((category) => {
-    return { value: category?.id as number, label: category?.name as string };
-  });
-
+  /////////////////////
   const [scroll, setScroll] = useState(false);
   window.onscroll = () => {
     if (window.pageYOffset < 150) {
@@ -86,7 +97,7 @@ const Header = () => {
     setActiveCategory(!activeCategory);
   };
   const [activeIndexCat, setActiveIndexCat] = useState(-1);
-  const handleCatClick = (index: number) => {
+  const handleCategoryIndexClick = (index: number) => {
     setActiveIndexCat(activeIndexCat === index ? -1 : index);
   };
 
@@ -97,10 +108,15 @@ const Header = () => {
         className={`side-overlay ${(menuActive || activeCategory) && "show"}`}
       />
       {/* ==================== Search Box Start Here ==================== */}
-      <form action="#" className={`search-box ${activeSearch && "active"}`}>
+
+      <form
+        onSubmit={handleSearchSubmit}
+        action="#"
+        className={`search-box  ${activeSearch && "active"}`}
+      >
         <button
-          onClick={handleSearchToggle}
-          type="button"
+          title="button"
+          type="submit"
           className="search-box__close position-absolute inset-block-start-0 inset-inline-end-0 m-16 w-48 h-48 border border-gray-100 rounded-circle flex-center text-white hover-text-gray-800 hover-bg-white text-2xl transition-1"
         >
           <i className="ph ph-x" />
@@ -110,10 +126,15 @@ const Header = () => {
             <input
               type="text"
               className="form-control py-16 px-24 text-xl rounded-pill pe-64"
-              placeholder="Search for a product or brand"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchString(e.target.value)
+              }
+              value={searchString}
+              placeholder="Search for a product"
             />
             <button
               type="submit"
+              title="button"
               className="w-48 h-48 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
             >
               <i className="ph ph-magnifying-glass" />
@@ -121,6 +142,7 @@ const Header = () => {
           </div>
         </div>
       </form>
+
       {/* ==================== Search Box End Here ==================== */}
       {/* ==================== Mobile Menu Start Here ==================== */}
       <div
@@ -616,37 +638,29 @@ const Header = () => {
             </div>
             {/* Logo End  */}
             {/* form location Start */}
-            <form
-              action="#"
-              className="flex-align flex-wrap form-location-wrapper"
-            >
-              <div className="search-category d-flex h-48 select-border-end-0 radius-end-0 search-form d-sm-flex d-none">
-                <select
-                  defaultValue={selectedCategoryId}
-                  onChange={handleCategoryChange}
-                  className="js-example-basic-single border border-gray-200 border-end-0"
-                  name="state"
+            <div className="flex-align flex-wrap form-location-wrapper ">
+              <div className="search-category d-flex h-48 select-border-end-0 radius-end-2 search-form d-sm-flex d-none">
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="search-form__wrapper position-relative"
                 >
-                  <option value={1}>All Categories</option>
-                  {categories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="search-form__wrapper position-relative">
                   <input
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSearchString(e.target.value)
+                    }
+                    value={searchString}
                     type="text"
                     className="search-form__input common-input py-13 ps-16 pe-18 rounded-end-pill pe-44"
                     placeholder="Search for a product or brand"
                   />
                   <button
                     type="submit"
+                    title="button"
                     className="w-32 h-32 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
                   >
                     <i className="ph ph-magnifying-glass" />
                   </button>
-                </div>
+                </form>
               </div>
               <div className="location-box bg-white flex-align gap-8 py-6 px-16 rounded-pill border border-gray-100">
                 <span className="text-gray-900 text-xl d-xs-flex d-none">
@@ -656,6 +670,7 @@ const Header = () => {
                   <span className="text-gray-600 text-xs">Your Location</span>
                   <div className="line-height-1">
                     <select
+                      title="select"
                       defaultValue={1}
                       className="js-example-basic-single border border-gray-200 border-end-0"
                       name="state"
@@ -677,13 +692,14 @@ const Header = () => {
                   </div>
                 </div>
               </div>
-            </form>
+            </div>
             {/* form location start */}
             {/* Header Middle Right start */}
             <div className="header-right flex-align d-lg-block d-none">
               <div className="flex-align flex-wrap gap-12">
                 <button
                   type="button"
+                  title="button"
                   className="search-icon flex-align d-lg-none d-flex gap-4 item-hover"
                 >
                   <span className="text-2xl text-gray-700 d-flex position-relative item-hover__text">
@@ -738,7 +754,7 @@ const Header = () => {
                   <span className="icon text-2xl d-xs-flex d-none">
                     <i className="ph ph-dots-nine" />
                   </span>
-                  <span className="d-sm-flex d-none">All</span> Categories
+                  <span className="d-sm-flex d-none">{categoryName}</span>
                   <span className="arrow-icon text-xl d-flex">
                     <i className="ph ph-caret-down" />
                   </span>
@@ -767,27 +783,60 @@ const Header = () => {
                   </div>
                   {/* Logo End */}
                   <ul className="scroll-sm p-0 py-8 w-300 max-h-400 overflow-y-auto">
-                    {categories.map((category) => (
-                      <li
-                        onClick={() => handleCatClick(1)}
-                        className={`has-submenus-submenu ${
-                          activeIndexCat === 1 ? "active" : ""
-                        }`}
+                    <li
+                      onClick={() => {
+                        handleCategoryIndexClick(1);
+                        handleCategoryToggle();
+                      }}
+                      className={`has-submenus-submenu ${
+                        activeIndexCat === 1 ? "active" : ""
+                      }`}
+                    >
+                      <a
+                        onClick={() => handleCategoryClick(undefined)}
+                        className="text-gray-500 text-15 py-12 px-16 flex-align gap-8 rounded-0"
+                        href="#"
                       >
-                        <a
-                          href="#"
-                          className="text-gray-500 text-15 py-12 px-16 flex-align gap-8 rounded-0"
+                        <span className="text-xl d-flex">
+                          <i className="ph ph-carrot" />
+                        </span>
+                        <span>All Categories</span>
+                        <span className="icon text-md d-flex ms-auto">
+                          <i className="ph ph-caret-right" />
+                        </span>
+                      </a>
+                    </li>
+
+                    {productCategories.map((category, index) => {
+                      return (
+                        <li
+                          onClick={() => {
+                            handleCategoryIndexClick(index);
+                            handleCategoryToggle();
+                          }}
+                          className={`has-submenus-submenu ${
+                            activeIndexCat === index ? "active" : ""
+                          }`}
+                          key={index}
                         >
-                          <span className="text-xl d-flex">
-                            <i className="ph ph-brandy" />
-                          </span>
-                          <span key={category.value}>{category.label}</span>
-                          <span className="icon text-md d-flex ms-auto">
-                            <i className="ph ph-caret-right" />
-                          </span>
-                        </a>
-                      </li>
-                    ))}
+                          <a
+                            onClick={() =>
+                              handleCategoryClick(category ?? undefined)
+                            }
+                            className="text-gray-500 text-15 py-12 px-16 flex-align gap-8 rounded-0"
+                            href="#"
+                          >
+                            <span className="text-xl d-flex">
+                              <i className="ph ph-carrot" />
+                            </span>
+                            <span key={category?.id}>{category?.name}</span>
+                            <span className="icon text-md d-flex ms-auto">
+                              <i className="ph ph-caret-right" />
+                            </span>
+                          </a>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
@@ -943,6 +992,7 @@ const Header = () => {
                   <button
                     onClick={handleSearchToggle}
                     type="button"
+                    title="button"
                     className="search-icon flex-align d-lg-none d-flex gap-4 item-hover"
                   >
                     <span className="text-2xl text-gray-700 d-flex position-relative item-hover__text">

@@ -50,6 +50,7 @@ export class ProductServices {
   }
 
   async getAll(input: ProductFilter) {
+    console.log("Rating:" + input.rating);
     const products = await this.productRepository.find({
       order: { createdAt: "DESC" },
       where: {
@@ -83,6 +84,7 @@ export class ProductServices {
             : input.available
             ? MoreThan(0)
             : Equal(0),
+        name: input.name ? Like(`%${input.name}%`) : undefined,
       },
     });
     return { products, count };

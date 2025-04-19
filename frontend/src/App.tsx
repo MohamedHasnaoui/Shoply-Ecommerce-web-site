@@ -8,6 +8,7 @@ import SellerLayout from "./layout/SellerLayout";
 import ProductListPage from "./Pages/Seller/productListPage";
 import AddProduct from "./Pages/Seller/addProductPage";
 import EditProductPage from "./Pages/Seller/editProductPage";
+import ShopSection from "./Pages/Buyer/ProductsList";
 function App() {
   return (
     <>
@@ -26,6 +27,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<OTPVerification />} />
+          <Route path="/productslist" element={<ShopSection />} />
+          {/* <Route path="/product-list" element={<ProductListPage />} /> */}
+
           <Route element={<ProtectedRoute />}>
             {/* ! protected routes here */}
           </Route>

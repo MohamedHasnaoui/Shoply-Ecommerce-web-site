@@ -50,6 +50,7 @@ export const productSchema = gql`
     name: String
     pageNb: Int
     pageSize: Int
+    rating: String
   }
   type Query {
     getAllProducts(input: ProductFilter): ProductListResult!

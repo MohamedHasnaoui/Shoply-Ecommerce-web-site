@@ -3,7 +3,6 @@ import {
   CreateProductInput,
   CreateProductMutation,
   CreateProductMutationVariables,
-  Exact,
   GetAllCategoriesQuery,
   GetAllMyProductsQuery,
   GetAllMyProductsQueryVariables,
@@ -16,17 +15,19 @@ import {
   RemoveProductMutationVariables,
   UpdateProductInput,
   UpdateProductMutation,
+  GetAllProductsQuery,
+  GetAllProductsQueryVariables,
   UpdateProductMutationVariables,
 } from "../../generated";
 import {
   ALL_CATEG_ID_NAME,
-  GET_PRODUCTS_BY_CATEGORY,
   CREATE_PRODUCT_MUTATION,
   DELETE_PRODUCT_MUTATION,
   GET_MY_PRODUCTS,
   GET_PRODUCT_BY_ID,
   GET_PRODUCTS_STOCK_COUNTS,
   UPDATE_PRODUCT_MUTATION,
+  GET_ALL_PRODUCTS_FILTERED,
 } from "../../graphql/product.graphql";
 import { client } from "../../graphqlProvider";
 
@@ -38,21 +39,32 @@ class ProductService {
     const response = await client.query<GetAllCategoriesQuery>(options);
     return response;
   }
-  async getProductsByCategory(
-    categoryId: number,
-    pageNb?: number,
-    pageSize?: number
-  ) {
+  async getProductsFiltered(input: ProductFilter) {
     const options: QueryOptions<
-      GetProductsByCategoryQuery,
-      GetProductsByCategoryQueryVariables
+      GetAllProductsQueryVariables,
+      GetAllProductsQuery
     > = {
-      query: GET_PRODUCTS_BY_CATEGORY,
-      variables: { categoryId, pageNb, pageSize },
+      query: GET_ALL_PRODUCTS_FILTERED,
+      variables: { input },
     };
-    const response = await client.query<GetProductsByCategoryQuery>(options);
+    const response = await client.query<GetAllProductsQuery>(options);
     return response;
   }
+  // async getProductsByCategory(
+  //   categoryId: number,
+  //   pageNb?: number,
+  //   pageSize?: number
+  // ) {
+  //   const options: QueryOptions<
+  //     GetProductsByCategoryQuery,
+  //     GetProductsByCategoryQueryVariables
+  //   > = {
+  //     query: GET_PRODUCTS_BY_CATEGORY,
+  //     variables: { categoryId, pageNb, pageSize },
+  //   };
+  //   const response = await client.query<GetProductsByCategoryQuery>(options);
+  //   return response;
+  // }
   async createProduct(input: CreateProductInput) {
     const options: MutationOptions<
       CreateProductMutation,

@@ -335,6 +335,7 @@ export type ProductFilter = {
   name?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+  rating?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductListResult = {
@@ -573,15 +574,6 @@ export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null } | null> | null };
 
-export type GetProductsByCategoryQueryVariables = Exact<{
-  categoryId: Scalars['Int']['input'];
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
-}>;
-
-
-export type GetProductsByCategoryQuery = { __typename?: 'Query', getProductsByCategory?: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, quantity: number, price: number } | null> | null };
-
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
 }>;
@@ -595,6 +587,13 @@ export type UpdateProductMutationVariables = Exact<{
 
 
 export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', id?: number | null } } | null };
+
+export type GetAllProductsQueryVariables = Exact<{
+  input?: InputMaybe<ProductFilter>;
+}>;
+
+
+export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', name?: string | null } }> } };
 
 export type GetProductQueryVariables = Exact<{
   productId: Scalars['Int']['input'];
@@ -783,39 +782,6 @@ export const useGetAllCategoriesQuery = <
       options
     )};
 
-export const GetProductsByCategoryDocument = `
-    query GetProductsByCategory($categoryId: Int!, $pageNb: Int, $pageSize: Int) {
-  getProductsByCategory(
-    categoryId: $categoryId
-    pageNb: $pageNb
-    pageSize: $pageSize
-  ) {
-    id
-    name
-    reference
-    images
-    rating
-    quantity
-    price
-  }
-}
-    `;
-
-export const useGetProductsByCategoryQuery = <
-      TData = GetProductsByCategoryQuery,
-      TError = unknown
-    >(
-      dataSource: { endpoint: string, fetchParams?: RequestInit },
-      variables: GetProductsByCategoryQueryVariables,
-      options?: UseQueryOptions<GetProductsByCategoryQuery, TError, TData>
-    ) => {
-    
-    return useQuery<GetProductsByCategoryQuery, TError, TData>(
-      ['GetProductsByCategory', variables],
-      fetcher<GetProductsByCategoryQuery, GetProductsByCategoryQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetProductsByCategoryDocument, variables),
-      options
-    )};
-
 export const CreateProductDocument = `
     mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input) {
@@ -879,6 +845,43 @@ export const useUpdateProductMutation = <
     return useMutation<UpdateProductMutation, TError, UpdateProductMutationVariables, TContext>(
       ['UpdateProduct'],
       (variables?: UpdateProductMutationVariables) => fetcher<UpdateProductMutation, UpdateProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateProductDocument, variables)(),
+      options
+    )};
+
+export const GetAllProductsDocument = `
+    query GetAllProducts($input: ProductFilter) {
+  getAllProducts(input: $input) {
+    products {
+      id
+      name
+      reference
+      images
+      rating
+      description
+      quantity
+      price
+      category {
+        name
+      }
+      createdAt
+    }
+    count
+  }
+}
+    `;
+
+export const useGetAllProductsQuery = <
+      TData = GetAllProductsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAllProductsQueryVariables,
+      options?: UseQueryOptions<GetAllProductsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAllProductsQuery, TError, TData>(
+      variables === undefined ? ['GetAllProducts'] : ['GetAllProducts', variables],
+      fetcher<GetAllProductsQuery, GetAllProductsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllProductsDocument, variables),
       options
     )};
 
