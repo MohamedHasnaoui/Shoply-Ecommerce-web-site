@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Category } from "../generated";
-import { CategoryContext } from "./Context";
+import { CategoryContext, CartContext } from "./Context";
 
 export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -23,5 +23,16 @@ export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({
     >
       {children}
     </CategoryContext.Provider>
+  );
+};
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [totalItems, setTotalItems] = useState<number>(0);
+
+  return (
+    <CartContext.Provider value={{ totalItems, setTotalItems }}>
+      {children}
+    </CartContext.Provider>
   );
 };

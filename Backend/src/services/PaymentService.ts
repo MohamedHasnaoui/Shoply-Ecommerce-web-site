@@ -102,8 +102,8 @@ export class PaymentService {
         payment_method_types: ["card"],
         line_items: productsLine,
         mode: "payment",
-        success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.CLIENT_URL}`,
+        success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.CLIENT_CART_URL}`,
         customer_email: buyer.email,
 
         metadata: {

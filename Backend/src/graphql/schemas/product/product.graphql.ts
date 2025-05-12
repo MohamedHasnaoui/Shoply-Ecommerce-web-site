@@ -51,7 +51,8 @@ export const productSchema = gql`
     name: String
     pageNb: Int
     pageSize: Int
-    rating: String
+    orderBy: String
+    price: Float
   }
   type Query {
     getAllProducts(input: ProductFilter): ProductListResult!

@@ -9,6 +9,8 @@ import ProductListPage from "./Pages/Seller/productListPage";
 import AddProduct from "./Pages/Seller/addProductPage";
 import EditProductPage from "./Pages/Seller/editProductPage";
 import ShopSection from "./Pages/Buyer/ProductsList";
+import CartPage from "./Pages/Buyer/CartPage";
+import PaymentSuccess from "./Components/buyer/PaymentSuccess";
 function App() {
   return (
     <>
@@ -28,7 +30,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<OTPVerification />} />
           <Route path="/productslist" element={<ShopSection />} />
-          {/* <Route path="/product-list" element={<ProductListPage />} /> */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
 
           <Route element={<ProtectedRoute />}>
             {/* ! protected routes here */}

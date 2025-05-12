@@ -1,4 +1,4 @@
-import { Equal, Like, MoreThan, Not, Repository } from "typeorm";
+import { Equal, LessThan, Like, MoreThan, Not, Repository } from "typeorm";
 import { Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
 import {
@@ -51,9 +51,28 @@ export class ProductServices {
   }
 
   async getAll(input: ProductFilter) {
-    console.log("Rating:" + input.rating);
+    let orderBy;
+
+    switch (input.orderBy) {
+      case "createdAt_ASC":
+        orderBy = { createdAt: "ASC" };
+        break;
+      case "rating":
+        orderBy = { rating: "DESC" };
+        break;
+      case "price_ASC":
+        orderBy = { price: "ASC" };
+        break;
+      case "price_DESC":
+        orderBy = { price: "DESC" };
+        break;
+      default:
+        orderBy = { createdAt: "DESC" }; // valeur par défaut
+        break;
+    }
+    console.log("Rating:" + input.orderBy);
     const products = await this.productRepository.find({
-      order: { createdAt: "DESC" },
+      order: orderBy,
       where: {
         category:
           input.categoryId !== undefined ? { id: input.categoryId } : undefined,
@@ -64,6 +83,7 @@ export class ProductServices {
             ? MoreThan(0)
             : Equal(0),
         name: input.name ? Like(`%${input.name}%`) : undefined,
+        price: input.price ? LessThan(input.price) : undefined,
       },
       take:
         !input.pageSize || !input.pageNb

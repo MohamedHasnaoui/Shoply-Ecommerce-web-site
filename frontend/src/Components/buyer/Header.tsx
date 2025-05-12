@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import Logo from "../../assets/ClientAssets/images/logo/logo.png";
-import { useCategory } from "../../helpers/useCategory";
+import { useCategory, useCartContext } from "../../helpers/useCategory";
 import $ from "jquery";
 import select2 from "select2";
 import { productService } from "../../services/product";
 import { Category, Product } from "../../generated";
+import { useAppSelector } from "../../redux/hooks";
+
 const Header = () => {
+  const totalItems = useAppSelector((state) => state.cart.totalItems);
+
   const [productCategories, setProductCategories] = useState<
     Array<Category | null>
   >([]);
@@ -23,6 +27,7 @@ const Header = () => {
     setActiveIndexCat(-1);
     setSelectedCategory(category);
     setCategoryName(category?.name ?? "All Categories");
+    // navigate("/productslist");
     alert(`Category selected: ${category?.name}`);
   };
 
@@ -721,7 +726,7 @@ const Header = () => {
                   <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                     <i className="ph ph-shopping-cart-simple" />
                     <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
-                      2
+                      {totalItems}
                     </span>
                   </span>
                   <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">

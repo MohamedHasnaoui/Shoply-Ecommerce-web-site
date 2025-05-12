@@ -36,7 +36,7 @@ export class ShoppingCartService {
   async getShoppingCartByBuyerId(buyerId: number) {
     const shoppingCart = await this.shoppingCartRepository.findOne({
       where: { buyer: { id: buyerId } },
-      relations: { cartItems: { product: true } },
+      relations: { cartItems: { product: { category: true } } },
     });
 
     if (shoppingCart === null) {

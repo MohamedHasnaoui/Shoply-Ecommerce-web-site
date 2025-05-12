@@ -9,7 +9,8 @@ import mainScopedSCSS from "../assets/ClientAssets/sass/main.scoped.scss?inline"
 import mainScopedCSS from "../assets/ClientAssets/css/main.scoped.css?inline";
 import jqueryUICSS from "../assets/ClientAssets/css/jquery-ui.scoped.css?inline";
 
-import { CategoryProvider } from "../helpers/CategoryProvider";
+import { CategoryProvider, CartProvider } from "../helpers/CategoryProvider";
+
 export default function ClientLayout() {
   return (
     <>

@@ -362,9 +362,10 @@ export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
-  rating?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type ProductListResult = {
@@ -609,6 +610,27 @@ export type VerificationEmailRequestMutationVariables = Exact<{
 
 export type VerificationEmailRequestMutation = { __typename?: 'Mutation', VerificationEmailRequest: boolean };
 
+export type CreateCartItemMutationVariables = Exact<{
+  input: CartItemInput;
+}>;
+
+
+export type CreateCartItemMutation = { __typename?: 'Mutation', creatCartItem: { __typename?: 'CartItem', id: number, quantity: number, price: number, product: { __typename?: 'Product', id: number, name?: string | null, price?: number | null } } };
+
+export type UpdateCartItemMutationVariables = Exact<{
+  input: CartItemUpdateInput;
+}>;
+
+
+export type UpdateCartItemMutation = { __typename?: 'Mutation', updateCartItem: { __typename?: 'CartItem', id: number, quantity: number, price: number, product: { __typename?: 'Product', id: number, name?: string | null, price?: number | null } } };
+
+export type RemoveCartItemMutationVariables = Exact<{
+  idCartItem: Scalars['Int']['input'];
+}>;
+
+
+export type RemoveCartItemMutation = { __typename?: 'Mutation', removeCartItem: boolean };
+
 export type GetOrderItemsForSellerQueryVariables = Exact<{
   input: OrderItemFilter;
 }>;
@@ -630,6 +652,18 @@ export type GetRecievedOrderItemsStatisticsQueryVariables = Exact<{
 
 
 export type GetRecievedOrderItemsStatisticsQuery = { __typename?: 'Query', getRecievedOrderItemsStatistics: { __typename?: 'OrderItemStatistics', countPending?: number | null, countCanceledOrFailed?: number | null, countDelivered?: number | null, all?: number | null } };
+
+export type CreatPaymentIntentMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreatPaymentIntentMutation = { __typename?: 'Mutation', creatPaymentIntent: { __typename?: 'PaymentSession', sessionUrl: string, sessionId: string } };
+
+export type VerifyPaymentMutationVariables = Exact<{
+  sessionId: Scalars['String']['input'];
+}>;
+
+
+export type VerifyPaymentMutation = { __typename?: 'Mutation', verifyPayment: boolean };
 
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -655,7 +689,7 @@ export type GetAllProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name: string, reference: string, images: Array<string>, rating: number, description: string, quantity: number, price: number, createdAt: any, category: { __typename?: 'Category', name?: string | null } }> } };
+export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', name?: string | null } | null }> } };
 
 export type GetProductQueryVariables = Exact<{
   productId: Scalars['Int']['input'];
@@ -682,6 +716,11 @@ export type RemoveProductMutationVariables = Exact<{
 
 
 export type RemoveProductMutation = { __typename?: 'Mutation', removeProduct: boolean };
+
+export type GetShoppingCartQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetShoppingCartQuery = { __typename?: 'Query', getShoppingCart?: { __typename?: 'ShoppingCart', id: number, totalAmount: number, cartItems?: Array<{ __typename?: 'CartItem', id: number, price: number, quantity: number, product: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, price?: number | null, category?: { __typename?: 'Category', name?: string | null } | null } } | null> | null } | null };
 
 export type GetParamUploadImageQueryVariables = Exact<{
   folder: Scalars['String']['input'];
@@ -820,6 +859,84 @@ export const useVerificationEmailRequestMutation = <
       options
     )};
 
+export const CreateCartItemDocument = `
+    mutation CreateCartItem($input: CartItemInput!) {
+  creatCartItem(input: $input) {
+    id
+    quantity
+    price
+    product {
+      id
+      name
+      price
+    }
+  }
+}
+    `;
+
+export const useCreateCartItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateCartItemMutation, TError, CreateCartItemMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<CreateCartItemMutation, TError, CreateCartItemMutationVariables, TContext>(
+      ['CreateCartItem'],
+      (variables?: CreateCartItemMutationVariables) => fetcher<CreateCartItemMutation, CreateCartItemMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreateCartItemDocument, variables)(),
+      options
+    )};
+
+export const UpdateCartItemDocument = `
+    mutation UpdateCartItem($input: CartItemUpdateInput!) {
+  updateCartItem(input: $input) {
+    id
+    quantity
+    price
+    product {
+      id
+      name
+      price
+    }
+  }
+}
+    `;
+
+export const useUpdateCartItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateCartItemMutation, TError, UpdateCartItemMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateCartItemMutation, TError, UpdateCartItemMutationVariables, TContext>(
+      ['UpdateCartItem'],
+      (variables?: UpdateCartItemMutationVariables) => fetcher<UpdateCartItemMutation, UpdateCartItemMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateCartItemDocument, variables)(),
+      options
+    )};
+
+export const RemoveCartItemDocument = `
+    mutation RemoveCartItem($idCartItem: Int!) {
+  removeCartItem(idCartItem: $idCartItem)
+}
+    `;
+
+export const useRemoveCartItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<RemoveCartItemMutation, TError, RemoveCartItemMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<RemoveCartItemMutation, TError, RemoveCartItemMutationVariables, TContext>(
+      ['RemoveCartItem'],
+      (variables?: RemoveCartItemMutationVariables) => fetcher<RemoveCartItemMutation, RemoveCartItemMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, RemoveCartItemDocument, variables)(),
+      options
+    )};
+
 export const GetOrderItemsForSellerDocument = `
     query GetOrderItemsForSeller($input: OrderItemFilter!) {
   getOrderItemsForSeller(input: $input) {
@@ -909,6 +1026,49 @@ export const useGetRecievedOrderItemsStatisticsQuery = <
     return useQuery<GetRecievedOrderItemsStatisticsQuery, TError, TData>(
       variables === undefined ? ['GetRecievedOrderItemsStatistics'] : ['GetRecievedOrderItemsStatistics', variables],
       fetcher<GetRecievedOrderItemsStatisticsQuery, GetRecievedOrderItemsStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetRecievedOrderItemsStatisticsDocument, variables),
+      options
+    )};
+
+export const CreatPaymentIntentDocument = `
+    mutation CreatPaymentIntent {
+  creatPaymentIntent {
+    sessionUrl
+    sessionId
+  }
+}
+    `;
+
+export const useCreatPaymentIntentMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreatPaymentIntentMutation, TError, CreatPaymentIntentMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<CreatPaymentIntentMutation, TError, CreatPaymentIntentMutationVariables, TContext>(
+      ['CreatPaymentIntent'],
+      (variables?: CreatPaymentIntentMutationVariables) => fetcher<CreatPaymentIntentMutation, CreatPaymentIntentMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreatPaymentIntentDocument, variables)(),
+      options
+    )};
+
+export const VerifyPaymentDocument = `
+    mutation VerifyPayment($sessionId: String!) {
+  verifyPayment(sessionId: $sessionId)
+}
+    `;
+
+export const useVerifyPaymentMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<VerifyPaymentMutation, TError, VerifyPaymentMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<VerifyPaymentMutation, TError, VerifyPaymentMutationVariables, TContext>(
+      ['VerifyPayment'],
+      (variables?: VerifyPaymentMutationVariables) => fetcher<VerifyPaymentMutation, VerifyPaymentMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerifyPaymentDocument, variables)(),
       options
     )};
 
@@ -1153,6 +1313,45 @@ export const useRemoveProductMutation = <
     return useMutation<RemoveProductMutation, TError, RemoveProductMutationVariables, TContext>(
       ['RemoveProduct'],
       (variables?: RemoveProductMutationVariables) => fetcher<RemoveProductMutation, RemoveProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, RemoveProductDocument, variables)(),
+      options
+    )};
+
+export const GetShoppingCartDocument = `
+    query GetShoppingCart {
+  getShoppingCart {
+    id
+    totalAmount
+    cartItems {
+      id
+      price
+      quantity
+      product {
+        id
+        name
+        reference
+        images
+        price
+        category {
+          name
+        }
+      }
+    }
+  }
+}
+    `;
+
+export const useGetShoppingCartQuery = <
+      TData = GetShoppingCartQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetShoppingCartQueryVariables,
+      options?: UseQueryOptions<GetShoppingCartQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetShoppingCartQuery, TError, TData>(
+      variables === undefined ? ['GetShoppingCart'] : ['GetShoppingCart', variables],
+      fetcher<GetShoppingCartQuery, GetShoppingCartQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetShoppingCartDocument, variables),
       options
     )};
 

@@ -1,11 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ReactSlider from "react-slider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { Product } from "../../../generated";
 import { useCategory } from "../../../helpers/useCategory";
 import { productService } from "../../../services/product";
+import { cartItemService } from "../../../services/cartItem";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setCartItems } from "../../../redux/slices/cartSlice";
+import { shoppingCartService } from "../../../services/shoppingCart";
 
 const ShopSection = () => {
+  //Add to Cart Code
+  const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
+
+  const handleAddToCart = async (productId: number) => {
+    try {
+      await cartItemService.createCartItem({
+        idProduct: productId,
+        quantity: 1,
+      });
+
+      // ✅ Rafraîchir le panier Redux
+      const updatedCart = await shoppingCartService.getShoppingCart();
+      dispatch(setCartItems(updatedCart ?? null));
+
+      toast.success("Produit ajouté au panier !");
+    } catch (error) {
+      console.error("Erreur lors de l'ajout au panier", error);
+      toast.error("Erreur lors de l'ajout !");
+    }
+  };
+
   const [grid, setGrid] = useState<boolean>(false);
 
   const [active, setActive] = useState<boolean>(false);
@@ -30,12 +60,11 @@ const ShopSection = () => {
     productStatus | undefined
   >(undefined);
   // Removed redundant state declaration for productNameFilter and setProductNameFilter
-  const [pageNb, setPageNb] = useState(1);
-  const [pageSz, setPageSz] = useState(1);
+  const [pageNb, setPageNb] = useState<number>(2);
+  const [pageSz, setPageSz] = useState<number>(1);
   const [sortedBy, setSortedBy] = useState<string>("");
 
   const [countFilteredProducts, setCountFilteredProducts] = useState(0);
-  const navigate = useNavigate();
   useEffect(() => {
     const fetchMyProducts = async () => {
       try {
@@ -45,9 +74,9 @@ const ShopSection = () => {
             ? selectedStatus === productStatus.AVAILABLE
             : undefined,
           categoryId: selectedCategory?.id,
-          pageNb,
+          pageNb: pageNb,
           pageSize: pageSz,
-          rating: sortedBy,
+          orderBy: sortedBy,
         });
         console.log("Rating:", sortedBy);
         console.log("🟢 Réponse API complète :", response);
@@ -58,6 +87,8 @@ const ShopSection = () => {
 
         setProducts(response?.data?.getAllProducts?.products as Array<Product>);
         console.log("Count:", response.data.getAllProducts.count);
+        console.log(" page Number:", pageNb);
+        // setPageNb(1);
         setCountFilteredProducts(response.data.getAllProducts.count);
       } catch (error) {
         console.error("❌ Erreur API :", error);
@@ -74,11 +105,21 @@ const ShopSection = () => {
     productNameFilter,
     sortedBy,
   ]);
-  setTotalPage(Math.ceil(countFilteredProducts / pageSz));
+  //setTotalPage(Math.ceil(countFilteredProducts / pageSz));
   useEffect(() => {
     console.log("Total page:", totalPage);
-    setPageNb(totalPage);
-  }, [selectedCategory, totalPage]);
+
+    setTotalPage(Math.ceil(countFilteredProducts / pageSz));
+  }, [
+    selectedCategory,
+    totalPage,
+    setTotalPage,
+    countFilteredProducts,
+    pageSz,
+  ]);
+  useEffect(() => {
+    setPageNb(1);
+  }, [selectedCategory, selectedStatus, productNameFilter]);
   const incrementPageNb = () => {
     console.log("Total page:", totalPage);
     if (pageNb <= totalPage) setPageNb(pageNb + 1);
@@ -91,20 +132,24 @@ const ShopSection = () => {
 
   const displayProducts = products.map((product, index) => {
     return (
-      <div className="product-card h-100 p-16 border border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2">
+      <div
+        key={product.id ?? index}
+        className="product-card h-100 p-16 border border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2"
+      >
         <Link
           to="/product-details-two"
-          className="product-card__thumb flex-center rounded-8 bg-gray-50 position-relative"
+          className="product-card__thumb w-full h-full object-contain flex-center rounded-8 bg-gray-50"
         >
           <img
-            src="assets/images/thumbs/product-two-img1.png"
+            src={product?.images?.[0] ?? "default-image-url.jpg"}
             alt=""
-            className="w-auto max-w-unset"
+            className="w-full h-full object-contain"
           />
           <span className="product-card__badge bg-primary-600 px-8 py-4 text-sm text-white position-absolute inset-inline-start-0 inset-block-start-0">
-            Best Sale{" "}
+            Best Sale
           </span>
         </Link>
+
         <div className="product-card__content mt-16">
           <h6 className="title text-lg fw-semibold mt-12 mb-8">
             <Link
@@ -151,13 +196,21 @@ const ShopSection = () => {
               <span className="text-gray-500 fw-normal">/Qty</span>{" "}
             </span>
           </div>
-          <Link
+          {/* <Link
             to="/cart"
             className="product-card__cart btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium"
             tabIndex={0}
           >
             Add To Cart <i className="ph ph-shopping-cart" />
-          </Link>
+          </Link> */}
+          <div
+            onClick={() => handleAddToCart(product.id)}
+            className="product-card__cart btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium"
+            role="button"
+            tabIndex={0}
+          >
+            Add To Cart <i className="ph ph-shopping-cart" />
+          </div>
         </div>
       </div>
     );
@@ -165,6 +218,7 @@ const ShopSection = () => {
 
   return (
     <section className="shop py-80">
+      <ToastContainer />
       <div className={`side-overlay ${active && "show"}`}></div>
       <div className="container container-lg">
         <div className="row">
@@ -806,15 +860,35 @@ const ShopSection = () => {
                     Sort by:{" "}
                   </label>
                   <select
-                    defaultValue=""
+                    defaultValue="createdAt_DESC"
                     onChange={(e) => setSortedBy(e.target.value)}
                     className="form-control common-input px-14 py-14 text-inherit rounded-6 w-auto"
                     id="sorting"
                   >
                     <option value="rating">Popular</option>
-                    <option value="">Latest</option>
-                    <option value="">Trending</option>
-                    <option value="">Matches</option>
+                    <option value="createdAt_DESC">Latest</option>
+                    <option value="createdAt_ASC">Oldest</option>
+                    <option value="price_ASC">Cheaper</option>
+                    <option value="price_DESC">Most Expensive</option>
+                  </select>
+                </div>
+
+                <div className="position-relative text-gray-500 flex-align gap-4 text-14">
+                  <label
+                    htmlFor="sorting"
+                    className="text-inherit flex-shrink-0"
+                  >
+                    Slice by:{" "}
+                  </label>
+                  <select
+                    defaultValue={pageSz}
+                    onChange={(e) => setPageSz(Number(e.target.value))}
+                    className="form-control common-input px-14 py-14 text-inherit rounded-6 w-auto"
+                    id="sorting"
+                  >
+                    <option value={4}>4</option>
+                    <option value={2}>2</option>
+                    <option value={6}>6</option>
                   </select>
                 </div>
                 <button
@@ -834,17 +908,22 @@ const ShopSection = () => {
             {/* Pagination Start */}
             <div className="pagination flex-center flex-wrap gap-16">
               <button
-                title="button"
+                title="Previous"
                 onClick={decremnetPageNb}
                 className="page-item"
+                disabled={pageNb === 1}
               >
-                <Link
-                  className="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100"
-                  to="#"
+                <div
+                  className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
+                    pageNb === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "text-neutral-600 border-gray-100"
+                  }`}
                 >
                   <i className="ph-bold ph-arrow-left" />
-                </Link>
+                </div>
               </button>
+
               {/* Affichage des pages dynamiques */}
               {Array.from({ length: totalPage }, (_, index) => (
                 <button
@@ -854,27 +933,34 @@ const ShopSection = () => {
                     pageNb === index + 1 ? "active" : ""
                   }`}
                 >
-                  <Link
+                  <div
                     className="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100"
-                    to="#"
-                    onClick={() => setPageNb(index + 1)}
+                    onClick={() => {
+                      console.log("Page index:", index);
+
+                      setPageNb(index + 1);
+                    }}
                   >
                     {index + 1}
-                  </Link>
+                  </div>
                 </button>
               ))}
 
               <button
-                title="button"
+                title="Next"
                 onClick={incrementPageNb}
                 className="page-item"
+                disabled={pageNb === totalPage}
               >
-                <Link
-                  className="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100"
-                  to="#"
+                <div
+                  className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
+                    pageNb === totalPage
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "text-neutral-600 border-gray-100"
+                  }`}
                 >
                   <i className="ph-bold ph-arrow-right" />
-                </Link>
+                </div>
               </button>
             </div>
             {/* Pagination End */}
