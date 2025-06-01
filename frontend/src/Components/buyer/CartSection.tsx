@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import QuantityControl from "../../helper/QuantityControl";
 import { shoppingCartService } from "../../services/shoppingCart";
 import { cartItemService } from "../../services/cartItem";
-import { CartItem, ShoppingCart } from "../../generated";
+import { ShoppingCart } from "../../generated";
 import { paymentService } from "../../services/payment";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCartItems } from "../../redux/slices/cartSlice";

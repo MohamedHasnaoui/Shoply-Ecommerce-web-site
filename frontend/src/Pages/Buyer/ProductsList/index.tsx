@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
 import ReactSlider from "react-slider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
