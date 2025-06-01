@@ -24,13 +24,13 @@ export const orderSchema = gql`
   }
 
   type Order {
-    id: Int!
-    status: OrderStatus!
-    totalAmount: Float!
-    orderItems: [OrderItem]!
-    buyer: User!
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    id: Int
+    status: OrderStatus
+    totalAmount: Float
+    orderItems: [OrderItem]
+    buyer: User
+    createdAt: DateTime
+    updatedAt: DateTime
   }
   type Query {
     getMyOrders(pageNb: Int, pageSize: Int): [Order]

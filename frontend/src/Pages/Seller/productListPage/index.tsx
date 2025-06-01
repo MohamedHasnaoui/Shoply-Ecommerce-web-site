@@ -3,7 +3,8 @@ import backgroundimg from "../../../assets/sellerAssets/media/photos/photo26@2x.
 import { productService } from "../../../services/product"
 import { Category, Product } from "../../../generated"
 import { Link, useNavigate } from "react-router"
-import Loading from "../../../Components/Seller/Loading"
+import { ErrorCode } from "../../../constants/errors"
+import { ApolloError } from "@apollo/client"
 
 const ProductListPage = () => {
   const [availableProductsCount,setAvailableProductsCount] = useState(0); 
@@ -21,25 +22,36 @@ const ProductListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
   const [productNameFilter,setProductNameFilter] = useState<string|undefined>(undefined)
   const navigate = useNavigate();
+  const [globalError,setGlobalError] = useState("");
+
   useEffect(() => {
     const fetchMyProducts = async () => {
-      const response = await productService.getMyProducts(
-        {
-          name: productNameFilter,
-          available: selectedStatus ? (selectedStatus===productStatus.AVAILABLE) : undefined,
-          categoryId: selectedCategory?.id,
-          pageNb,
-          pageSize:pageSz
-        }
-      );
+      try{
+        const response = await productService.getMyProducts(
+          {
+            name: productNameFilter,
+            available: selectedStatus ? (selectedStatus===productStatus.AVAILABLE) : undefined,
+            categoryId: selectedCategory?.id,
+            pageNb,
+            pageSize:pageSz
+          }
+        );
       if(response.data?.getAllMyProducts){
         setMyProducts(response.data.getAllMyProducts.products as Array<Product>);
         setCountFilteredProducts(response.data.getAllMyProducts.count);
       } 
-    }
+      }catch(e){
+        const err = e as ApolloError;
+        if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+          setGlobalError(err.graphQLErrors[0].message);
+        }else {
+          navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+        }
+      }
+  }
     fetchMyProducts();
   }
-  ,[selectedCategory,selectedStatus,pageNb,pageSz,productStatus,productNameFilter])
+  ,[selectedCategory,selectedStatus,pageNb,pageSz,productStatus,productNameFilter,navigate])
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       const response = await productService.getCatgories();
@@ -54,9 +66,18 @@ const ProductListPage = () => {
         setOutOfStockProductsCount(response.data.getMyProductsStatistics.countOutOfStock);
       }
     }
-    fetchProductStockCounts();
-    fetchCategoryProducts();
-  },[])
+    try{
+      fetchProductStockCounts();
+      fetchCategoryProducts();
+    }catch(e){
+      const err = e as ApolloError;
+      if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+        setGlobalError(err.graphQLErrors[0].message);
+      }else {
+        navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+      }
+    }
+  },[navigate])
   const [isCategoryFilterOpen, setIsCategoryFilterOpen] = useState(false);
   const [isSatusFilterOpen, setIsSatusFilterOpen] = useState(false);
 
@@ -113,7 +134,7 @@ const ProductListPage = () => {
         <td style={{fontSize:18}} className="d-none d-sm-table-cell text-center">
           {product.quantity ? <span className="badge bg-success">{productStatus.AVAILABLE}</span>:<span className="badge bg-danger">{productStatus.OUT_OF_STOCK}</span> }
         </td>
-        <td className="text-center">{product.totalSales}</td>
+        <td className="text-center">{product.totalOrders}</td>
         <td className="text-center">{product.rating?.toFixed(1)}</td>
         <td className="text-end">{product.price} DH</td>
       </tr>
@@ -125,10 +146,8 @@ const ProductListPage = () => {
         <i className="fa fa-fw fa-gamepad opacity-50 me-1"></i> {category?.name}
       </button>
     )
-  })
-  if(!myProducts){
-    return <Loading />
-  }  
+  }) 
+  if(globalError) return( <div className="alert alert-danger">{globalError}</div>)
   return (
     <main id="main-container">
         {/* <!-- Hero --> */}
@@ -148,7 +167,7 @@ const ProductListPage = () => {
         <div className="bg-body-light border-bottom">
           <div className="content py-1 text-center">
             <nav className="breadcrumb bg-body-light py-2 mb-0">
-              <a className="breadcrumb-item" href="be_pages_ecom_dashboard.html">e-Commerce</a>
+              <Link to={"/seller/home"} className="breadcrumb-item">e-Commerce</Link>
               <span className="breadcrumb-item active">My Products</span>
             </nav>
           </div>
@@ -162,7 +181,7 @@ const ProductListPage = () => {
           <div className="row">
             {/* <!-- All Products --> */}
             <div className="col-md-6 col-xl-3">
-              <a className="block block-rounded block-link-shadow">
+              <div className="block block-rounded block-link-shadow">
                 <div className="block-content block-content-full block-sticky-options">
                   <div className="block-options">
                     <div className="block-options-item">
@@ -174,13 +193,13 @@ const ProductListPage = () => {
                     <div className="fs-sm fw-semibold text-uppercase text-muted">All Products</div>
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
             {/* <!-- END All Products --> */}
 
             {/* <!-- Top Sellers --> */}
             <div className="col-md-6 col-xl-3">
-              <a className="block block-rounded block-link-shadow">
+              <div className="block block-rounded block-link-shadow">
                 <div className="block-content block-content-full block-sticky-options">
                   <div className="block-options">
                     <div className="block-options-item">
@@ -192,13 +211,13 @@ const ProductListPage = () => {
                     <div className="fs-sm fw-semibold text-uppercase text-muted">{productStatus.AVAILABLE}</div>
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
             {/* <!-- END Top Sellers --> */}
 
             {/* <!-- Out of Stock --> */}
             <div className="col-md-6 col-xl-3">
-              <a className="block block-rounded block-link-shadow">
+              <div className="block block-rounded block-link-shadow">
                 <div className="block-content block-content-full block-sticky-options">
                   <div className="block-options">
                     <div className="block-options-item">
@@ -210,13 +229,13 @@ const ProductListPage = () => {
                     <div className="fs-sm fw-semibold text-uppercase text-muted">Out of Stock</div>
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
             {/* <!-- END Out of Stock --> */}
 
             {/* <!-- Add Product --> */}
             <div className="col-md-6 col-xl-3">
-              <Link to="/add-product" className="block block-rounded block-link-shadow">
+              <Link to="/seller/add-product" className="block block-rounded block-link-shadow">
                 <div className="block-content block-content-full block-sticky-options">
                   <div className="block-options">
                     <div className="block-options-item">
@@ -244,7 +263,7 @@ const ProductListPage = () => {
             <div className="space-x-1">
               <div className="dropdown d-inline-block">
                 <button type="button" className="btn btn-sm btn-alt-secondary" onClick={handleClickCategoryFilter}>
-                  <span>Category</span>
+                  <span>Category ({selectedCategory ? selectedCategory.name : "All"})</span>
                   <i className="fa fa-angle-down opacity-50 ms-1"></i>
                 </button>
                 <div className={`dropdown-menu dropdown-menu-end ${isCategoryFilterOpen ? "show" : ""}`} >
@@ -257,7 +276,7 @@ const ProductListPage = () => {
               </div>
               <div className="dropdown d-inline-block">
                 <button type="button" className="btn btn-sm btn-alt-secondary" onClick={handleClickStatusFilter}>
-                  <span>All</span>
+                  <span>{selectedStatus ? selectedStatus : "All"}</span>
                   <i className="fa fa-angle-down opacity-50 ms-1"></i>
                 </button>
                 <div className={`dropdown-menu dropdown-menu-end ${isSatusFilterOpen ? "show" : ""}`} >
@@ -282,7 +301,7 @@ const ProductListPage = () => {
                 <div className="mb-4">
                   <div className="input-group">
                     <input type="text" className="form-control" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} value={searchString} placeholder="Search products.." />
-                    <button type="submit" className="btn btn-primary">
+                    <button title="Search" type="submit" className="btn btn-primary">
                       <i className="fa fa-search"></i>
                     </button>
                   </div>

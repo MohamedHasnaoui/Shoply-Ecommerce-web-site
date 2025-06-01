@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 import backgroundimg from "../../../assets/sellerAssets/media/photos/photo26@2x.jpg"
 import OrdersStatistics from "../../../Components/Seller/OrdersStatistics";
 import { OrderItem, OrderItemStatistics, OrderItemStatus, PeriodFilter } from "../../../generated";
-import { orderItemService } from "../../../services/OrderItem";
+import { orderItemService } from "../../../services/orderItem";
 import { Link } from "react-router";
 import { BasicModal, BasicModalRef } from "../../../Components/common/modal";
 import  Select  from "react-select";
@@ -153,10 +153,10 @@ const OrdersSellerPage = () => {
           {new Date(order.updatedAt).toLocaleDateString("fr-FR")}
         </td>
         <td className="d-none d-sm-table-cell">
-          <Link to={"/edit-product/" + order.product?.id}>{order.product?.name}</Link>
+          <Link to={"/seller/edit-product/" + order.product?.id}>{order.product?.name}</Link>
         </td>
         <td className="d-none d-sm-table-cell">
-          <a>{order.quantity}</a>
+          {order.quantity}
         </td>
         <td className="d-none d-sm-table-cell text-end">{order.price} DH</td>
       </tr>
@@ -181,7 +181,7 @@ return (
     <div className="bg-body-light border-bottom">
       <div className="content py-1 text-center">
         <nav className="breadcrumb bg-body-light py-2 mb-0">
-          <a className="breadcrumb-item" href="be_pages_ecom_dashboard.html">e-Commerce</a>
+          <Link className="breadcrumb-item" to="/seller/home">e-Commerce</Link>
           <span className="breadcrumb-item active">Orders</span>
         </nav>
       </div>

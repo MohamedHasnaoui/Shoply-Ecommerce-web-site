@@ -59,7 +59,7 @@ const OrdersStatistics = (props:propsType) => {
    <div className="row">
      {/* <!-- Pending --> */}
      <div className="col-md-6 col-xl-3">
-       <a className="block block-rounded block-transparent bg-gd-sun" href="javascript:void(0)">
+       <button className="block block-rounded block-transparent bg-gd-sun btn w-100">
          <div className="block-content block-content-full block-sticky-options">
            <div className="block-options">
              <div className="block-options-item">
@@ -71,13 +71,13 @@ const OrdersStatistics = (props:propsType) => {
              <div className="fs-sm fw-semibold text-uppercase text-white-75">Pending</div>
            </div>
          </div>
-       </a>
+       </button>
      </div>
      {/* <!-- END Pending --> */}
 
      {/* <!-- Canceled --> */}
      <div className="col-md-6 col-xl-3">
-       <a className="block block-rounded block-transparent bg-gd-cherry" href="javascript:void(0)">
+       <button className="block block-rounded block-transparent bg-gd-cherry btn w-100">
          <div className="block-content block-content-full block-sticky-options">
            <div className="block-options">
              <div className="block-options-item">
@@ -89,14 +89,13 @@ const OrdersStatistics = (props:propsType) => {
              <div className="fs-sm fw-semibold text-uppercase text-white-75">Canceled Or Failed</div>
            </div>
          </div>
-       </a>
+       </button>
      </div>
      {/* <!-- END Canceled --> */}
 
      {/* <!-- Completed --> */}
      <div className="col-md-6 col-xl-3">
-       <a className="block block-rounded block-transparent bg-gd-lake" href="javascript:void(0)">
-         <div className="block-content block-content-full block-sticky-options">
+        <button className="block block-rounded block-transparent bg-gd-cherry btn w-100">         <div className="block-content block-content-full block-sticky-options">
            <div className="block-options">
              <div className="block-options-item">
                <i className="fa fa-check text-white-75"></i>
@@ -107,13 +106,13 @@ const OrdersStatistics = (props:propsType) => {
              <div className="fs-sm fw-semibold text-uppercase text-white-75">Delivered</div>
            </div>
          </div>
-       </a>
+       </button>
      </div>
      {/* <!-- END Completed --> */}
 
      {/* <!-- All --> */}
      <div className="col-md-6 col-xl-3">
-       <a className="block block-rounded block-transparent bg-gd-dusk">
+       <button className="block block-rounded block-transparent bg-gd-dusk btn w-100">
          <div className="block-content block-content-full block-sticky-options">
            <div className="block-options">
              <div className="block-options-item">
@@ -125,7 +124,7 @@ const OrdersStatistics = (props:propsType) => {
              <div className="fs-sm fw-semibold text-uppercase text-white-75">All</div>
            </div>
          </div>
-       </a>
+       </button>
      </div>
      </div>
      </>

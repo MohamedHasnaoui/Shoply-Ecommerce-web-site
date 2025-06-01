@@ -262,19 +262,20 @@ export type MutationVerifyPaymentArgs = {
 
 export type Order = {
   __typename?: 'Order';
-  buyer: User;
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['Int']['output'];
-  orderItems: Array<Maybe<OrderItem>>;
-  status: OrderStatus;
-  totalAmount: Scalars['Float']['output'];
-  updatedAt: Scalars['DateTime']['output'];
+  buyer?: Maybe<User>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  orderItems?: Maybe<Array<Maybe<OrderItem>>>;
+  status?: Maybe<OrderStatus>;
+  totalAmount?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type OrderItem = {
   __typename?: 'OrderItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
+  order?: Maybe<Order>;
   price: Scalars['Float']['output'];
   product?: Maybe<Product>;
   quantity: Scalars['Int']['output'];
@@ -357,7 +358,7 @@ export type Product = {
   quantity?: Maybe<Scalars['Int']['output']>;
   rating?: Maybe<Scalars['Int']['output']>;
   reference?: Maybe<Scalars['String']['output']>;
-  totalSales?: Maybe<Scalars['Int']['output']>;
+  totalOrders?: Maybe<Scalars['Int']['output']>;
 };
 
 export type ProductFilter = {
@@ -389,6 +390,7 @@ export type Query = {
   getAllProducts: ProductListResult;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
+  getCustomerPastOrderItems?: Maybe<Array<OrderItem>>;
   getEarningByPeriod: Array<Scalars['Float']['output']>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
@@ -401,7 +403,9 @@ export type Query = {
   getProduct: Product;
   getRecievedOrderItemsStatistics: OrderItemStatistics;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
+  getSellerTopProducts?: Maybe<Array<ProductAndNbOrders>>;
   getShoppingCart?: Maybe<ShoppingCart>;
+  getUserById: User;
   getWishList: WishList;
 };
 
@@ -423,6 +427,11 @@ export type QueryGetCartItemArgs = {
 
 export type QueryGetCategoryArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetCustomerPastOrderItemsArgs = {
+  customerId: Scalars['Int']['input'];
 };
 
 
@@ -479,6 +488,16 @@ export type QueryGetRecievedOrderItemsStatisticsArgs = {
 
 export type QueryGetReviewsByProductIdArgs = {
   productId: Scalars['Int']['input'];
+};
+
+
+export type QueryGetSellerTopProductsArgs = {
+  nbProduct: Scalars['Int']['input'];
+};
+
+
+export type QueryGetUserByIdArgs = {
+  id: Scalars['Int']['input'];
 };
 
 export type Review = {
@@ -543,15 +562,18 @@ export type UpdateReviewInput = {
 };
 
 export type UpdateUserInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
   birthDay?: InputMaybe<Scalars['DateTime']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
   coverImg?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<Gender>;
-  id: Scalars['Int']['input'];
   lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
   profileImg?: InputMaybe<Scalars['String']['input']>;
+  street?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UploadCloud = {
@@ -564,23 +586,32 @@ export type UploadCloud = {
 
 export type User = {
   __typename?: 'User';
-  address?: Maybe<Scalars['String']['output']>;
   birthDay?: Maybe<Scalars['DateTime']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
   coverImg?: Maybe<Scalars['String']['output']>;
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<Gender>;
   id: Scalars['Int']['output'];
-  lastName: Scalars['String']['output'];
+  lastName?: Maybe<Scalars['String']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
+  postalCode?: Maybe<Scalars['String']['output']>;
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
+  street?: Maybe<Scalars['String']['output']>;
 };
 
 export type WishList = {
   __typename?: 'WishList';
   id: Scalars['Int']['output'];
   products?: Maybe<Array<Maybe<Product>>>;
+};
+
+export type ProductAndNbOrders = {
+  __typename?: 'productAndNbOrders';
+  product: Product;
+  totalSold: Scalars['Int']['output'];
 };
 
 export enum RndType {
@@ -593,7 +624,7 @@ export type SigninMutationVariables = Exact<{
 }>;
 
 
-export type SigninMutation = { __typename?: 'Mutation', signin: { __typename?: 'AuthResponse', jwt: string, user: { __typename?: 'User', id: number, email: string, firstName: string, lastName: string, address?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } } };
+export type SigninMutation = { __typename?: 'Mutation', signin: { __typename?: 'AuthResponse', jwt: string, user: { __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } } };
 
 export type SignupMutationVariables = Exact<{
   input: SignupIpnut;
@@ -605,7 +636,7 @@ export type SignupMutation = { __typename?: 'Mutation', signup: boolean };
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: number, email: string, firstName: string, lastName: string, address?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } | null };
+export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } | null };
 
 export type VerifyEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -622,12 +653,19 @@ export type VerificationEmailRequestMutationVariables = Exact<{
 
 export type VerificationEmailRequestMutation = { __typename?: 'Mutation', VerificationEmailRequest: boolean };
 
+export type UpdateUserMutationVariables = Exact<{
+  input: UpdateUserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } };
+
 export type GetOrderItemsForSellerQueryVariables = Exact<{
   input: OrderItemFilter;
 }>;
 
 
-export type GetOrderItemsForSellerQuery = { __typename?: 'Query', getOrderItemsForSeller: { __typename?: 'OrderItemsListResult', count: number, orderItems: Array<{ __typename?: 'OrderItem', id: number, quantity: number, price: number, status: OrderItemStatus, createdAt: any, updatedAt: any, product?: { __typename?: 'Product', id: number, name?: string | null } | null }> } };
+export type GetOrderItemsForSellerQuery = { __typename?: 'Query', getOrderItemsForSeller: { __typename?: 'OrderItemsListResult', count: number, orderItems: Array<{ __typename?: 'OrderItem', id: number, quantity: number, price: number, status: OrderItemStatus, createdAt: any, updatedAt: any, product?: { __typename?: 'Product', id: number, name?: string | null } | null, order?: { __typename?: 'Order', buyer?: { __typename?: 'User', id: number, firstName?: string | null, lastName?: string | null } | null } | null }> } };
 
 export type UpdateOrderItemStatusMutationVariables = Exact<{
   orderItemId: Scalars['Int']['input'];
@@ -696,7 +734,7 @@ export type GetAllMyProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, totalSales?: number | null, category?: { __typename?: 'Category', name?: string | null } | null }> } };
+export type GetAllMyProductsQuery = { __typename?: 'Query', getAllMyProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, totalOrders?: number | null, category?: { __typename?: 'Category', name?: string | null } | null }> } };
 
 export type GetMyProductsStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -709,6 +747,27 @@ export type RemoveProductMutationVariables = Exact<{
 
 
 export type RemoveProductMutation = { __typename?: 'Mutation', removeProduct: boolean };
+
+export type GetSellerTopProductsQueryVariables = Exact<{
+  nbProduct: Scalars['Int']['input'];
+}>;
+
+
+export type GetSellerTopProductsQuery = { __typename?: 'Query', getSellerTopProducts?: Array<{ __typename?: 'productAndNbOrders', totalSold: number, product: { __typename?: 'Product', id: number, name?: string | null, rating?: number | null } }> | null };
+
+export type GetCustomerInfoQueryVariables = Exact<{
+  Id: Scalars['Int']['input'];
+}>;
+
+
+export type GetCustomerInfoQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } };
+
+export type GetCustomerPastOrderItemsQueryVariables = Exact<{
+  customerId: Scalars['Int']['input'];
+}>;
+
+
+export type GetCustomerPastOrderItemsQuery = { __typename?: 'Query', getCustomerPastOrderItems?: Array<{ __typename?: 'OrderItem', id: number, quantity: number, price: number, status: OrderItemStatus, createdAt: any, updatedAt: any, product?: { __typename?: 'Product', id: number, name?: string | null } | null }> | null };
 
 export type GetParamUploadImageQueryVariables = Exact<{
   folder: Scalars['String']['input'];
@@ -727,7 +786,10 @@ export const SigninDocument = `
       email
       firstName
       lastName
-      address
+      country
+      city
+      street
+      postalCode
       phoneNumber
       birthDay
       gender
@@ -781,7 +843,10 @@ export const CurrentUserDocument = `
     email
     firstName
     lastName
-    address
+    country
+    city
+    street
+    postalCode
     phoneNumber
     birthDay
     gender
@@ -847,6 +912,41 @@ export const useVerificationEmailRequestMutation = <
       options
     )};
 
+export const UpdateUserDocument = `
+    mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input) {
+    id
+    email
+    firstName
+    lastName
+    country
+    city
+    street
+    postalCode
+    phoneNumber
+    birthDay
+    gender
+    profileImg
+    coverImg
+    role
+  }
+}
+    `;
+
+export const useUpdateUserMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateUserMutation, TError, UpdateUserMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateUserMutation, TError, UpdateUserMutationVariables, TContext>(
+      ['UpdateUser'],
+      (variables?: UpdateUserMutationVariables) => fetcher<UpdateUserMutation, UpdateUserMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateUserDocument, variables)(),
+      options
+    )};
+
 export const GetOrderItemsForSellerDocument = `
     query GetOrderItemsForSeller($input: OrderItemFilter!) {
   getOrderItemsForSeller(input: $input) {
@@ -855,6 +955,13 @@ export const GetOrderItemsForSellerDocument = `
       product {
         id
         name
+      }
+      order {
+        buyer {
+          id
+          firstName
+          lastName
+        }
       }
       quantity
       price
@@ -1148,7 +1255,7 @@ export const GetAllMyProductsDocument = `
         name
       }
       createdAt
-      totalSales
+      totalOrders
     }
     count
   }
@@ -1211,6 +1318,102 @@ export const useRemoveProductMutation = <
     return useMutation<RemoveProductMutation, TError, RemoveProductMutationVariables, TContext>(
       ['RemoveProduct'],
       (variables?: RemoveProductMutationVariables) => fetcher<RemoveProductMutation, RemoveProductMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, RemoveProductDocument, variables)(),
+      options
+    )};
+
+export const GetSellerTopProductsDocument = `
+    query GetSellerTopProducts($nbProduct: Int!) {
+  getSellerTopProducts(nbProduct: $nbProduct) {
+    product {
+      id
+      name
+      rating
+    }
+    totalSold
+  }
+}
+    `;
+
+export const useGetSellerTopProductsQuery = <
+      TData = GetSellerTopProductsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetSellerTopProductsQueryVariables,
+      options?: UseQueryOptions<GetSellerTopProductsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetSellerTopProductsQuery, TError, TData>(
+      ['GetSellerTopProducts', variables],
+      fetcher<GetSellerTopProductsQuery, GetSellerTopProductsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetSellerTopProductsDocument, variables),
+      options
+    )};
+
+export const GetCustomerInfoDocument = `
+    query GetCustomerInfo($Id: Int!) {
+  getUserById(id: $Id) {
+    id
+    email
+    firstName
+    lastName
+    country
+    city
+    street
+    postalCode
+    phoneNumber
+    birthDay
+    gender
+    profileImg
+    coverImg
+    role
+  }
+}
+    `;
+
+export const useGetCustomerInfoQuery = <
+      TData = GetCustomerInfoQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetCustomerInfoQueryVariables,
+      options?: UseQueryOptions<GetCustomerInfoQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetCustomerInfoQuery, TError, TData>(
+      ['GetCustomerInfo', variables],
+      fetcher<GetCustomerInfoQuery, GetCustomerInfoQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetCustomerInfoDocument, variables),
+      options
+    )};
+
+export const GetCustomerPastOrderItemsDocument = `
+    query GetCustomerPastOrderItems($customerId: Int!) {
+  getCustomerPastOrderItems(customerId: $customerId) {
+    id
+    quantity
+    price
+    status
+    createdAt
+    updatedAt
+    product {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useGetCustomerPastOrderItemsQuery = <
+      TData = GetCustomerPastOrderItemsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetCustomerPastOrderItemsQueryVariables,
+      options?: UseQueryOptions<GetCustomerPastOrderItemsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetCustomerPastOrderItemsQuery, TError, TData>(
+      ['GetCustomerPastOrderItems', variables],
+      fetcher<GetCustomerPastOrderItemsQuery, GetCustomerPastOrderItemsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetCustomerPastOrderItemsDocument, variables),
       options
     )};
 

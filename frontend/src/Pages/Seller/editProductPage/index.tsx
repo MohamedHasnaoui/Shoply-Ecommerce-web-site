@@ -9,7 +9,8 @@ import { Link, useNavigate, useParams } from "react-router";
 import Loading from "../../../Components/Seller/Loading";
 import  { BasicModal, BasicModalRef }  from "../../../Components/common/modal"; 
 import { client } from "../../../graphqlProvider";
-
+import { ErrorCode } from "../../../constants/errors";
+import { ApolloError } from "@apollo/client";
 
 const EditProductPage = () => {
     const ModalRef = useRef<BasicModalRef>(null);
@@ -18,26 +19,53 @@ const EditProductPage = () => {
     const [productCategories,setProductCategories] = useState<Array<Category | null>>([]);
     const [productEdit,setProductEdit] = useState<Product | null>(null)
     const [editProductLoading ,setEditProductLoading] = useState<boolean>(false);
+    const [globalError,setGlobalError] = useState("");
+    const [loadingProduct,setLoadingProduct] = useState<boolean>(true);
+    const [loadingCategories,setLoadingCategories] = useState<boolean>(true);
     useEffect(()=>{
         const fetchCateg = async () => {
+          try{
+            setLoadingCategories(true);
             const response = await productService.getCatgories();
             if(response.data.getAllCategories){
-            setProductCategories(response.data.getAllCategories);  
+              setProductCategories(response.data.getAllCategories);  
+            }}catch(e){
+              const err = e as ApolloError;
+              if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+                setGlobalError(err.graphQLErrors[0].message);
+              }else {
+                navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+              }
+            }finally{
+              setLoadingCategories(false);
             }
+
         }
       fetchCateg();
-    },[])
+    },[navigate])
     useEffect(() => {
+      setLoadingProduct(true);
       const fetchProduct = async () => {
-        const response = await productService.getProductByID(parseInt(productId!));
-        if(response.data.getProduct){
-            setProductEdit(response.data.getProduct);  
+        try{
+          const response = await productService.getProductByID(parseInt(productId!));
+          if(response.data.getProduct){
+              setProductEdit(response.data.getProduct);  
+          }
+        }catch(e){
+          const err = e as ApolloError;
+          if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+            setGlobalError(err.graphQLErrors[0].message);
+          }else {
+            navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+          }
+        }finally{
+          setLoadingProduct(false);
         }
       }
 
       fetchProduct()
-    },[productId]);
-
+    },[productId,navigate]);
+    console.log("e",globalError);
     useEffect(()=>{
         setSelectedCategory({label:productEdit?.category?.name as string,value:productEdit?.category?.id as number})
     },[productEdit?.category]);
@@ -45,7 +73,7 @@ const EditProductPage = () => {
   const { getRootProps, getInputProps,acceptedFiles } = useDropzone({});
   const productNewImages = acceptedFiles.map((image,key) => {
       if(image.type.includes("image")){
-        return <img key={key} width={200} src={URL.createObjectURL(image)} style={{margin:5}} />
+        return <img alt="product" key={key} width={200} src={URL.createObjectURL(image)} style={{margin:5}} />
       }
       }
     );
@@ -59,7 +87,7 @@ const EditProductPage = () => {
   const productImages = productEdit?.images?.map((url,key) => {
     return <div className="col-sm-4 col-xl-3">
         <div className="options-container">
-        <img className="img-fluid options-item" key={key} src={url} style={{margin:15}} />
+        <img alt="product" className="img-fluid options-item" key={key} src={url} style={{margin:15}} />
         <div className="options-overlay bg-black-75">
             <div className="options-overlay-content">
             <button className="btn btn-sm btn-alt-danger" onClick={()=>{setProductEdit({...productEdit,images:productEdit?.images?.filter((image)=>{return image!==url})})}}>
@@ -96,15 +124,20 @@ const EditProductPage = () => {
       setSubmitError("");
       if(validate() && productEdit){
         setEditProductLoading(true);
-        try {
-        const imagesUrls = await uploadCloudService.uploadImages(acceptedFiles,"images/products");
-        const {id,name,description,price,images,quantity,reference} = productEdit;
-        await productService.updateProduct({id,name,description,price,quantity,reference,categoryId:productEdit.category?.id,images:imagesUrls.concat(images? images : [])});
-        client.resetStore();
-        navigate("/product-list")
-        }catch(err){
-          setSubmitError((err as Error).message);
-        }
+          try {
+            const imagesUrls = await uploadCloudService.uploadImages(acceptedFiles,"images/products");
+            const {id,name,description,price,images,quantity,reference} = productEdit;
+            await productService.updateProduct({id,name,description,price,quantity,reference,categoryId:productEdit.category?.id,images:imagesUrls.concat(images? images : [])});
+            client.resetStore();
+            navigate("/seller/product-list");
+          }catch(e){
+            const err = e as ApolloError;
+            if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+              setSubmitError(err.graphQLErrors[0].message);
+            }else {
+              navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+            }
+          }
         setEditProductLoading(false);
       }
     }
@@ -116,7 +149,7 @@ const EditProductPage = () => {
       setSubmitError("");
       await productService.deleteProduct(parseInt(productId!));
       client.resetStore();
-      navigate("/product-list")
+      navigate("/seller/product-list")
     }catch(err){
       setSubmitError((err as Error).message);
     }finally{
@@ -135,10 +168,9 @@ const EditProductPage = () => {
           )}
         </button>
       </div>
-
-    if(!productEdit || !productCategories){
-      return <Loading />
-    } 
+    if(globalError) return( <div className="alert alert-danger">{globalError}</div>)
+    if(loadingCategories || loadingProduct) return <Loading />
+    if(!productEdit) return <div className="alert alert-danger">Product not found</div>
     return (
       <main id="main-container">
           {/* <!-- Hero --> */}
@@ -158,8 +190,8 @@ const EditProductPage = () => {
           <div className="bg-body-light border-bottom">
             <div className="content py-1 text-center">
               <nav className="breadcrumb bg-body-light py-2 mb-0">
-                <a className="breadcrumb-item" href="be_pages_ecom_dashboard.html">e-Commerce</a>
-                <Link to={"/product-list"} className="breadcrumb-item">Products</Link>
+                <Link to={"/seller/home"} className="breadcrumb-item">e-Commerce</Link>
+                <Link to={"/seller/product-list"} className="breadcrumb-item">Products</Link>
                 <span className="breadcrumb-item active">Edit Product</span>
               </nav>
             </div>

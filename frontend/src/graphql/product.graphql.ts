@@ -80,7 +80,7 @@ export const GET_MY_PRODUCTS = gql`
           name
         }
         createdAt
-        totalSales
+        totalOrders
       }
       count
     }
@@ -99,5 +99,18 @@ export const GET_PRODUCTS_STOCK_COUNTS = gql`
 export const DELETE_PRODUCT_MUTATION = gql`
   mutation RemoveProduct($productId: Int!) {
     removeProduct(productId: $productId)
+  }
+`;
+
+export const GET_TOP_SELLING_PRODUCT_ = gql`
+  query GetSellerTopProducts($nbProduct: Int!) {
+    getSellerTopProducts(nbProduct: $nbProduct) {
+      product {
+        id
+        name
+        rating
+      }
+      totalSold
+    }
   }
 `;

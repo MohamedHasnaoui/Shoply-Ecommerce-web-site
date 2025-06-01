@@ -9,7 +9,10 @@ export const SIGNIN_MUTATION = gql`
         email
         firstName
         lastName
-        address
+        country
+        city
+        street
+        postalCode
         phoneNumber
         birthDay
         gender
@@ -35,7 +38,10 @@ export const GET_CURRENT_USER = gql`
       email
       firstName
       lastName
-      address
+      country
+      city
+      street
+      postalCode
       phoneNumber
       birthDay
       gender
@@ -55,5 +61,25 @@ export const VERIFY_EMAIL = gql`
 export const VERIFY_EMAIL_REQUEST = gql`
   mutation VerificationEmailRequest($email: String!) {
     VerificationEmailRequest(email: $email)
+  }
+`;
+export const UPDATE_USER = gql`
+  mutation UpdateUser($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      id
+      email
+      firstName
+      lastName
+      country
+      city
+      street
+      postalCode
+      phoneNumber
+      birthDay
+      gender
+      profileImg
+      coverImg
+      role
+    }
   }
 `;

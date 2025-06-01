@@ -27,22 +27,28 @@ export const authSchema = gql`
     password: String!
   }
   input UpdateUserInput {
-    id: Int!
     firstName: String
     lastName: String
-    address: String
+    country: String
+    city: String
+    street: String
+    postalCode: String
     phoneNumber: String
     birthDay: DateTime
     gender: Gender
     profileImg: String
     coverImg: String
+    password: String
   }
   type User {
     id: Int!
-    email: String!
-    firstName: String!
-    lastName: String!
-    address: String
+    email: String
+    firstName: String
+    lastName: String
+    country: String
+    city: String
+    street: String
+    postalCode: String
     phoneNumber: String
     birthDay: DateTime
     gender: Gender
@@ -60,6 +66,7 @@ export const authSchema = gql`
   }
   type Query {
     currentUser: User
+    getUserById(id: Int!): User!
   }
   type Mutation {
     signup(input: SignupIpnut!): Boolean!

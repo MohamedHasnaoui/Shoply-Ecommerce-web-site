@@ -4,10 +4,11 @@ import { productService } from "../../services/productServices.js";
 import { userService } from "../../services/userService.js";
 import { Seller } from "../../entities";
 import { categoryService } from "../../services/categoryServices.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 export const ProductResolver: Resolvers = {
   Product: {
-    totalSales: async (parent, {}, context) => {
+    totalOrders: async (parent, {}, context) => {
       return await productService.countTotalSales(parent.id);
     },
   },
@@ -15,13 +16,13 @@ export const ProductResolver: Resolvers = {
     createProduct: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Seller) {
-        throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       const seller = user as Seller;
@@ -30,18 +31,19 @@ export const ProductResolver: Resolvers = {
     updateProduct: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("CANNOT UPDATE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const product = await productService.findById(input.id);
+      console.log(product);
       if (product === null) {
         throw new GraphQLError("Product Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (product.owner.id != context.currentUser.userId) {
         throw new GraphQLError("CANNOT UPDATE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       product.name = input.name || product.name;
@@ -60,13 +62,13 @@ export const ProductResolver: Resolvers = {
     removeProduct: async (parent, { productId }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("CANNOT DELETE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const product = await productService.findById(productId);
       if (product.owner.id != context.currentUser.userId) {
         throw new GraphQLError("CANNOT DELETE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       return await productService.remove(product);
@@ -74,18 +76,18 @@ export const ProductResolver: Resolvers = {
     incrementQuantity: async (parent, { addedQte, productId }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("CANNOT UPDATE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const product = await productService.findById(productId);
       if (product === null) {
         throw new GraphQLError("Product Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (product.owner.id != context.currentUser.userId) {
         throw new GraphQLError("CANNOT UPDATE PRODUCT", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       return await productService.incrementQuantity(productId, addedQte);
@@ -96,18 +98,24 @@ export const ProductResolver: Resolvers = {
       return await productService.getAll({ ...input });
     },
     getProduct: async (parent, { id }, context) => {
-      return await productService.findById(id);
+      const product = await productService.findById(id);
+      if (product === null) {
+        throw new GraphQLError("Product Not Found", {
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
+        });
+      }
+      return product;
     },
     getAllMyProducts: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Seller) {
         throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       return await productService.getAllBySellerId(context.currentUser.userId, {
@@ -117,13 +125,13 @@ export const ProductResolver: Resolvers = {
     getMyProductsStatistics: async (parent, args, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Seller) {
         throw new GraphQLError("UNAUTHORISED", {
-          extensions: { code: "UNAUTHORISED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       const countAvailable = await productService.countAvailable(
@@ -133,6 +141,23 @@ export const ProductResolver: Resolvers = {
         context.currentUser.userId
       );
       return { countAvailable, countOutOfStock };
+    },
+    getSellerTopProducts: async (parent, { nbProduct }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Seller) {
+        throw new GraphQLError("UNAUTHORISED", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
+        });
+      }
+      return await productService.getTopSellingProductsBySellerId(
+        context.currentUser.userId,
+        nbProduct
+      );
     },
   },
 };

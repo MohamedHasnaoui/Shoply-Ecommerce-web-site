@@ -22,6 +22,8 @@ import { OrderResolver } from "./resolvers/OrderResolver.js";
 import { ReviewResolver } from "./resolvers/ReviewResolver.js";
 import { uploadCloudSchema } from "./schemas/upload/uploadCloud.graphql.js";
 import { UploadCloudResolver } from "./resolvers/UploadCloudResolver.js";
+import { buyerSchema } from "./schemas/seller/seller.graphql.js";
+import { SellerResolver } from "./resolvers/SellerResolver.js";
 export interface MyContext {
   currentUser?: JwtPayload;
   idShoppingCart: number;
@@ -39,6 +41,7 @@ const typeDefsArray = [
   wishListSchema,
   reviewSchema,
   uploadCloudSchema,
+  buyerSchema,
 ];
 const resolversArray = [
   AuthResolver,
@@ -52,6 +55,7 @@ const resolversArray = [
   OrderItemReolver,
   ReviewResolver,
   UploadCloudResolver,
+  SellerResolver,
 ];
 export const typeDefs = mergeTypeDefs(typeDefsArray);
 export const resolvers = mergeResolvers(resolversArray);

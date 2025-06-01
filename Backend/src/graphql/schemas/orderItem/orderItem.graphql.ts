@@ -14,6 +14,7 @@ export const orderItemSchema = gql`
   type OrderItem {
     id: Int!
     product: Product
+    order: Order
     quantity: Int!
     price: Float!
     status: OrderItemStatus!

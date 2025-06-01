@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import Header from '../Components/Seller/Header'
 import Sidebar from "../Components/Seller/Sidebar"
-import QuickAccess from "../Components/Seller/QuickAccess";
+import QuickAccess from "../Components/Seller/QuickAccess/QuickAccess";
 import { Navigate, Outlet } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";

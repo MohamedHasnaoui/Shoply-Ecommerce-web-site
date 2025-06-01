@@ -46,7 +46,7 @@ export class Product {
 
   @Column({ default: new Date() })
   @IsOptional()
-  cpdatedAt: Date;
+  updatedAt: Date;
 
   @Column({ default: 0, type: "float8" })
   @Min(0) // Minimum rating value is 0

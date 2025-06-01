@@ -10,6 +10,8 @@ import {
   GetMyProductsStatisticsQueryVariables,
   GetProductQuery,
   GetProductQueryVariables,
+  GetSellerTopProductsQuery,
+  GetSellerTopProductsQueryVariables,
   ProductFilter,
   RemoveProductMutation,
   RemoveProductMutationVariables,
@@ -24,6 +26,7 @@ import {
   GET_MY_PRODUCTS,
   GET_PRODUCT_BY_ID,
   GET_PRODUCTS_STOCK_COUNTS,
+  GET_TOP_SELLING_PRODUCT_,
   UPDATE_PRODUCT_MUTATION,
 } from "../../graphql/product.graphql";
 import { client } from "../../graphqlProvider";
@@ -130,6 +133,17 @@ class ProductService {
     const options: QueryOptions<GetProductQueryVariables, GetProductQuery> = {
       query: GET_PRODUCT_BY_ID,
       variables: { productId },
+    };
+    const response = await client.query(options);
+    return response;
+  }
+  async getTopSellingProducts(nbProduct: number) {
+    const options: QueryOptions<
+      GetSellerTopProductsQueryVariables,
+      GetSellerTopProductsQuery
+    > = {
+      query: GET_TOP_SELLING_PRODUCT_,
+      variables: { nbProduct },
     };
     const response = await client.query(options);
     return response;

@@ -38,11 +38,11 @@ const Login = () => {
       if(response.errors) setsubmitError(response.errors[0].message);
       if(response.data){
         const data = response.data.signin;
-         setData(data);
-         loginUser(data.user);
-         localStorage.setItem("jwt",data.jwt);
-         await client.resetStore()
-         if(data.user.role === Role.Seller) navigate("/seller")
+        setData(data);
+        loginUser(data.user);
+        localStorage.setItem("jwt",data.jwt);
+        await client.resetStore();
+        if(data.user.role === Role.Seller) navigate("/seller/home");
       }
     } catch (err) {
       setsubmitError((err as Error).message);

@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { OrderItemStatistics, PeriodFilter } from '../../../generated';
 import { useEffect, useState } from 'react';
-import { orderItemService } from '../../../services/OrderItem';
+import { orderItemService } from '../../../services/orderItem';
 import { client } from '../../../graphqlProvider';
 
 ChartJS.register(

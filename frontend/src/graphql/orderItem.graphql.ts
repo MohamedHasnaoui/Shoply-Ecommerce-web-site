@@ -9,6 +9,13 @@ export const GET_ORDER_ITEMS_SELLER_QUERY = gql`
           id
           name
         }
+        order {
+          buyer {
+            id
+            firstName
+            lastName
+          }
+        }
         quantity
         price
         status

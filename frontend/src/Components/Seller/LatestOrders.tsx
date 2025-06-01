@@ -1,5 +1,22 @@
+import { useEffect, useState } from "react";
+import { OrderItem } from "../../generated";
+import { orderItemService } from "../../services/orderItem";
+import { StatusColor } from "../../constants/orderStatus";
+import { Link } from "react-router";
 
 const LatestOrders = () => {
+     const [orderItems , setOrderItems] = useState<OrderItem[] | null>(null);
+     
+    useEffect(() => {
+        const fetch = async ()=> {
+            const response = await orderItemService.getSellerOrderItems({});
+            if(response.data.getOrderItemsForSeller.orderItems){
+               const orders = response.data.getOrderItemsForSeller.orderItems;
+               setOrderItems(orders);
+            }
+        }
+        fetch();
+    },[])
   return (
     <div className="block block-rounded">
         <div className="block-content block-content-full">
@@ -13,126 +30,20 @@ const LatestOrders = () => {
                     </tr>
                 </thead>
                 <tbody>
+                    { orderItems && orderItems.map((orderItem) => (
                     <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1851</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-info">Processing</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Carol Ray</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$268</td>
+                        <td>
+                            <button type="button" className="fw-semibold border-0 bg-transparent">ORD.{orderItem.id}</button>
+                        </td>
+                        <td>
+                            <span className={`badge ${StatusColor[orderItem.status].bgcolor}`}>{orderItem.status}</span>
+                        </td>
+                        <td className="d-none d-sm-table-cell">
+                            <Link to={`/seller/customer/${orderItem.order?.buyer?.id}`}>{orderItem.order?.buyer?.firstName +" "+orderItem.order?.buyer?.lastName}</Link>
+                        </td>
+                        <td className="d-none d-sm-table-cell text-end">{orderItem.price} DH</td>
                     </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1850</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-success">Completed</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Albert Ray</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$772</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1849</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-info">Processing</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Lisa Jenkins</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$111</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1848</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-success">Completed</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Jose Mills</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$356</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1847</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-warning">Pending</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Thomas Riley</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$485</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1846</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-danger">Canceled</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Alice Moore</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$597</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1845</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-warning">Pending</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Amanda Powell</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$156</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1844</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-info">Processing</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Jose Wagner</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$669</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1843</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-danger">Canceled</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Jack Greene</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$650</td>
-                    </tr>
-                    <tr>
-                    <td>
-                        <a className="fw-semibold" href="be_pages_ecom_order.html">ORD.1842</a>
-                    </td>
-                    <td>
-                        <span className="badge bg-success">Completed</span>
-                    </td>
-                    <td className="d-none d-sm-table-cell">
-                        <a href="be_pages_ecom_customer.html">Lori Grant</a>
-                    </td>
-                    <td className="d-none d-sm-table-cell text-end">$683</td>
-                    </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

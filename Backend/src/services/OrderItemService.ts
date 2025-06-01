@@ -89,9 +89,9 @@ export class OrderItemService {
         createdAt:
           input?.period !== undefined ? MoreThanOrEqual(date) : undefined,
       },
-      relations: { product: true },
+      relations: { product: true, order: { buyer: true } },
       order: { createdAt: "DESC" },
-      take: input.pageNb ? input?.pageSize : undefined,
+      take: input.pageNb ? input?.pageSize : 15,
       skip:
         input.pageNb && input.pageSize
           ? (input?.pageNb - 1) * input?.pageSize
@@ -104,14 +104,24 @@ export class OrderItemService {
         createdAt:
           input?.period !== undefined ? MoreThanOrEqual(date) : undefined,
       },
-      relations: { product: true },
       order: { id: "DESC" },
     });
+    console.log(orderItems[0].order);
     return { orderItems, count };
   }
   async findByBuyerIdAndProductId(buyerId: number, productId: number) {
     return await this.orderItemRepository.findOne({
       where: { product: { id: productId }, order: { buyer: { id: buyerId } } },
+      order: { createdAt: "DESC" },
+    });
+  }
+  async findBySellerIdAndCustomerId(sellerId: number, customerID: number) {
+    return await this.orderItemRepository.find({
+      where: {
+        product: { owner: { id: sellerId } },
+        order: { buyer: { id: customerID } },
+      },
+      relations: { product: true },
       order: { createdAt: "DESC" },
     });
   }
@@ -163,7 +173,6 @@ export class OrderItemService {
     period?: PeriodFilter
   ): Promise<{ totalEarnings: number }> {
     const date = dateUtil.getStartDateOfPeriod(period);
-    console.log(date);
     const res = await this.orderItemRepository
       .createQueryBuilder("orderItem")
       .select("COALESCE(SUM(orderItem.price), 0)", "totalEarnings")
@@ -177,7 +186,6 @@ export class OrderItemService {
         status: OrderItemStatus.Delivered,
       })
       .getRawOne();
-    console.log(res);
     return res;
   }
   async totalNewCustomers(
@@ -223,7 +231,6 @@ export class OrderItemService {
         .orderBy("date", "ASC")
         .getRawMany();
     const dates = dateUtil.generateDateRange(startDate, addDays(endDate, -1));
-    console.log(startDate, endDate, dates);
     const earningsMap = new Map<string, number>();
     earnings.forEach((entry) => {
       earningsMap.set(format(entry.date, "yyyy-MM-dd"), entry.totalEarnings);

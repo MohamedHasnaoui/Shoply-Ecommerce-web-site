@@ -14,6 +14,7 @@ const authSlice = createSlice({
     },
     logoutAction(state) {
       state.currentUser = null;
+      localStorage.removeItem("jwt");
     },
     setSignupEmail(state, action) {
       state.signupEmail = action.payload;

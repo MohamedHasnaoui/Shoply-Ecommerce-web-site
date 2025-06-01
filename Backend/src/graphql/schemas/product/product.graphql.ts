@@ -14,7 +14,7 @@ export const productSchema = gql`
     price: Float
     category: Category
     createdAt: DateTime
-    totalSales: Int
+    totalOrders: Int
   }
 
   input CreateProductInput {
@@ -52,13 +52,16 @@ export const productSchema = gql`
     pageNb: Int
     pageSize: Int
   }
+  type productAndNbOrders {
+    product: Product!
+    totalSold: Int!
+  }
   type Query {
     getAllProducts(input: ProductFilter): ProductListResult!
     getAllMyProducts(input: ProductFilter): ProductListResult!
-
     getProduct(id: Int!): Product!
-
     getMyProductsStatistics: ProductsStatistics!
+    getSellerTopProducts(nbProduct: Int!): [productAndNbOrders!]
   }
   type Mutation {
     createProduct(input: CreateProductInput!): Product

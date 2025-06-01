@@ -9,6 +9,7 @@ import { verificationTokenService } from "../../services/VerificationTokenServic
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Buyer } from "../../entities/index.js";
 import { whishListService } from "../../services/WhishListService.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 export const AuthResolver: Resolvers = {
   DateTime: GraphQLDateTime,
@@ -20,7 +21,7 @@ export const AuthResolver: Resolvers = {
           await userService.remove(user);
         } else {
           throw new GraphQLError("user already exist in the database", {
-            extensions: { code: "BAD USER INPUTS" },
+            extensions: { code: ErrorCode.BAD_USER_INPUT },
           });
         }
       }
@@ -37,13 +38,13 @@ export const AuthResolver: Resolvers = {
       const user = await userService.findOneByEmail(input.email);
       if (!user) {
         throw new GraphQLError("Incorrect Credentiels", {
-          extensions: { code: "INVALID INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       const correctBwd = await bcrypt.compare(input.password, user.password);
       if (!correctBwd) {
         throw new GraphQLError("Incorrect Credentiels", {
-          extensions: { code: "INVALID INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       // if (!user.verified) {
@@ -62,12 +63,12 @@ export const AuthResolver: Resolvers = {
       const user = await userService.findOneByEmail(email);
       if (!user) {
         throw new GraphQLError("Wrong Credentials", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (user.verified) {
         throw new GraphQLError("Already verified", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       const verificationToken = await verificationTokenService.findByUserId(
@@ -76,17 +77,17 @@ export const AuthResolver: Resolvers = {
       );
       if (verificationToken == null) {
         throw new GraphQLError("Token not found", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (verificationToken.expiresAt < new Date()) {
         throw new GraphQLError("Token is invalid or has expired.", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (verificationToken.token !== token) {
         throw new GraphQLError("Token not valid", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       user.verified = true;
@@ -98,7 +99,7 @@ export const AuthResolver: Resolvers = {
       const user = await userService.findOneByEmail(email);
       if (!user) {
         throw new GraphQLError("Wrong Credentials", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       await emailUtil.sendResetPasswordEmail(user);
@@ -108,7 +109,7 @@ export const AuthResolver: Resolvers = {
       const user = await userService.findOneById(userId);
       if (!user) {
         throw new GraphQLError("Wrong Credentials", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       const verificationToken = await verificationTokenService.findByUserId(
@@ -117,17 +118,17 @@ export const AuthResolver: Resolvers = {
       );
       if (verificationToken == null) {
         throw new GraphQLError("Token not found", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (verificationToken.expiresAt < new Date()) {
         throw new GraphQLError("Token is invalid or has expired.", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (verificationToken.token !== token) {
         throw new GraphQLError("Token not valid", {
-          extensions: { code: "BAD USER INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       user.password = await bcrypt.hash(password, 10);
@@ -138,28 +139,29 @@ export const AuthResolver: Resolvers = {
     updateUser: async (parent, { input }, context) => {
       if (!context.currentUser) {
         throw new GraphQLError("not authorized", {
-          extensions: { code: "not authorized" },
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
-      const user = await userService.findOneById(input.id);
+      const user = await userService.findOneById(context.currentUser.userId);
       if (!user) {
         throw new GraphQLError("User not found", {
-          extensions: { code: "BAD USER INPUTS" },
-        });
-      }
-      if (context.currentUser.userId !== user.id) {
-        throw new GraphQLError("not authorized", {
-          extensions: { code: "not authorized" },
+          extensions: { code: ErrorCode.NOT_FOUND },
         });
       }
       user.firstName = input.firstName || user.firstName;
       user.lastName = input.lastName || user.lastName;
-      user.address = input.address || user.address;
+      user.country = input.country || user.country;
+      user.city = input.city || user.city;
+      user.street = input.street || user.street;
+      user.postalCode = input.postalCode || user.postalCode;
       user.phoneNumber = input.phoneNumber || user.phoneNumber;
       user.birthDay = input.birthDay || user.birthDay;
       user.profileImg = input.profileImg || user.profileImg;
       user.coverImg = input.coverImg || user.coverImg;
       user.gender = input.gender || user.gender;
+      if (input.password) {
+        user.password = await bcrypt.hash(input.password, 10);
+      }
 
       return await userService.update(user);
     },
@@ -171,11 +173,14 @@ export const AuthResolver: Resolvers = {
   Query: {
     currentUser: async (parent, {}, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("not authorized", {
-          extensions: { code: "not authorized" },
+        throw new GraphQLError(ErrorCode.UNAUTHENTICATED, {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       return await userService.findOneById(context.currentUser.userId);
+    },
+    getUserById: async (parent, { id }, context) => {
+      return await userService.findOneById(id);
     },
   },
 };

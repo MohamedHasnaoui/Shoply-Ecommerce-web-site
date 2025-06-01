@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { OrderItemStatistics, PeriodFilter } from "../../generated";
-import { orderItemService } from "../../services/OrderItem";
+import { orderItemService } from "../../services/orderItem";
 
 const HomeGeneralStatistics = () => {
     const [generalStatistics,setGeneralStatistics] = useState<OrderItemStatistics | null>(null);
@@ -62,7 +62,7 @@ const HomeGeneralStatistics = () => {
     <div className="row">
         {/* <!-- Earnings --> */}
         <div className="col-md-6 col-xl-3">
-          <a className="block block-rounded block-transparent bg-gd-elegance" href="javascript:void(0)">
+          <div style={{cursor:"pointer"}} className="block block-rounded block-transparent bg-gd-elegance" >
             <div className="block-content block-content-full block-sticky-options">
               <div className="block-options">
                 <div className="block-options-item">
@@ -70,17 +70,17 @@ const HomeGeneralStatistics = () => {
                 </div>
               </div>
               <div className="py-3 text-center">
-                <div className="fs-2 fw-bold mb-0 text-white">{generalStatistics?.totalEarnings?? "..."}</div>
+                <div className="fs-2 fw-bold mb-0 text-white">{generalStatistics?.totalEarnings?? "..."} DH</div>
                 <div className="fs-sm fw-semibold text-uppercase text-white-75">Earnings</div>
               </div>
             </div>
-          </a>
+          </div>
         </div>
         {/* <!-- END Earnings --> */}
 
         {/* <!-- Orders --> */}
         <div className="col-md-6 col-xl-3">
-          <a className="block block-rounded block-transparent bg-gd-dusk" href="be_pages_ecom_orders.html">
+          <div style={{cursor:"pointer"}} className="block block-rounded block-transparent bg-gd-dusk">
             <div className="block-content block-content-full block-sticky-options">
               <div className="block-options">
                 <div className="block-options-item">
@@ -92,13 +92,13 @@ const HomeGeneralStatistics = () => {
                 <div className="fs-sm fw-semibold text-uppercase text-white-75">Recieved Orders</div>
               </div>
             </div>
-          </a>
+          </div>
         </div>
         {/* <!-- END Orders --> */}
 
         {/* <!-- New Customers --> */}
         <div className="col-md-6 col-xl-3">
-          <a className="block block-rounded block-transparent bg-gd-sea" href="javascript:void(0)">
+          <div style={{cursor:"pointer"}} className="block block-rounded block-transparent bg-gd-sea">
             <div className="block-content block-content-full block-sticky-options">
               <div className="block-options">
                 <div className="block-options-item">
@@ -110,13 +110,13 @@ const HomeGeneralStatistics = () => {
                 <div className="fs-sm fw-semibold text-uppercase text-white-75">New Customers</div>
               </div>
             </div>
-          </a>
+          </div>
         </div>
         {/* <!-- END New Customers --> */}
 
         {/* <!-- Conversion Rate --> */}
         <div className="col-md-6 col-xl-3">
-          <a className="block block-rounded block-transparent bg-gd-aqua" href="javascript:void(0)">
+          <div style={{cursor:"pointer"}} className="block block-rounded block-transparent bg-gd-aqua">
             <div className="block-content block-content-full block-sticky-options">
               <div className="block-options">
                 <div className="block-options-item">
@@ -128,7 +128,7 @@ const HomeGeneralStatistics = () => {
                 <div className="fs-sm fw-semibold text-uppercase text-white-75">Completed Orders</div>
               </div>
             </div>
-          </a>
+          </div>
         </div>
         {/* <!-- END Conversion Rate --> */}
       </div>

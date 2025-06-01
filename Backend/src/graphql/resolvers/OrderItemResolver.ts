@@ -4,19 +4,20 @@ import { OrderItemStatus, Resolvers, Role } from "../types/resolvers-types.js";
 import { orderService } from "../../services/OrderService.js";
 import { userService } from "../../services/userService.js";
 import { NextStatusBuyer, NextStatusSeller } from "../../entities/index.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 export const OrderItemReolver: Resolvers = {
   Mutation: {
     updateOrderItemStatus: async (parent, { orderItemId, status }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("Not Authenticated", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const orderItem = await orderItemService.findOneById(orderItemId);
       if (orderItem === null) {
         throw new GraphQLError("Order Item Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
@@ -39,23 +40,23 @@ export const OrderItemReolver: Resolvers = {
   Query: {
     getOrderItem: async (parent, { OrderItemId }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const orderItem = await orderItemService.findOneById(OrderItemId);
       if (orderItem === null) {
         throw new GraphQLError("Order Item Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       return orderItem;
     },
     getOrderItemsForSeller: async (parent, { input }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       return await orderItemService.findBySellerId(
@@ -65,19 +66,19 @@ export const OrderItemReolver: Resolvers = {
     },
     getOrderItemsByOrderId: async (parent, { orderId }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const order = await orderService.findOneById(orderId);
       if (order === null) {
         throw new GraphQLError("Order Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
       if (order.buyer.id !== context.currentUser.userId) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       return order.orderItems;
@@ -127,8 +128,8 @@ export const OrderItemReolver: Resolvers = {
     },
     getEarningByPeriod: async (parent, { period }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const totalEarnings = await orderItemService.getPeriodEarningList(
@@ -139,8 +140,8 @@ export const OrderItemReolver: Resolvers = {
     },
     getOrdersByPeriod: async (parent, { period }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("Not Authorized", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const totalOrders = await orderItemService.getOrderCountPeriodList(

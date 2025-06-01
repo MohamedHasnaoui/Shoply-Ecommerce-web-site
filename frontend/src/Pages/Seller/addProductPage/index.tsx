@@ -5,27 +5,43 @@ import { Category, CreateProductInput } from "../../../generated";
 import { productService } from "../../../services/product";
 import Select from 'react-select'
 import { uploadCloudService } from "../../../services/uploadCloud";
-import { useNavigate } from "react-router";
-import { client } from "../../../graphqlProvider";
+import { Link, useNavigate } from "react-router";
+import { client } from "../../../graphqlProvider"
+import { ErrorCode } from "../../../constants/errors";
+import { ApolloError } from "@apollo/client";
 export default function AddProduct() {
   const navigate = useNavigate();
   const [productCategories,setProductCategories] = useState<Array<Category | null>>([]);
   const [productInput,setProductInput] = useState<CreateProductInput>({
     categoryId:0,description:"",name:"",price:0,reference:"",images:[],quantity:0});
   const [createProductLoading ,setCreateProductLoading] = useState<boolean>(false);
-  useEffect(() => {
+  const [globalError,setGlobalError] = useState("");
+    useEffect(() => {    
+
     const fetch = async () => {
-      const response = await productService.getCatgories();
-      if(response.data.getAllCategories){
-      setProductCategories(response.data.getAllCategories);  
+      try{
+        const response = await productService.getCatgories();
+        if(response.data.getAllCategories){
+          setProductCategories(response.data.getAllCategories);  
+        }
+      }catch(e){
+        const err = e as ApolloError;
+        if(err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT){
+          setGlobalError(err.graphQLErrors[0].message);
+        }else {
+          navigate("/Error/"+err.graphQLErrors[0].extensions?.code+"/"+err.graphQLErrors[0].message)
+        }
       }
     }
     fetch();
-  },[]);
-const { getRootProps, getInputProps,acceptedFiles } = useDropzone({});
+  },[navigate]);
+const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
+  maxFiles: 1,
+  multiple: false
+});
 const productImages = acceptedFiles.map((image) => {
     if(image.type.includes("image")){
-      return <img width={200} src={URL.createObjectURL(image)} style={{margin:5}} />
+      return <img alt="product" width={200} src={URL.createObjectURL(image)} style={{margin:5}} />
     }
     }
   );
@@ -71,7 +87,7 @@ const [submitError,setSubmitError] = useState("");
       setCreateProductLoading(false);
     }
   }
-    
+  if(globalError) return( <div className="alert alert-danger">{globalError}</div>)
   return (
     <main id="main-container">
         {/* <!-- Hero --> */}
@@ -91,8 +107,8 @@ const [submitError,setSubmitError] = useState("");
         <div className="bg-body-light border-bottom">
           <div className="content py-1 text-center">
             <nav className="breadcrumb bg-body-light py-2 mb-0">
-              <a className="breadcrumb-item" href="be_pages_ecom_dashboard.html">e-Commerce</a>
-              <a className="breadcrumb-item" href="be_pages_ecom_products.html">Products</a>
+              <Link className="breadcrumb-item" to="/seller/home">e-Commerce</Link>
+              <Link className="breadcrumb-item" to="/seller/product-list">Products</Link>
               <span className="breadcrumb-item active">Add Product</span>
             </nav>
           </div>

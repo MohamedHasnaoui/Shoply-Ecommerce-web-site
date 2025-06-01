@@ -50,9 +50,29 @@ export class User {
 
   @Column({ nullable: true })
   @IsString()
-  @Length(5, 100, { message: "Address must be between 5 and 100 characters." })
+  @Length(2, 50, { message: "Country must be between 2 and 50 characters." })
   @IsOptional()
-  address?: string;
+  country?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @Length(2, 50, { message: "City must be between 2 and 50 characters." })
+  @IsOptional()
+  city?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @Length(2, 100, { message: "Street must be between 2 and 100 characters." })
+  @IsOptional()
+  street?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @Length(1, 10, {
+    message: "Postal code must be between 1 and 10 characters.",
+  })
+  @IsOptional()
+  postalCode?: string;
 
   @Column({ nullable: true })
   @IsPhoneNumber(null, { message: "Invalid phone number." })

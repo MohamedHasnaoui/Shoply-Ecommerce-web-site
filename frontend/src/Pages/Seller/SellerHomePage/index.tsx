@@ -1,3 +1,4 @@
+import { Link } from "react-router"
 import backgroundImg from "../../../assets/sellerAssets/media/photos/photo26@2x.jpg"
 import ChartsHomePage from "../../../Components/Seller/chartsHomePage/ChartsHomePage"
 import HomeGeneralStatistics from "../../../Components/Seller/HomeGeneralStatistics"
@@ -14,7 +15,7 @@ const SellerHomePage = () => {
         <div className="content content-top content-full text-center">
           <div className="py-3">
             <h1 className="h2 fw-bold text-white mb-2">e-Commerce Dashboard</h1>
-            <h2 className="h4 fw-normal text-white-75 mb-0">Welcome Admin, you have <a className="text-primary-light link-fx" href="be_pages_ecom_orders.html">12 pending orders</a>.</h2>
+            <h2 className="h4 fw-normal text-white-75 mb-0">Welcome Admin, See your <Link className="text-primary-light link-fx" to="/seller/orders">Pending Orders</Link>.</h2>
           </div>
         </div>
       </div>
@@ -25,7 +26,7 @@ const SellerHomePage = () => {
     <div className="bg-body-light border-bottom">
       <div className="content py-1 text-center">
         <nav className="breadcrumb bg-body-light py-2 mb-0">
-          <a className="breadcrumb-item" href="be_pages_ecom_dashboard.html">e-Commerce</a>
+          <div className="breadcrumb-item">e-Commerce</div>
           <span className="breadcrumb-item active">Dashboard</span>
         </nav>
       </div>

@@ -7,6 +7,9 @@ import {
   SignupIpnut,
   SignupMutation,
   SignupMutationVariables,
+  UpdateUserInput,
+  UpdateUserMutation,
+  UpdateUserMutationVariables,
   VerificationEmailRequestMutation,
   VerificationEmailRequestMutationVariables,
   VerifyEmailMutation,
@@ -16,6 +19,7 @@ import {
   GET_CURRENT_USER,
   SIGNIN_MUTATION,
   SIGNUP_MUTATION,
+  UPDATE_USER,
   VERIFY_EMAIL,
   VERIFY_EMAIL_REQUEST,
 } from "../../graphql/auth.graphql";
@@ -63,6 +67,17 @@ class AuthService {
     > = {
       mutation: VERIFY_EMAIL_REQUEST,
       variables: { email },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async updateUserInput(input: UpdateUserInput) {
+    const options: MutationOptions<
+      UpdateUserMutation,
+      UpdateUserMutationVariables
+    > = {
+      mutation: UPDATE_USER,
+      variables: { input },
     };
     const response = await client.mutate(options);
     return response;
