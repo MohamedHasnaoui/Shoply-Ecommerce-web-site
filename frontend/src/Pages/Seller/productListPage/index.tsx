@@ -7,20 +7,28 @@ import { ErrorCode } from "../../../constants/errors"
 import { ApolloError } from "@apollo/client"
 
 const ProductListPage = () => {
-  const [availableProductsCount,setAvailableProductsCount] = useState(0); 
-  const [outOfStockProductsCount,setOutOfStockProductsCount] = useState(0); 
-  const [pageNb,setPageNb] = useState(1);
-  const [pageSz,setPageSz] = useState(10);  
-  const [myProducts, setMyProducts] = useState<Product[]>([])
-  const [countFilteredProducts,setCountFilteredProducts] = useState(0);
-  const [productCategories,setProductCategories] = useState<Array<Category | null>>([]);
+  const [availableProductsCount, setAvailableProductsCount] = useState(0);
+  const [outOfStockProductsCount, setOutOfStockProductsCount] = useState(0);
+  const [pageNb, setPageNb] = useState(1);
+  const [pageSz, setPageSz] = useState(10);
+  const [myProducts, setMyProducts] = useState<Product[]>([]);
+  const [countFilteredProducts, setCountFilteredProducts] = useState(0);
+  const [productCategories, setProductCategories] = useState<
+    Array<Category | null>
+  >([]);
   enum productStatus {
     AVAILABLE = "Available",
-    OUT_OF_STOCK = "Out of Stock"
+    OUT_OF_STOCK = "Out of Stock",
   }
-  const [selectedStatus,setSelectedStatus] = useState<productStatus | undefined>(undefined);
-  const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
-  const [productNameFilter,setProductNameFilter] = useState<string|undefined>(undefined)
+  const [selectedStatus, setSelectedStatus] = useState<
+    productStatus | undefined
+  >(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<
+    Category | undefined
+  >(undefined);
+  const [productNameFilter, setProductNameFilter] = useState<
+    string | undefined
+  >(undefined);
   const navigate = useNavigate();
   const [globalError,setGlobalError] = useState("");
 
@@ -55,15 +63,19 @@ const ProductListPage = () => {
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       const response = await productService.getCatgories();
-      if(response.data.getAllCategories){
-      setProductCategories(response.data.getAllCategories);  
+      if (response.data.getAllCategories) {
+        setProductCategories(response.data.getAllCategories);
       }
-    }
+    };
     const fetchProductStockCounts = async () => {
       const response = await productService.getProductStockCounts();
-      if(response.data.getMyProductsStatistics){
-        setAvailableProductsCount(response.data.getMyProductsStatistics.countAvailable);
-        setOutOfStockProductsCount(response.data.getMyProductsStatistics.countOutOfStock);
+      if (response.data.getMyProductsStatistics) {
+        setAvailableProductsCount(
+          response.data.getMyProductsStatistics.countAvailable
+        );
+        setOutOfStockProductsCount(
+          response.data.getMyProductsStatistics.countOutOfStock
+        );
       }
     }
     try{
@@ -84,65 +96,91 @@ const ProductListPage = () => {
   const handleClickCategoryFilter = () => {
     setIsCategoryFilterOpen(!isCategoryFilterOpen);
     setIsSatusFilterOpen(false);
-  }
+  };
   const handleClickStatusFilter = () => {
     setIsSatusFilterOpen(!isSatusFilterOpen);
     setIsCategoryFilterOpen(false);
-  }
-  const handleSelectedCategoryChange = async (category: Category | undefined) => {
+  };
+  const handleSelectedCategoryChange = async (
+    category: Category | undefined
+  ) => {
     setPageNb(1);
     setSelectedCategory(category);
     setIsCategoryFilterOpen(false);
-  }
-  
-  const handleSelectedStatusChange = async (status: productStatus | undefined) => { 
+  };
+
+  const handleSelectedStatusChange = async (
+    status: productStatus | undefined
+  ) => {
     setPageNb(1);
     setSelectedStatus(status);
     setIsSatusFilterOpen(false);
-   }
-   const handleProductEditLink = (productId:number) => {
-    navigate("/edit-product/"+productId)
-   }
-   const incrementPageNb = ()=>{
-    const totalPages = Math.ceil((countFilteredProducts)/pageSz);
-      if(pageNb < totalPages) setPageNb(pageNb+1);
-   } 
-   const decremnetPageNb = () => {
-    if(pageNb > 1) setPageNb(pageNb-1);
-   }
-   const [searchString, setSearchString] = useState<string>("");
-   const handleSearchSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+  };
+  const handleProductEditLink = (productId: number) => {
+    navigate("/edit-product/" + productId);
+  };
+  const incrementPageNb = () => {
+    const totalPages = Math.ceil(countFilteredProducts / pageSz);
+    if (pageNb < totalPages) setPageNb(pageNb + 1);
+  };
+  const decremnetPageNb = () => {
+    if (pageNb > 1) setPageNb(pageNb - 1);
+  };
+  const [searchString, setSearchString] = useState<string>("");
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setProductNameFilter(searchString);
     setPageNb(1);
-   }
-  const displayProducts = myProducts.map((product,index) => {
+  };
+  const displayProducts = myProducts.map((product, index) => {
     return (
       <tr key={index}>
         <td>
-          <button className="fw-semibold btn btn-link" onClick={()=>handleProductEditLink(product.id)}>PID.{product.id}</button>
+          <button
+            className="fw-semibold btn btn-link"
+            onClick={() => handleProductEditLink(product.id)}
+          >
+            PID.{product.id}
+          </button>
         </td>
-        <td className="text-center">
-          <button className="fw-semibold " style={{border:"none",background:"none"}}>{product.name}</button>
+        <td>
+          <button
+            className="fw-semibold"
+            style={{ border: "none", background: "none" }}
+          >
+            {product.name}
+          </button>
         </td>
-        <td className="d-none d-md-table-cell text-center">
-          <p >{product.category?.name}</p>
+        <td className="d-none d-md-table-cell">
+          <p>{product.category.name}</p>
         </td>
-        <td className="d-none d-sm-table-cell text-center">
-          {new Date(product.createdAt).toLocaleDateString("fr-FR") }
+        <td className="d-none d-sm-table-cell">
+          {new Date(product.createdAt).toLocaleDateString("fr-FR")}
         </td>
-        <td style={{fontSize:18}} className="d-none d-sm-table-cell text-center">
-          {product.quantity ? <span className="badge bg-success">{productStatus.AVAILABLE}</span>:<span className="badge bg-danger">{productStatus.OUT_OF_STOCK}</span> }
+        <td style={{ fontSize: 18 }} className="d-none d-sm-table-cell">
+          {product.quantity ? (
+            <span className="badge bg-success">{productStatus.AVAILABLE}</span>
+          ) : (
+            <span className="badge bg-danger">
+              {productStatus.OUT_OF_STOCK}
+            </span>
+          )}
         </td>
         <td className="text-center">{product.totalOrders}</td>
         <td className="text-center">{product.rating?.toFixed(1)}</td>
         <td className="text-end">{product.price} DH</td>
       </tr>
-    )
-  })
-  const categoriesJSX = productCategories.map((category,index) => {
+    );
+  });
+  const categoriesJSX = productCategories.map((category, index) => {
     return (
-      <button key={index} className={`dropdown-item ${category?.name === selectedCategory?.name ? "active":""}`} onClick={()=>handleSelectedCategoryChange(category!)}>
+      <button
+        key={index}
+        className={`dropdown-item ${
+          category?.name === selectedCategory?.name ? "active" : ""
+        }`}
+        onClick={() => handleSelectedCategoryChange(category!)}
+      >
         <i className="fa fa-fw fa-gamepad opacity-50 me-1"></i> {category?.name}
       </button>
     )
@@ -150,18 +188,23 @@ const ProductListPage = () => {
   if(globalError) return( <div className="alert alert-danger">{globalError}</div>)
   return (
     <main id="main-container">
-        {/* <!-- Hero --> */}
-        <div className="bg-image" style={{backgroundImage: `url('${backgroundimg}')`}}>
-          <div className="bg-black-75">
-            <div className="content content-top content-full text-center">
-              <div className="py-3">
-                <h1 className="h2 fw-bold text-white mb-2">Products</h1>
-                <h2 className="h4 fw-normal text-white-75 mb-0">You currently have 4,360 in the catalog!</h2>
-              </div>
+      {/* <!-- Hero --> */}
+      <div
+        className="bg-image"
+        style={{ backgroundImage: `url('${backgroundimg}')` }}
+      >
+        <div className="bg-black-75">
+          <div className="content content-top content-full text-center">
+            <div className="py-3">
+              <h1 className="h2 fw-bold text-white mb-2">Products</h1>
+              <h2 className="h4 fw-normal text-white-75 mb-0">
+                You currently have 4,360 in the catalog!
+              </h2>
             </div>
           </div>
         </div>
-        {/* <!-- END Hero --> */}
+      </div>
+      {/* <!-- END Hero --> */}
 
         {/* <!-- Breadcrumb --> */}
         <div className="bg-body-light border-bottom">
@@ -330,38 +373,48 @@ const ProductListPage = () => {
               </table>
               {/* <!-- END Products Table --> */}
 
-              {/* <!-- Navigation --> */}
-              <nav aria-label="Products navigation">
-                <ul className="pagination justify-content-end mb-0">
-                  <li className="page-item">
-                    <button className={`page-link ${pageNb===1 ? "disabled":""}`}  onClick={decremnetPageNb}>
-                      <span aria-hidden="true">
-                        <i className="fa fa-angle-left"></i>
-                      </span>
-                      <span className="sr-only">Previous</span>
-                    </button>
-                  </li>
-                  <li className="page-item active">
-                    <button className="page-link">{pageNb}</button>
-                  </li>
-                  <li className="page-item">
-                    <button className={`page-link ${pageNb===Math.ceil((countFilteredProducts)/pageSz) ? "disabled":""}`} onClick={incrementPageNb}>
-                      <span aria-hidden="true">
-                        <i className="fa fa-angle-right"></i>
-                      </span>
-                      <span className="sr-only">Next</span>
-                    </button>
-                  </li>
-                </ul>
-              </nav>
-              {/* <!-- END Navigation --> */}
-            </div>
+            {/* <!-- Navigation --> */}
+            <nav aria-label="Products navigation">
+              <ul className="pagination justify-content-end mb-0">
+                <li className="page-item">
+                  <button
+                    className={`page-link ${pageNb === 1 ? "disabled" : ""}`}
+                    onClick={decremnetPageNb}
+                  >
+                    <span aria-hidden="true">
+                      <i className="fa fa-angle-left"></i>
+                    </span>
+                    <span className="sr-only">Previous</span>
+                  </button>
+                </li>
+                <li className="page-item active">
+                  <button className="page-link">{pageNb}</button>
+                </li>
+                <li className="page-item">
+                  <button
+                    className={`page-link ${
+                      pageNb === Math.ceil(countFilteredProducts / pageSz)
+                        ? "disabled"
+                        : ""
+                    }`}
+                    onClick={incrementPageNb}
+                  >
+                    <span aria-hidden="true">
+                      <i className="fa fa-angle-right"></i>
+                    </span>
+                    <span className="sr-only">Next</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+            {/* <!-- END Navigation --> */}
           </div>
-          {/* <!-- END Products --> */}
         </div>
-        {/* <!-- END Page Content --> */}
-      </main>
-  )
-}
+        {/* <!-- END Products --> */}
+      </div>
+      {/* <!-- END Page Content --> */}
+    </main>
+  );
+};
 
-export default ProductListPage
+export default ProductListPage;

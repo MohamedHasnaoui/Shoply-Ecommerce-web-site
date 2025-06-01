@@ -347,8 +347,10 @@ export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type ProductListResult = {

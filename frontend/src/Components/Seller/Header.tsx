@@ -6,9 +6,9 @@ import { Navigate, useNavigate } from "react-router";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
 
-interface propsType  {
-  toggleSideBar: ()=> void
-  openQuickAccess: ()=>void;
+interface propsType {
+  toggleSideBar: () => void;
+  openQuickAccess: () => void;
 }
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => dispatch(logoutAction()),

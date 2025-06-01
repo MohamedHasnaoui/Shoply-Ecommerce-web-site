@@ -51,6 +51,8 @@ export const productSchema = gql`
     name: String
     pageNb: Int
     pageSize: Int
+    orderBy: String
+    price: Float
   }
   type productAndNbOrders {
     product: Product!

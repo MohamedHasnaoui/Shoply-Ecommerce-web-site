@@ -13,8 +13,10 @@ import SellerHomePage from './Pages/Seller/SellerHomePage'
 import CustomerInfoPage from './Pages/Seller/customerInfoPage'
 import ErrorPage from './Pages/Common/errorPage'
 import { ErrorCode } from './constants/errors'
+import ShopSection from "./Pages/Buyer/ProductsList";
+import CartPage from "./Pages/Buyer/CartPage";
+import PaymentSuccess from "./Components/buyer/PaymentSuccess";
 function App() {
-
   return (
     <>
     <Routes>
@@ -32,6 +34,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<OTPVerification />} />
+        <Route path="/productslist" element={<ShopSection />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route element={<ProtectedRoute />}>
             {/* ! protected routes here */}
           </Route>
@@ -41,7 +46,7 @@ function App() {
       <Route path="*" element={<Navigate to={`/Error/${ErrorCode.NOT_FOUND}`} />} />
      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

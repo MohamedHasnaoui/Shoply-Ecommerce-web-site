@@ -1,23 +1,33 @@
-import Header from '../Components/buyer/Header'
-import {Outlet} from 'react-router'
-import "animate.css"
+import Header from "../Components/buyer/Header";
+import { Outlet } from "react-router";
+import "animate.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "select2/dist/css/select2.min.css";
-import bootstrapStyles from '../assets/ClientAssets/css/bootstrap.min.css?inline'; // Vite/Webpack-specific syntax
-import mainScopedSCSS from '../assets/ClientAssets/sass/main.scoped.scss?inline';
-import mainScopedCSS from '../assets/ClientAssets/css/main.scoped.css?inline';
-import jqueryUICSS from '../assets/ClientAssets/css/jquery-ui.scoped.css?inline';
+import bootstrapStyles from "../assets/ClientAssets/css/bootstrap.min.css?inline"; // Vite/Webpack-specific syntax
+import mainScopedSCSS from "../assets/ClientAssets/sass/main.scoped.scss?inline";
+import mainScopedCSS from "../assets/ClientAssets/css/main.scoped.css?inline";
+import jqueryUICSS from "../assets/ClientAssets/css/jquery-ui.scoped.css?inline";
+
+import { CategoryProvider, CartProvider } from "../helpers/CategoryProvider";
+
 export default function ClientLayout() {
-  
   return (
     <>
-       <style>{bootstrapStyles}</style>
+      <style>{bootstrapStyles}</style>
       <style>{mainScopedSCSS}</style>
       <style>{mainScopedCSS}</style>
       <style>{jqueryUICSS}</style>
-      <Header />
-      <Outlet />
+
+      {/* <CategoryContext.Provider
+        value={{ selectedCategory, setSelectedCategory }}
+      > */}
+      <CategoryProvider>
+        <Header />
+        <Outlet />
+      </CategoryProvider>
+
+      {/* </CategoryContext.Provider> */}
     </>
-  )
+  );
 }
