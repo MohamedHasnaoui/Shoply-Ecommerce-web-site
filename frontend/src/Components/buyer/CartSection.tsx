@@ -25,6 +25,7 @@ const CartSection = () => {
 
       if (updatedItem) {
         const updatedCart = await shoppingCartService.getShoppingCart();
+        console.log("Mise à jour du panier :", updatedCart);
         if (updatedCart) {
           setCart(updatedCart ?? null);
         }
@@ -107,7 +108,7 @@ const CartSection = () => {
                   </thead>
                   <tbody>
                     {cart.cartItems.map((item) => (
-                      <tr>
+                      <tr key={item?.id}>
                         <td>
                           <button
                             type="button"
@@ -225,12 +226,6 @@ const CartSection = () => {
               <div className="bg-color-three rounded-8 p-24">
                 <div className="mb-32 flex-between gap-8">
                   <span className="text-gray-900 font-heading-two">
-                    Subtotal
-                  </span>
-                  <span className="text-gray-900 fw-semibold">$250.00</span>
-                </div>
-                <div className="mb-32 flex-between gap-8">
-                  <span className="text-gray-900 font-heading-two">
                     Extimated Delivery
                   </span>
                   <span className="text-gray-900 fw-semibold">Free</span>
@@ -252,12 +247,7 @@ const CartSection = () => {
                   </span>
                 </div>
               </div>
-              <Link
-                to="/checkout"
-                className="btn btn-main mt-40 py-18 w-100 rounded-8"
-              >
-                Proceed to checkout
-              </Link>
+
               <button
                 type="button"
                 onClick={handleCheckout}
