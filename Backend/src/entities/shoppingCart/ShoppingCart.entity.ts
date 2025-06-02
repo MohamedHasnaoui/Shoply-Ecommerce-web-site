@@ -21,6 +21,13 @@ export class ShoppingCart {
   )
   totalAmount: number;
 
+  @Column({ default: new Date() })
+  @IsOptional()
+  createdAt: Date;
+
+  @Column({ default: new Date() })
+  @IsOptional()
+  updatedAt: Date;
   @OneToOne(() => Buyer, { onDelete: "CASCADE" })
   @JoinColumn()
   buyer: Buyer;

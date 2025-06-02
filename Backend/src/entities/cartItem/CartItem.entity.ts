@@ -5,9 +5,12 @@ import {
   ManyToOne,
   Relation,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Product, ShoppingCart } from "../index.js";
-import { IsNumber, Min } from "class-validator";
+import { IsNumber, IsOptional, Min } from "class-validator";
+
 @Entity()
 export class CartItem {
   @PrimaryGeneratedColumn()
@@ -22,6 +25,13 @@ export class CartItem {
   @IsNumber()
   @Min(0, { message: "Quantity cannot be negative." })
   price: number;
+
+  @CreateDateColumn() // ← Remplacez par ceci
+  createdAt: Date;
+
+  @UpdateDateColumn() // ← Remplacez par ceci
+  updatedAt: Date;
+
   @ManyToOne(
     () => ShoppingCart,
     (shoppingCart: ShoppingCart) => shoppingCart.cartItems

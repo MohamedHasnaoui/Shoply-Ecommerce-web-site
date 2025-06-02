@@ -36,9 +36,19 @@ export class ShoppingCartService {
   async getShoppingCartByBuyerId(buyerId: number) {
     const shoppingCart = await this.shoppingCartRepository.findOne({
       where: { buyer: { id: buyerId } },
-      relations: { cartItems: { product: { category: true } } },
+      relations: {
+        cartItems: {
+          product: {
+            category: true,
+          },
+        },
+      },
+      order: {
+        cartItems: {
+          createdAt: "ASC",
+        },
+      },
     });
-
     if (shoppingCart === null) {
       throw new GraphQLError("ShoppingCart not found for this Buyer", {
         extensions: { code: "NOT_FOUND" },
@@ -64,6 +74,7 @@ export class ShoppingCartService {
   async update(shoppingCart: ShoppingCart) {
     try {
       await validateOrReject(shoppingCart);
+      shoppingCart.updatedAt = new Date();
       return await this.shoppingCartRepository.save(shoppingCart);
     } catch (error) {
       if (error instanceof ValidationError) {
