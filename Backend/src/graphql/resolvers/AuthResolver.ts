@@ -30,7 +30,7 @@ export const AuthResolver: Resolvers = {
       if (newUser.role === Role.Buyer) {
         const id = await shoppingCartService.create(newUser as Buyer);
         context.idShoppingCart = id;
-        const idWishList = await whishListService.create(user as Buyer);
+        await whishListService.create(user as Buyer);
       }
       return true;
     },
@@ -57,6 +57,8 @@ export const AuthResolver: Resolvers = {
         process.env.JWT_KEY!,
         { expiresIn: "7 days" }
       );
+      // await whishListService.create(user as Buyer);
+
       return { user, jwt: jwtToken };
     },
     verifyEmail: async (parent, { email, token }, context) => {

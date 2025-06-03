@@ -29,9 +29,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalWishlistItems, setTotalWishlistItems] = useState<number>(0);
 
   return (
-    <CartContext.Provider value={{ totalItems, setTotalItems }}>
+    <CartContext.Provider
+      value={{
+        totalItems,
+        setTotalItems,
+        totalWishlistItems,
+        setTotalWishlistItems,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

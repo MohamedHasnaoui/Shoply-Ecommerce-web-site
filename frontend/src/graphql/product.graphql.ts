@@ -5,6 +5,8 @@ export const ALL_CATEG_ID_NAME = gql`
     getAllCategories {
       id
       name
+      description
+      productCount
     }
   }
 `;

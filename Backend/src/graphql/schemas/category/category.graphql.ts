@@ -6,6 +6,7 @@ export const categorySchema = gql`
     id: Int
     name: String
     description: String
+    productCount: Int
   }
 
   input CategoryUpdatedInput {

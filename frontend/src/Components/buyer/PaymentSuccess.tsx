@@ -13,6 +13,7 @@ const PaymentSuccess: React.FC = () => {
   useEffect(() => {
     const checkPayment = async () => {
       if (!sessionId) {
+        alert("Session de paiement invalide. Veuillez réessayer.");
         navigate("/cart");
         return;
       }
@@ -22,6 +23,7 @@ const PaymentSuccess: React.FC = () => {
         if (isSuccess) {
           dispatch(verifyPayment());
           alert("Paiement confirmé ! Merci pour votre commande.");
+          navigate("/cart");
         } else {
           alert(" Paiement non confirmé. Veuillez réessayer.");
           navigate("/cart");

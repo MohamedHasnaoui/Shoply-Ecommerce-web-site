@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router";
 import ReactSlider from "react-slider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
-import { Product } from "../../../generated";
+import { Category, Product } from "../../../generated";
 import { useCategory } from "../../../helpers/useCategory";
 import { productService } from "../../../services/product";
 import { cartItemService } from "../../../services/cartItem";
 import { useAppDispatch } from "../../../redux/hooks";
 import { setCartItems } from "../../../redux/slices/cartSlice";
+import { setWishlist } from "../../../redux/slices/wishlistSlice/wishlistSlice";
 import { shoppingCartService } from "../../../services/shoppingCart";
+import { wishListService } from "../../../services/wishlist";
 
 const ShopSection = () => {
   //Add to Cart Code
@@ -36,13 +38,26 @@ const ShopSection = () => {
     }
   };
 
-  const [grid, setGrid] = useState<boolean>(false);
+  const [tempPriceRange, setTempPriceRange] = useState<[number, number]>([
+    0, 100,
+  ]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [rating, setRating] = useState<number>(0);
 
+  const handleFilter = () => {
+    setPriceRange(tempPriceRange);
+  };
+
+  const [grid, setGrid] = useState<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
+
   const sidebarController = () => {
     setActive(!active);
   };
+
   const [products, setProducts] = useState<Product[]>([]);
+  const [wishlistProductIds, setWishlistProductIds] = useState<number[]>([]);
+
   const {
     selectedCategory,
     productNameFilter,
@@ -56,18 +71,72 @@ const ShopSection = () => {
     AVAILABLE = "Available",
     OUT_OF_STOCK = "Out of Stock",
   }
+
   const [selectedStatus, setSelectedStatus] = useState<
     productStatus | undefined
   >(undefined);
-  // Removed redundant state declaration for productNameFilter and setProductNameFilter
-  const [pageNb, setPageNb] = useState<number>(2);
-  const [pageSz, setPageSz] = useState<number>(1);
-  const [sortedBy, setSortedBy] = useState<string>("");
+  const [productCategories, setProductCategories] = useState<
+    Array<Category | null>
+  >([]);
 
+  // États pour la pagination et l'affichage
+  const [pageNb, setPageNb] = useState<number>(1); // Page courante
+  const [pageSz, setPageSz] = useState<number>(6); // Nombre de produits par page (côté serveur)
+  const [productsPerRow, setProductsPerRow] = useState<number>(3); // Produits par ligne dans la grille
+  const [sortedBy, setSortedBy] = useState<string>("");
   const [countFilteredProducts, setCountFilteredProducts] = useState(0);
+
+  const resetFilters = () => {
+    setTempPriceRange([0, 100]);
+    setPriceRange([0, 100]);
+    setRating(0);
+    setSelectedCategory(undefined);
+    setProductNameFilter("");
+    setSelectedStatus(undefined);
+    setSortedBy("");
+    setPageNb(1); // on revient à la première page
+  };
+
+  useEffect(() => {
+    const fetchCategoryProducts = async () => {
+      const response = await productService.getCatgories();
+      if (response.data.getAllCategories) {
+        setProductCategories(response.data.getAllCategories);
+      }
+    };
+
+    fetchCategoryProducts();
+  }, [selectedCategory]);
+
+  const handleCategoryClick = (category: Category | undefined) => {
+    setSelectedCategory(category);
+    alert(`Category selected: ${category?.name}`);
+  };
+
+  const toggleWishlist = async (productId: number) => {
+    try {
+      if (wishlistProductIds.includes(productId)) {
+        await wishListService.deleteProductFromWishList(productId);
+        setWishlistProductIds((prev) => prev.filter((id) => id !== productId));
+      } else {
+        await wishListService.addProductToWishList(productId);
+        setWishlistProductIds((prev) => [...prev, productId]);
+      }
+      const res = await wishListService.getWishList();
+      dispatch(setWishlist(res ?? null));
+    } catch (error) {
+      console.error("Erreur lors de la modification de la wishlist :", error);
+    }
+  };
+
   useEffect(() => {
     const fetchMyProducts = async () => {
       try {
+        const responseW = await wishListService.getWishList();
+        console.log("🟢 Wishlist Products:", responseW?.products);
+        const wishlistedIds = responseW?.products?.map((p) => p?.id) ?? [];
+        setWishlistProductIds(wishlistedIds);
+
         const response = await productService.getProductsFiltered({
           name: productNameFilter,
           available: selectedStatus
@@ -75,21 +144,24 @@ const ShopSection = () => {
             : undefined,
           categoryId: selectedCategory?.id,
           pageNb: pageNb,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          minRating: rating,
           pageSize: pageSz,
           orderBy: sortedBy,
         });
-        console.log("Rating:", sortedBy);
+
         console.log("🟢 Réponse API complète :", response);
         console.log(
           "🟢 Produits retournés :",
           response?.data?.getAllProducts?.products
         );
 
-        setProducts(response?.data?.getAllProducts?.products as Array<Product>);
-        console.log("Count:", response.data.getAllProducts.count);
-        console.log(" page Number:", pageNb);
-        // setPageNb(1);
+        setProducts(response?.data?.getAllProducts?.products as Array);
         setCountFilteredProducts(response.data.getAllProducts.count);
+
+        console.log("Count:", response.data.getAllProducts.count);
+        console.log("Page Number:", pageNb);
       } catch (error) {
         console.error("❌ Erreur API :", error);
       }
@@ -101,43 +173,83 @@ const ShopSection = () => {
     selectedStatus,
     pageNb,
     pageSz,
-    productStatus,
     productNameFilter,
     sortedBy,
+    priceRange,
+    rating,
+    // Retiré toggleWishlist des dépendances pour éviter les re-renders infinis
   ]);
-  //setTotalPage(Math.ceil(countFilteredProducts / pageSz));
+  // Calculer le nombre total de pages
   useEffect(() => {
-    console.log("Total page:", totalPage);
-
     setTotalPage(Math.ceil(countFilteredProducts / pageSz));
-  }, [
-    selectedCategory,
-    totalPage,
-    setTotalPage,
-    countFilteredProducts,
-    pageSz,
-  ]);
+  }, [countFilteredProducts, pageSz, setTotalPage]);
+
+  // Remettre à la page 1 quand on change les filtres
   useEffect(() => {
     setPageNb(1);
-  }, [selectedCategory, selectedStatus, productNameFilter]);
+  }, [selectedCategory, selectedStatus, productNameFilter, rating, priceRange]);
+
   const incrementPageNb = () => {
-    console.log("Total page:", totalPage);
-    if (pageNb <= totalPage) setPageNb(pageNb + 1);
-    console.log("pageNb+:", pageNb);
-  };
-  const decremnetPageNb = () => {
-    if (pageNb > 1) setPageNb(pageNb - 1);
-    console.log("pageNb-:", pageNb);
+    if (pageNb < totalPage) {
+      setPageNb(pageNb + 1);
+    }
   };
 
+  const decrementPageNb = () => {
+    if (pageNb > 1) {
+      setPageNb(pageNb - 1);
+    }
+  };
+
+  const ratingsData = [
+    { id: 5, progress: 70 },
+    { id: 4, progress: 50 },
+    { id: 3, progress: 35 },
+    { id: 2, progress: 20 },
+    { id: 1, progress: 5 },
+  ];
+
+  // Rendu des produits (pas de pagination côté client, les produits viennent déjà paginés du serveur)
   const displayProducts = products.map((product, index) => {
     return (
       <div
         key={product.id ?? index}
-        className="product-card h-100 p-16 border border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2"
+        className={`product-card h-100 p-16 border border-gray-100 hover-border-main-600 rounded-16 position-relative transition-2 ${
+          grid ? "col-12" : `col-lg-${12 / productsPerRow} col-md-6 col-sm-12`
+        }`}
+        style={grid ? {} : { flexBasis: `${100 / productsPerRow}%` }}
       >
+        <span
+          onClick={() => toggleWishlist(product.id)}
+          className="position-absolute rounded-circle d-flex align-items-center justify-content-center cursor-pointer shadow-sm hover:shadow-md transition-all duration-200 z-10"
+          style={{
+            top: "10px",
+            right: "10px",
+            width: "32px",
+            height: "32px",
+            backgroundColor: "white",
+            border: wishlistProductIds.includes(product.id)
+              ? "2px solid #dc2626"
+              : "2px solid #e5e7eb",
+            fontSize: "16px",
+          }}
+        >
+          <span
+            style={{
+              color: wishlistProductIds.includes(product.id)
+                ? "#dc2626"
+                : "#9ca3af",
+              fontWeight: wishlistProductIds.includes(product.id)
+                ? "bold"
+                : "normal",
+            }}
+          >
+            {wishlistProductIds.includes(product.id) ? "★" : "☆"}
+          </span>
+        </span>
+
         <Link
-          to="/product-details-two"
+          to={`/product-details/${product.id}`}
           className="product-card__thumb w-full h-full object-contain flex-center rounded-8 bg-gray-50"
         >
           <img
@@ -153,13 +265,14 @@ const ShopSection = () => {
         <div className="product-card__content mt-16">
           <h6 className="title text-lg fw-semibold mt-12 mb-8">
             <Link
-              to="/product-details-two"
+              to={`/product-details/${product.id}`}
               className="link text-line-2"
               tabIndex={0}
             >
               {product?.name}
             </Link>
           </h6>
+
           <div className="flex-align mb-20 mt-16 gap-6">
             <span className="text-xs fw-medium text-gray-500">
               {product?.rating}
@@ -169,6 +282,20 @@ const ShopSection = () => {
             </span>
             <span className="text-xs fw-medium text-gray-500">(17k)</span>
           </div>
+
+          <div
+            className={`mb-12 fw-semibold ${
+              (product?.quantity ?? 0) > 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {(product?.quantity ?? 0) > 0
+              ? productStatus.AVAILABLE
+              : productStatus.OUT_OF_STOCK}
+            <span className="text-gray-500 fw-normal">
+              /Qty:{product?.quantity}
+            </span>
+          </div>
+
           <div className="mt-8">
             <div
               className="progress w-100 bg-color-three rounded-pill h-4"
@@ -183,39 +310,36 @@ const ShopSection = () => {
                 style={{ width: "35%" }}
               />
             </div>
-            <span className="text-gray-900 text-xs fw-medium mt-8">
-              Sold: 18/35
-            </span>
           </div>
+
           <div className="product-card__price my-20">
-            <span className="text-gray-400 text-md fw-semibold text-decoration-line-through">
-              $28.99
-            </span>
             <span className="text-heading text-md fw-semibold ">
-              {product?.price}{" "}
-              <span className="text-gray-500 fw-normal">/Qty</span>{" "}
+              ${product?.price}{" "}
             </span>
           </div>
-          {/* <Link
-            to="/cart"
-            className="product-card__cart btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium"
-            tabIndex={0}
-          >
-            Add To Cart <i className="ph ph-shopping-cart" />
-          </Link> */}
-          <div
+
+          <button
             onClick={() => handleAddToCart(product.id)}
-            className="product-card__cart btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium"
-            role="button"
+            disabled={product?.quantity === 0}
+            className={`product-card__cart btn bg-gray-50 text-heading hover-bg-main-600 hover-text-white py-11 px-24 rounded-8 flex-center gap-8 fw-medium ${
+              product.quantity === 0 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             tabIndex={0}
           >
             Add To Cart <i className="ph ph-shopping-cart" />
-          </div>
+          </button>
         </div>
       </div>
     );
   });
 
+  // Calculer les indices pour l'affichage "Showing X-Y of Z results"
+  const startIndex =
+    countFilteredProducts === 0 ? 0 : (pageNb - 1) * pageSz + 1;
+  const endIndex =
+    countFilteredProducts === 0
+      ? 0
+      : Math.min(pageNb * pageSz, countFilteredProducts);
   return (
     <section className="shop py-80">
       <ToastContainer />
@@ -233,123 +357,50 @@ const ShopSection = () => {
               >
                 <i className="ph ph-x" />
               </button>
+              <button
+                onClick={resetFilters}
+                className="btn btn-secondary mb-10 "
+              >
+                Réinitialiser les filtres
+              </button>
+              {/* Categories */}
               <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                 <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
                   Product Category
                 </h6>
                 <ul className="max-h-540 overflow-y-auto scroll-sm">
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Mobile &amp; Accessories (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Laptop (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Electronics (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Smart Watch (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Storage (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Portable Devices (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Action Camera (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Smart Gadget (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Monitor (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Smart TV (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Camera (12)
-                    </Link>
-                  </li>
-                  <li className="mb-24">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Monitor Stand (12)
-                    </Link>
-                  </li>
-                  <li className="mb-0">
-                    <Link
-                      to="/product-details-two"
-                      className="text-gray-900 hover-text-main-600"
-                    >
-                      Headphone (12)
-                    </Link>
-                  </li>
+                  {productCategories
+                    .filter(
+                      (category): category is Category => category !== null
+                    )
+                    .sort(
+                      (a, b) => (b.productCount ?? 0) - (a.productCount ?? 0)
+                    )
+                    .map((category) => (
+                      <li
+                        key={category.id}
+                        className="mb-24 cursor-pointer"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <div className="text-gray-900 hover:text-main-600">
+                          {category.name} ({category.productCount})
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               </div>
+
+              {/* Price Filter */}
               <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                 <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
                   Filter by Price
                 </h6>
                 <div className="custom--range">
                   <ReactSlider
+                    value={tempPriceRange}
+                    onChange={(value) =>
+                      setTempPriceRange(value as [number, number])
+                    }
                     className="horizontal-slider"
                     thumbClassName="example-thumb"
                     trackClassName="example-track"
@@ -367,359 +418,80 @@ const ShopSection = () => {
                     pearling
                     minDistance={10}
                   />
-
                   <br />
                   <br />
-                  <div className="flex-between flex-wrap-reverse gap-8 mt-24 ">
+                  <div className="flex-between flex-wrap-reverse gap-8 mt-24">
                     <button
                       type="button"
                       title="button"
+                      onClick={handleFilter}
                       className="btn btn-main h-40 flex-align"
                     >
-                      Filter{" "}
+                      Filter
                     </button>
                   </div>
                 </div>
               </div>
 
+              {/* Rating Filter */}
               <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                 <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
                   Filter by Rating
                 </h6>
-                <div className="flex-align gap-8 position-relative mb-20">
-                  <label
-                    className="position-absolute w-100 h-100 cursor-pointer"
-                    htmlFor="rating5"
-                  >
-                    {" "}
-                  </label>
-                  <div className="common-check common-radio mb-0">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="flexRadioDefault"
-                      id="rating5"
-                    />
-                  </div>
+                {ratingsData.map((ratingItem) => (
                   <div
-                    className="progress w-100 bg-gray-100 rounded-pill h-8"
-                    role="progressbar"
-                    aria-label="Basic example"
-                    aria-valuenow={70}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
+                    key={ratingItem.id}
+                    className={`flex-align gap-8 position-relative mb-${
+                      ratingItem.id === 1 ? "0" : "20"
+                    }`}
                   >
+                    <label
+                      className="position-absolute w-100 h-100 cursor-pointer"
+                      htmlFor={`rating${ratingItem.id}`}
+                    ></label>
+
+                    <div className="common-check common-radio mb-0">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="flexRadioDefault"
+                        id={`rating${ratingItem.id}`}
+                        onClick={() => setRating(ratingItem.id)}
+                      />
+                    </div>
+
                     <div
-                      className="progress-bar bg-main-600 rounded-pill"
-                      style={{ width: "70%" }}
-                    />
+                      className="progress w-100 bg-gray-100 rounded-pill h-8"
+                      role="progressbar"
+                      aria-valuenow={ratingItem.progress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <div
+                        className="progress-bar bg-main-600 rounded-pill"
+                        style={{ width: `${ratingItem.progress}%` }}
+                      />
+                    </div>
+
+                    <div className="flex-align gap-4">
+                      {[...Array(5)].map((_, i) => (
+                        <span
+                          key={i}
+                          className={`text-xs fw-medium d-flex ${
+                            i < ratingItem.id
+                              ? "text-warning-600"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          <i className="ph-fill ph-star" />
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex-align gap-4">
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                  </div>
-                  <span className="text-gray-900 flex-shrink-0">124</span>
-                </div>
-                <div className="flex-align gap-8 position-relative mb-20">
-                  <label
-                    className="position-absolute w-100 h-100 cursor-pointer"
-                    htmlFor="rating4"
-                  >
-                    {" "}
-                  </label>
-                  <div className="common-check common-radio mb-0">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="flexRadioDefault"
-                      id="rating4"
-                    />
-                  </div>
-                  <div
-                    className="progress w-100 bg-gray-100 rounded-pill h-8"
-                    role="progressbar"
-                    aria-label="Basic example"
-                    aria-valuenow={50}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  >
-                    <div
-                      className="progress-bar bg-main-600 rounded-pill"
-                      style={{ width: "50%" }}
-                    />
-                  </div>
-                  <div className="flex-align gap-4">
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                  </div>
-                  <span className="text-gray-900 flex-shrink-0">52</span>
-                </div>
-                <div className="flex-align gap-8 position-relative mb-20">
-                  <label
-                    className="position-absolute w-100 h-100 cursor-pointer"
-                    htmlFor="rating3"
-                  >
-                    {" "}
-                  </label>
-                  <div className="common-check common-radio mb-0">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="flexRadioDefault"
-                      id="rating3"
-                    />
-                  </div>
-                  <div
-                    className="progress w-100 bg-gray-100 rounded-pill h-8"
-                    role="progressbar"
-                    aria-label="Basic example"
-                    aria-valuenow={35}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  >
-                    <div
-                      className="progress-bar bg-main-600 rounded-pill"
-                      style={{ width: "35%" }}
-                    />
-                  </div>
-                  <div className="flex-align gap-4">
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                  </div>
-                  <span className="text-gray-900 flex-shrink-0">12</span>
-                </div>
-                <div className="flex-align gap-8 position-relative mb-20">
-                  <label
-                    className="position-absolute w-100 h-100 cursor-pointer"
-                    htmlFor="rating2"
-                  >
-                    {" "}
-                  </label>
-                  <div className="common-check common-radio mb-0">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="flexRadioDefault"
-                      id="rating2"
-                    />
-                  </div>
-                  <div
-                    className="progress w-100 bg-gray-100 rounded-pill h-8"
-                    role="progressbar"
-                    aria-label="Basic example"
-                    aria-valuenow={20}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  >
-                    <div
-                      className="progress-bar bg-main-600 rounded-pill"
-                      style={{ width: "20%" }}
-                    />
-                  </div>
-                  <div className="flex-align gap-4">
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                  </div>
-                  <span className="text-gray-900 flex-shrink-0">5</span>
-                </div>
-                <div className="flex-align gap-8 position-relative mb-0">
-                  <label
-                    className="position-absolute w-100 h-100 cursor-pointer"
-                    htmlFor="rating1"
-                  >
-                    {" "}
-                  </label>
-                  <div className="common-check common-radio mb-0">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="flexRadioDefault"
-                      id="rating1"
-                    />
-                  </div>
-                  <div
-                    className="progress w-100 bg-gray-100 rounded-pill h-8"
-                    role="progressbar"
-                    aria-label="Basic example"
-                    aria-valuenow={5}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  >
-                    <div
-                      className="progress-bar bg-main-600 rounded-pill"
-                      style={{ width: "5%" }}
-                    />
-                  </div>
-                  <div className="flex-align gap-4">
-                    <span className="text-xs fw-medium text-warning-600 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                    <span className="text-xs fw-medium text-gray-400 d-flex">
-                      <i className="ph-fill ph-star" />
-                    </span>
-                  </div>
-                  <span className="text-gray-900 flex-shrink-0">2</span>
-                </div>
+                ))}
               </div>
-              <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
-                <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
-                  Filter by Color
-                </h6>
-                <ul className="max-h-540 overflow-y-auto scroll-sm">
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-black">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color1"
-                      />
-                      <label className="form-check-label" htmlFor="color1">
-                        Black(12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-primary">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color2"
-                      />
-                      <label className="form-check-label" htmlFor="color2">
-                        Blue (12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-gray">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color3"
-                      />
-                      <label className="form-check-label" htmlFor="color3">
-                        Gray (12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-success">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color4"
-                      />
-                      <label className="form-check-label" htmlFor="color4">
-                        Green (12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-danger">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color5"
-                      />
-                      <label className="form-check-label" htmlFor="color5">
-                        Red (12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio checked-white">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color6"
-                      />
-                      <label className="form-check-label" htmlFor="color6">
-                        White (12)
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-0">
-                    <div className="form-check common-check common-radio checked-purple">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="color7"
-                      />
-                      <label className="form-check-label" htmlFor="color7">
-                        Purple (12)
-                      </label>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+
+              {/* Brand Filter - Reste inchangé */}
               <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
                 <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
                   Filter by Brand
@@ -818,23 +590,29 @@ const ShopSection = () => {
                   </li>
                 </ul>
               </div>
+
               <div className="shop-sidebar__box rounded-8">
                 <img src="assets/images/thumbs/advertise-img1.png" alt="" />
               </div>
             </div>
           </div>
           {/* Sidebar End */}
+
           {/* Content Start */}
           <div className="col-lg-9">
-            {/* Top Start */}
-            <div className="flex-between gap-16 flex-wrap mb-40 ">
-              <span className="text-gray-900">Showing 1-20 of 85 result</span>
+            {/* Top Controls */}
+            <div className="flex-between gap-16 flex-wrap mb-40">
+              <span className="text-gray-900">
+                Showing {startIndex}-{endIndex} of {countFilteredProducts}{" "}
+                results
+              </span>
               <div className="position-relative flex-align gap-16 flex-wrap">
+                {/* List/Grid Toggle */}
                 <div className="list-grid-btns flex-align gap-16">
                   <button
                     onClick={() => setGrid(true)}
                     type="button"
-                    title="button"
+                    title="List View"
                     className={`w-44 h-44 flex-center border rounded-6 text-2xl list-btn border-gray-100 ${
                       grid === true && "border-main-600 text-white bg-main-600"
                     }`}
@@ -844,7 +622,7 @@ const ShopSection = () => {
                   <button
                     onClick={() => setGrid(false)}
                     type="button"
-                    title="button"
+                    title="Grid View"
                     className={`w-44 h-44 flex-center border rounded-6 text-2xl grid-btn border-gray-100 ${
                       grid === false && "border-main-600 text-white bg-main-600"
                     }`}
@@ -852,12 +630,14 @@ const ShopSection = () => {
                     <i className="ph ph-squares-four" />
                   </button>
                 </div>
+
+                {/* Sort By */}
                 <div className="position-relative text-gray-500 flex-align gap-4 text-14">
                   <label
                     htmlFor="sorting"
                     className="text-inherit flex-shrink-0"
                   >
-                    Sort by:{" "}
+                    Sort by:
                   </label>
                   <select
                     defaultValue="createdAt_DESC"
@@ -873,99 +653,146 @@ const ShopSection = () => {
                   </select>
                 </div>
 
+                {/* Products per page */}
                 <div className="position-relative text-gray-500 flex-align gap-4 text-14">
                   <label
-                    htmlFor="sorting"
+                    htmlFor="pageSize"
                     className="text-inherit flex-shrink-0"
                   >
-                    Slice by:{" "}
+                    Per page:
                   </label>
                   <select
-                    defaultValue={pageSz}
+                    value={pageSz}
                     onChange={(e) => setPageSz(Number(e.target.value))}
                     className="form-control common-input px-14 py-14 text-inherit rounded-6 w-auto"
-                    id="sorting"
+                    id="pageSize"
                   >
-                    <option value={4}>4</option>
-                    <option value={2}>2</option>
                     <option value={6}>6</option>
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
                   </select>
                 </div>
+
+                {/* Products per row (seulement en mode grille) */}
+                {!grid && (
+                  <div className="position-relative text-gray-500 flex-align gap-4 text-14">
+                    <label
+                      htmlFor="perRow"
+                      className="text-inherit flex-shrink-0"
+                    >
+                      Per row:
+                    </label>
+                    <select
+                      value={productsPerRow}
+                      onChange={(e) =>
+                        setProductsPerRow(Number(e.target.value))
+                      }
+                      className="form-control common-input px-14 py-14 text-inherit rounded-6 w-auto"
+                      id="perRow"
+                    >
+                      <option value={2}>2</option>
+                      <option value={3}>3</option>
+                      <option value={4}>4</option>
+                    </select>
+                  </div>
+                )}
+
                 <button
                   onClick={sidebarController}
                   type="button"
-                  title="button"
+                  title="Filter"
                   className="w-44 h-44 d-lg-none d-flex flex-center border border-gray-100 rounded-6 text-2xl sidebar-btn"
                 >
                   <i className="ph-bold ph-funnel" />
                 </button>
               </div>
             </div>
-            {/* Top End */}
-            <div className={`list-grid-wrapper ${grid && "list-view"}`}>
-              {displayProducts}
-            </div>
-            {/* Pagination Start */}
-            <div className="pagination flex-center flex-wrap gap-16">
-              <button
-                title="Previous"
-                onClick={decremnetPageNb}
-                className="page-item"
-                disabled={pageNb === 1}
-              >
-                <div
-                  className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
-                    pageNb === 1
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "text-neutral-600 border-gray-100"
-                  }`}
-                >
-                  <i className="ph-bold ph-arrow-left" />
-                </div>
-              </button>
 
-              {/* Affichage des pages dynamiques */}
-              {Array.from({ length: totalPage }, (_, index) => (
+            {/* Products Display */}
+            <div
+              className={`list-grid-wrapper ${grid && "list-view"}`}
+              style={{
+                minHeight: "400px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* Liste des produits */}
+              <div
+                className={grid ? "" : "row"}
+                style={{ flexGrow: 1, padding: "8px" }}
+              >
+                {displayProducts}
+              </div>
+
+              {/* Pagination - Toujours en bas */}
+              <div
+                className="pagination flex-center flex-wrap gap-16 mt-40"
+                style={{
+                  clear: "both",
+                  marginTop: "40px",
+                  // Pas besoin de position: absolute ici
+                }}
+              >
+                {/* Tes boutons de pagination ici */}
                 <button
-                  title="button"
-                  key={index}
-                  className={`page-item ${
-                    pageNb === index + 1 ? "active" : ""
-                  }`}
+                  title="Previous"
+                  onClick={decrementPageNb}
+                  className="page-item"
+                  disabled={pageNb === 1}
                 >
                   <div
-                    className="page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium text-neutral-600 border border-gray-100"
-                    onClick={() => {
-                      console.log("Page index:", index);
-
-                      setPageNb(index + 1);
-                    }}
+                    className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
+                      pageNb === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "text-neutral-600 border-gray-100"
+                    }`}
                   >
-                    {index + 1}
+                    <i className="ph-bold ph-arrow-left" />
                   </div>
                 </button>
-              ))}
 
-              <button
-                title="Next"
-                onClick={incrementPageNb}
-                className="page-item"
-                disabled={pageNb === totalPage}
-              >
-                <div
-                  className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
-                    pageNb === totalPage
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "text-neutral-600 border-gray-100"
-                  }`}
+                {Array.from({ length: totalPage }, (_, index) => (
+                  <button
+                    title={`Page ${index + 1}`}
+                    key={index}
+                    className={`page-item ${
+                      pageNb === index + 1 ? "active" : ""
+                    }`}
+                    onClick={() => setPageNb(index + 1)}
+                  >
+                    <div
+                      className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border border-gray-100 ${
+                        pageNb === index + 1
+                          ? "bg-main-600 text-white border-main-600"
+                          : "text-neutral-600"
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+                  </button>
+                ))}
+
+                <button
+                  title="Next"
+                  onClick={incrementPageNb}
+                  className="page-item"
+                  disabled={pageNb === totalPage}
                 >
-                  <i className="ph-bold ph-arrow-right" />
-                </div>
-              </button>
+                  <div
+                    className={`page-link h-64 w-64 flex-center text-xxl rounded-8 fw-medium border ${
+                      pageNb === totalPage
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "text-neutral-600 border-gray-100"
+                    }`}
+                  >
+                    <i className="ph-bold ph-arrow-right" />
+                  </div>
+                </button>
+              </div>
             </div>
-            {/* Pagination End */}
           </div>
-          {/* Content End */}
         </div>
       </div>
     </section>

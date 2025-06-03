@@ -3,23 +3,44 @@ import { Link } from "react-router";
 import QuantityControl from "../../helper/QuantityControl";
 import { shoppingCartService } from "../../services/shoppingCart";
 import { cartItemService } from "../../services/cartItem";
-import { ShoppingCart } from "../../generated";
+import { CartItem, ShoppingCart } from "../../generated";
 import { paymentService } from "../../services/payment";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCartItems } from "../../redux/slices/cartSlice";
+import { toast, ToastContainer } from "react-toastify";
 
 const CartSection = () => {
   const [cart, setCart] = useState<ShoppingCart | null>(null);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [quantity, setQuantity] = useState<number>(1);
+
+  const handleClearCart = async () => {
+    setLoading(true);
+    try {
+      const success = await shoppingCartService.cancelShoppingCart();
+      if (success) {
+        dispatch(setCartItems(null));
+        setCart(null);
+        alert("Panier vidé avec succès !");
+      } else {
+        alert("Impossible de vider le panier.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors de la suppression du panier.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleQuantityChange = async (
-    cartItemId: number,
+    cartItem: CartItem,
     newQuantity: number
   ) => {
     try {
       const updatedItem = await cartItemService.updateCartItem({
-        id: cartItemId,
+        id: cartItem.id,
         quantity: newQuantity,
       });
 
@@ -31,7 +52,14 @@ const CartSection = () => {
         }
       }
     } catch (error) {
-      console.error("Erreur mise à jour de la quantité", error);
+      if (error instanceof Error) {
+        if (error.message.includes("Product's Quantity is not enough!")) {
+          toast.error("Quantité demandée supérieure à la quantité disponible.");
+          console.log("Erreur mise à jour de la quantité", error.message);
+        } else {
+          console.log("Erreur mise à jour de la quantité", error);
+        }
+      }
     }
   };
   const handleRemoveCartItem = async (cartItemId: number) => {
@@ -91,6 +119,7 @@ const CartSection = () => {
   if (!cart || !cart.cartItems?.length) return <p>Votre panier est vide.</p>;
   return (
     <section className="cart py-80">
+      <ToastContainer />
       <div className="container container-lg">
         <div className="row gy-4">
           <div className="col-xl-9 col-lg-8">
@@ -183,7 +212,7 @@ const CartSection = () => {
                             value={item?.quantity ?? 1}
                             onChange={(q) =>
                               item?.id !== undefined &&
-                              handleQuantityChange(item.id, q)
+                              handleQuantityChange(item, q)
                             }
                           />
                         </td>
@@ -198,7 +227,7 @@ const CartSection = () => {
                 </table>
               </div>
               <div className="flex-between flex-wrap gap-16 mt-16">
-                <div className="flex-align gap-16">
+                {/* <div className="flex-align gap-16">
                   <input
                     type="text"
                     className="common-input"
@@ -210,12 +239,13 @@ const CartSection = () => {
                   >
                     Apply Coupon
                   </button>
-                </div>
+                </div> */}
                 <button
-                  type="submit"
+                  onClick={handleClearCart}
+                  type="button"
                   className="text-lg text-gray-500 hover-text-main-600"
                 >
-                  Update Cart
+                  Clear ShoppingCart
                 </button>
               </div>
             </div>

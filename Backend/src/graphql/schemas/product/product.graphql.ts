@@ -12,6 +12,7 @@ export const productSchema = gql`
     description: String
     quantity: Int
     price: Float
+
     category: Category
     createdAt: DateTime
     totalOrders: Int
@@ -52,7 +53,10 @@ export const productSchema = gql`
     pageNb: Int
     pageSize: Int
     orderBy: String
+    minPrice: Float
+    maxPrice: Float
     price: Float
+    minRating: Int
   }
   type productAndNbOrders {
     product: Product!

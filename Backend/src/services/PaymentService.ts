@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { User, Buyer, Payment } from "../entities/index.js";
+import { User, Buyer, Payment, Product } from "../entities/index.js";
 import { userService } from "./userService.js";
 import { appDataSource } from "../database/data-source.js";
 import { stripe } from "../../utils/Stripe.js";
@@ -129,11 +129,41 @@ export class PaymentService {
       if (!buyerId) {
         throw new GraphQLError("Identifiant acheteur introuvable");
       }
+
+      const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
+        Number(buyerId)
+      );
+      if (!shoppingCart) {
+        throw new GraphQLError("Panier introuvable", {
+          extensions: { code: "EMPTY_CART" },
+        });
+      }
+
+      const productRepository = appDataSource.getRepository(Product);
+      for (const cartItem of shoppingCart.cartItems) {
+        const product = await productRepository.findOneBy({
+          id: cartItem.product.id,
+        });
+        if (!product) continue;
+
+        if (product.quantity < cartItem.quantity) {
+          throw new GraphQLError(
+            `Stock insuffisant pour le produit ${product.name}`,
+            {
+              extensions: { code: "INSUFFICIENT_STOCK" },
+            }
+          );
+        }
+
+        product.quantity -= cartItem.quantity;
+        await productRepository.save(product);
+      }
       await this.paymentRepository.save({
         paymentDate: new Date(),
         paymentType: PaymentType.Visa,
       });
-
+      await shoppingCartService.cancelShoppingCart(Number(buyerId));
+      //create order
       return true;
     } catch (error) {
       console.error("Erreur lors de la vérification du paiement", error);

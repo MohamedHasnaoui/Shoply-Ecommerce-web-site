@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { IsString, IsDate, IsEnum } from "class-validator";
+import { IsString, IsDate, IsEnum, IsOptional } from "class-validator";
 import { PaymentType } from "../../graphql/types/resolvers-types.js";
 @Entity()
 export class Payment {
@@ -9,6 +9,10 @@ export class Payment {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   @IsDate({ message: "Invalid date format." })
   paymentDate: Date;
+
+  @Column({ default: new Date() })
+  @IsOptional()
+  createdAt: Date;
 
   @Column()
   @IsString()

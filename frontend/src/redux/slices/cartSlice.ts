@@ -18,12 +18,9 @@ const cartSlice = createSlice({
   reducers: {
     setCartItems(state, action: PayloadAction<ShoppingCart | null>) {
       state.cart = action.payload;
-      state.totalItems =
-        action.payload?.cartItems?.reduce(
-          (sum, item) => sum + (item?.quantity ?? 0),
-          0
-        ) ?? 0;
+      state.totalItems = action.payload?.cartItems?.length ?? 0;
     },
+
     clearCart(state) {
       state.cart = null;
       state.totalItems = 0;

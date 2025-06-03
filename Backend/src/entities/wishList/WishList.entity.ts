@@ -15,7 +15,7 @@ export class WishList {
   id: number;
 
   @OneToOne(() => Buyer, { onDelete: "CASCADE" })
-  @JoinTable()
+  @JoinColumn()
   buyer: Buyer;
   @ManyToMany(() => Product)
   @JoinTable()
