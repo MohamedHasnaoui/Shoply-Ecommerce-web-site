@@ -18,7 +18,6 @@ import CartPage from "./Pages/Buyer/CartPage";
 import PaymentSuccess from "./Components/buyer/PaymentSuccess";
 import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
 import Wishlist from "./Components/buyer/Wishlist";
-import BannerOne from "./Components/buyer/BannerOne";
 import HomePage from "./Pages/Buyer/HomePage";
 import ProductDetails from "./Pages/Buyer/ProductDetails";
 import AdminLayout from "./layout/AdminLayout";
@@ -42,18 +41,18 @@ function App() {
           <Route path='/admin' element={<AdminLayout />} >
               <Route path='users' element={<AdminHomePage/>} />
           </Route>
-          <Route element={<ClientLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<OTPVerification />} />
-            <Route path="/products-list" element={<ShopSection />} />
-            <Route path="/product-details/:id" element={<ProductDetails />} />
+        </Route>
+        <Route element={<ClientLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<OTPVerification />} />
+          <Route path="/products-list" element={<ShopSection />} />
+          <Route path="/product-details/:id" element={<ProductDetails />} />
 
-            <Route path="/" element={<HomePage />} />
-
+          <Route path="/" element={<HomePage />} />
+          <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<CartPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
-
             <Route
               path="/payment-success"
               element={
@@ -62,9 +61,8 @@ function App() {
                 </ProtectedPaymentRoute>
               }
             />
+            </Route>
           </Route>
-        </Route>
-
         <Route path="Error/:errorCode/:message" element={<ErrorPage />} />
         <Route path="Error/:errorCode" element={<ErrorPage />} />
         <Route
