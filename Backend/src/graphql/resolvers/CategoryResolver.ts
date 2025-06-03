@@ -1,8 +1,19 @@
 import { GraphQLError } from "graphql";
 import { categoryService } from "../../services/categoryServices.js";
 import { Resolvers } from "../types/resolvers-types";
+import { Product } from "../../entities/product/Product.entity.js";
+import { appDataSource } from "../../database/data-source.js";
 
+const productRepository = appDataSource.getRepository(Product);
 export const CategoryResolver: Resolvers = {
+  Category: {
+    productCount: async (parent) => {
+      const count = await productRepository.count({
+        where: { category: { id: parent.id } },
+      });
+      return count;
+    },
+  },
   Mutation: {
     createCategory: async (parent, { input }, context) => {
       try {

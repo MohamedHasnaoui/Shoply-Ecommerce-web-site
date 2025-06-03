@@ -23,3 +23,8 @@ export const GET_SHOPPING_CART = gql`
     }
   }
 `;
+export const CANCEL_SHOPPING_CART = gql`
+  mutation CancelShoppingCart {
+    cancelShoppingCart
+  }
+`;

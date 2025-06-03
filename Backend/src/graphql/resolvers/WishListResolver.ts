@@ -36,6 +36,39 @@ export const WhishListResolver: Resolvers = {
 
       return wishList;
     },
+    getFilteredWishList: async (parent, { input }, context) => {
+      if (!context.currentUser || !context.currentUser.userId) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (!user) {
+        throw new GraphQLError("User not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+
+      if (user.role !== Role.Buyer) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: "UNAUTHORIZED" },
+        });
+      }
+
+      try {
+        const filteredProducts =
+          await whishListService.getFilteredWishlistProducts(
+            context.currentUser.userId,
+            input
+          );
+        return filteredProducts;
+      } catch (error) {
+        throw new GraphQLError("Failed to fetch filtered wishlist", {
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        });
+      }
+    },
   },
   Mutation: {
     addProductToWishList: async (parent, { productId }, context) => {

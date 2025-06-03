@@ -9,13 +9,18 @@ interface CategoryContextType {
   totalPage: number;
   setTotalPage: (totalPage: number) => void;
 }
+
 interface CartContextType {
   totalItems: number;
   setTotalItems: (value: number) => void;
+  totalWishlistItems: number;
+  setTotalWishlistItems: (value: number) => void;
 }
 export const CartContext = createContext<CartContextType>({
   totalItems: 0,
   setTotalItems: () => {},
+  totalWishlistItems: 0,
+  setTotalWishlistItems: () => {},
 });
 
 // Création du contexte avec une valeur par défaut

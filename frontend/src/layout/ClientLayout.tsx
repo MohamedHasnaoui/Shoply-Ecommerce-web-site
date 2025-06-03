@@ -10,6 +10,8 @@ import mainScopedCSS from "../assets/ClientAssets/css/main.scoped.css?inline";
 import jqueryUICSS from "../assets/ClientAssets/css/jquery-ui.scoped.css?inline";
 
 import { CategoryProvider, CartProvider } from "../helpers/CategoryProvider";
+import FooterTwo from "../Components/buyer/FooterTwo";
+import BottomFooter from "../Components/buyer/BottomFooter";
 
 export default function ClientLayout() {
   return (
@@ -25,6 +27,9 @@ export default function ClientLayout() {
       <CategoryProvider>
         <Header />
         <Outlet />
+        {/* Pied de page */}
+        <FooterTwo />
+        <BottomFooter />
       </CategoryProvider>
 
       {/* </CategoryContext.Provider> */}

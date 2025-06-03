@@ -9,7 +9,9 @@ import { useAppSelector } from "../../redux/hooks";
 
 const Header = () => {
   const totalItems = useAppSelector((state) => state.cart.totalItems);
-
+  const totalWishlistItems = useAppSelector(
+    (state) => state.wishlist.totalWishlistItems
+  );
   const [productCategories, setProductCategories] = useState<
     Array<Category | null>
   >([]);
@@ -217,7 +219,7 @@ const Header = () => {
                   activeIndex === 1 ? "d-block" : ""
                 }`}
               >
-                <a href="#" className="nav-menu__a">
+                <a href="/products-list" className="nav-menu__a">
                   Shop
                 </a>
                 <ul
@@ -667,36 +669,6 @@ const Header = () => {
                   </button>
                 </form>
               </div>
-              <div className="location-box bg-white flex-align gap-8 py-6 px-16 rounded-pill border border-gray-100">
-                <span className="text-gray-900 text-xl d-xs-flex d-none">
-                  <i className="ph ph-map-pin" />
-                </span>
-                <div className="line-height-1">
-                  <span className="text-gray-600 text-xs">Your Location</span>
-                  <div className="line-height-1">
-                    <select
-                      title="select"
-                      defaultValue={1}
-                      className="js-example-basic-single border border-gray-200 border-end-0"
-                      name="state"
-                    >
-                      <option value={1}>Alabama</option>
-                      <option value={1}>Alaska</option>
-                      <option value={1}>Arizona</option>
-                      <option value={1}>Delaware</option>
-                      <option value={1}>Florida</option>
-                      <option value={1}>Georgia</option>
-                      <option value={1}>Hawaii</option>
-                      <option value={1}>Indiana</option>
-                      <option value={1}>Marzland</option>
-                      <option value={1}>Nevada</option>
-                      <option value={1}>New Jersey</option>
-                      <option value={1}>New Mexico</option>
-                      <option value={1}>New York</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
             </div>
             {/* form location start */}
             {/* Header Middle Right start */}
@@ -711,11 +683,11 @@ const Header = () => {
                     <i className="ph ph-magnifying-glass" />
                   </span>
                 </button>
-                <a href="/cart" className="flex-align gap-4 item-hover">
+                <a href="/wishlist" className="flex-align gap-4 item-hover">
                   <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                     <i className="ph ph-heart" />
                     <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
-                      2
+                      {totalWishlistItems}
                     </span>
                   </span>
                   <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
@@ -850,11 +822,11 @@ const Header = () => {
               <div className="header-menu d-lg-block d-none">
                 {/* Nav Menu Start */}
                 <ul className="nav-menu flex-align ">
-                  <li className="on-hover-item nav-menu__item has-submenu">
-                    <a href="#" className="nav-menu__link">
+                  <li className="on-hover-item nav-menu__item ">
+                    <a href="/" className="nav-menu__link">
                       Home
                     </a>
-                    <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
+                    {/* <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
                       <li className="common-dropdown__item nav-submenu__item">
                         <a
                           href="/"
@@ -873,13 +845,13 @@ const Header = () => {
                           Home Two
                         </a>
                       </li>
-                    </ul>
+                    </ul> */}
                   </li>
-                  <li className="on-hover-item nav-menu__item has-submenu">
-                    <a href="#" className="nav-menu__link">
+                  <li className="on-hover-item nav-menu__item ">
+                    <a href="/products-list" className="nav-menu__link">
                       Shop
                     </a>
-                    <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
+                    {/* <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
                       <li className="common-dropdown__item nav-submenu__item">
                         <a
                           href="/shop"
@@ -907,7 +879,7 @@ const Header = () => {
                           Shop Details Two
                         </a>
                       </li>
-                    </ul>
+                    </ul> */}
                   </li>
                   <li className="on-hover-item nav-menu__item has-submenu">
                     <a href="#" className="nav-menu__link">
@@ -921,6 +893,15 @@ const Header = () => {
                         >
                           {" "}
                           Cart
+                        </a>
+                      </li>
+                      <li className="common-dropdown__item nav-submenu__item">
+                        <a
+                          href="/wishlist"
+                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
+                        >
+                          {" "}
+                          Wishlist{" "}
                         </a>
                       </li>
                       <li className="common-dropdown__item nav-submenu__item">
@@ -943,31 +924,7 @@ const Header = () => {
                       </li>
                     </ul>
                   </li>
-                  <li className="on-hover-item nav-menu__item has-submenu">
-                    <a href="#" className="nav-menu__link">
-                      Blog
-                    </a>
-                    <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/blog"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Blog
-                        </a>
-                      </li>
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/blog-details"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Blog Details
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
+
                   <li className="nav-menu__item">
                     <a
                       href="/contact"

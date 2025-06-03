@@ -65,6 +65,7 @@ export type Category = {
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  productCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CategoryInput = {
@@ -364,11 +365,23 @@ export type Product = {
 export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
+  maxPrice?: InputMaybe<Scalars['Float']['input']>;
+  minPrice?: InputMaybe<Scalars['Float']['input']>;
+  minRating?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ProductFilterInput = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  maxPrice?: InputMaybe<Scalars['Float']['input']>;
+  minPrice?: InputMaybe<Scalars['Float']['input']>;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductListResult = {
@@ -394,6 +407,7 @@ export type Query = {
   getCategory?: Maybe<Category>;
   getCustomerPastOrderItems?: Maybe<Array<OrderItem>>;
   getEarningByPeriod: Array<Scalars['Float']['output']>;
+  getFilteredWishList?: Maybe<Array<Maybe<Product>>>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
@@ -439,6 +453,11 @@ export type QueryGetCustomerPastOrderItemsArgs = {
 
 export type QueryGetEarningByPeriodArgs = {
   period?: InputMaybe<PeriodFilter>;
+};
+
+
+export type QueryGetFilteredWishListArgs = {
+  input?: InputMaybe<ProductFilterInput>;
 };
 
 
@@ -741,7 +760,7 @@ export type VerifyPaymentMutation = { __typename?: 'Mutation', verifyPayment: bo
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null } | null> | null };
+export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, productCount?: number | null } | null> | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -816,12 +835,43 @@ export type GetShoppingCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetShoppingCartQuery = { __typename?: 'Query', getShoppingCart?: { __typename?: 'ShoppingCart', id: number, totalAmount: number, cartItems?: Array<{ __typename?: 'CartItem', id: number, price: number, quantity: number, product: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, price?: number | null, category?: { __typename?: 'Category', name?: string | null } | null } } | null> | null } | null };
 
+export type CancelShoppingCartMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CancelShoppingCartMutation = { __typename?: 'Mutation', cancelShoppingCart: boolean };
+
 export type GetParamUploadImageQueryVariables = Exact<{
   folder: Scalars['String']['input'];
 }>;
 
 
 export type GetParamUploadImageQuery = { __typename?: 'Query', getParamUploadImage: { __typename?: 'UploadCloud', signature: string, timestamp: number, cloudName: string, apiKey: string } };
+
+export type GetWishListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetWishListQuery = { __typename?: 'Query', getWishList: { __typename?: 'WishList', id: number, products?: Array<{ __typename?: 'Product', id: number, name?: string | null, price?: number | null, images?: Array<string> | null, quantity?: number | null, rating?: number | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null } | null> | null } };
+
+export type AddProductToWishListMutationVariables = Exact<{
+  productId: Scalars['Int']['input'];
+}>;
+
+
+export type AddProductToWishListMutation = { __typename?: 'Mutation', addProductToWishList: { __typename?: 'WishList', id: number, products?: Array<{ __typename?: 'Product', id: number } | null> | null } };
+
+export type DeleteProductFromWishListMutationVariables = Exact<{
+  productId: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteProductFromWishListMutation = { __typename?: 'Mutation', deleteProductFromWishList: boolean };
+
+export type GetFilteredWishListQueryVariables = Exact<{
+  input?: InputMaybe<ProductFilterInput>;
+}>;
+
+
+export type GetFilteredWishListQuery = { __typename?: 'Query', getFilteredWishList?: Array<{ __typename?: 'Product', id: number, name?: string | null, price?: number | null, rating?: number | null, quantity?: number | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null } | null> | null };
 
 
 
@@ -1287,6 +1337,8 @@ export const GetAllCategoriesDocument = `
   getAllCategories {
     id
     name
+    description
+    productCount
   }
 }
     `;
@@ -1661,6 +1713,26 @@ export const useGetShoppingCartQuery = <
       options
     )};
 
+export const CancelShoppingCartDocument = `
+    mutation CancelShoppingCart {
+  cancelShoppingCart
+}
+    `;
+
+export const useCancelShoppingCartMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<CancelShoppingCartMutation, TError, CancelShoppingCartMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<CancelShoppingCartMutation, TError, CancelShoppingCartMutationVariables, TContext>(
+      ['CancelShoppingCart'],
+      (variables?: CancelShoppingCartMutationVariables) => fetcher<CancelShoppingCartMutation, CancelShoppingCartMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CancelShoppingCartDocument, variables)(),
+      options
+    )};
+
 export const GetParamUploadImageDocument = `
     query GetParamUploadImage($folder: String!) {
   getParamUploadImage(folder: $folder) {
@@ -1684,5 +1756,116 @@ export const useGetParamUploadImageQuery = <
     return useQuery<GetParamUploadImageQuery, TError, TData>(
       ['GetParamUploadImage', variables],
       fetcher<GetParamUploadImageQuery, GetParamUploadImageQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetParamUploadImageDocument, variables),
+      options
+    )};
+
+export const GetWishListDocument = `
+    query GetWishList {
+  getWishList {
+    id
+    products {
+      id
+      name
+      price
+      images
+      quantity
+      category {
+        id
+        name
+      }
+      rating
+    }
+  }
+}
+    `;
+
+export const useGetWishListQuery = <
+      TData = GetWishListQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetWishListQueryVariables,
+      options?: UseQueryOptions<GetWishListQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetWishListQuery, TError, TData>(
+      variables === undefined ? ['GetWishList'] : ['GetWishList', variables],
+      fetcher<GetWishListQuery, GetWishListQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetWishListDocument, variables),
+      options
+    )};
+
+export const AddProductToWishListDocument = `
+    mutation AddProductToWishList($productId: Int!) {
+  addProductToWishList(productId: $productId) {
+    id
+    products {
+      id
+    }
+  }
+}
+    `;
+
+export const useAddProductToWishListMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<AddProductToWishListMutation, TError, AddProductToWishListMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<AddProductToWishListMutation, TError, AddProductToWishListMutationVariables, TContext>(
+      ['AddProductToWishList'],
+      (variables?: AddProductToWishListMutationVariables) => fetcher<AddProductToWishListMutation, AddProductToWishListMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, AddProductToWishListDocument, variables)(),
+      options
+    )};
+
+export const DeleteProductFromWishListDocument = `
+    mutation DeleteProductFromWishList($productId: Int!) {
+  deleteProductFromWishList(productId: $productId)
+}
+    `;
+
+export const useDeleteProductFromWishListMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<DeleteProductFromWishListMutation, TError, DeleteProductFromWishListMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<DeleteProductFromWishListMutation, TError, DeleteProductFromWishListMutationVariables, TContext>(
+      ['DeleteProductFromWishList'],
+      (variables?: DeleteProductFromWishListMutationVariables) => fetcher<DeleteProductFromWishListMutation, DeleteProductFromWishListMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, DeleteProductFromWishListDocument, variables)(),
+      options
+    )};
+
+export const GetFilteredWishListDocument = `
+    query GetFilteredWishList($input: ProductFilterInput) {
+  getFilteredWishList(input: $input) {
+    id
+    name
+    price
+    rating
+    quantity
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useGetFilteredWishListQuery = <
+      TData = GetFilteredWishListQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetFilteredWishListQueryVariables,
+      options?: UseQueryOptions<GetFilteredWishListQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetFilteredWishListQuery, TError, TData>(
+      variables === undefined ? ['GetFilteredWishList'] : ['GetFilteredWishList', variables],
+      fetcher<GetFilteredWishListQuery, GetFilteredWishListQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetFilteredWishListDocument, variables),
       options
     )};

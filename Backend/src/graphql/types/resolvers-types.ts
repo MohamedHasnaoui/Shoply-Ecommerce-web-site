@@ -47,6 +47,7 @@ export type Category = {
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  productCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CategoryInput = {
@@ -346,11 +347,23 @@ export type Product = {
 export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
+  maxPrice?: InputMaybe<Scalars['Float']['input']>;
+  minPrice?: InputMaybe<Scalars['Float']['input']>;
+  minRating?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ProductFilterInput = {
+  available?: InputMaybe<Scalars['Boolean']['input']>;
+  categoryId?: InputMaybe<Scalars['Int']['input']>;
+  maxPrice?: InputMaybe<Scalars['Float']['input']>;
+  minPrice?: InputMaybe<Scalars['Float']['input']>;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductListResult = {
@@ -376,6 +389,7 @@ export type Query = {
   getCategory?: Maybe<Category>;
   getCustomerPastOrderItems?: Maybe<Array<OrderItem>>;
   getEarningByPeriod: Array<Scalars['Float']['output']>;
+  getFilteredWishList?: Maybe<Array<Maybe<Product>>>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
@@ -421,6 +435,11 @@ export type QueryGetCustomerPastOrderItemsArgs = {
 
 export type QueryGetEarningByPeriodArgs = {
   period?: InputMaybe<PeriodFilter>;
+};
+
+
+export type QueryGetFilteredWishListArgs = {
+  input?: InputMaybe<ProductFilterInput>;
 };
 
 
@@ -702,6 +721,7 @@ export type ResolversTypes = {
   PeriodFilter: PeriodFilter;
   Product: ResolverTypeWrapper<Product>;
   ProductFilter: ProductFilter;
+  ProductFilterInput: ProductFilterInput;
   ProductListResult: ResolverTypeWrapper<ProductListResult>;
   ProductsStatistics: ResolverTypeWrapper<ProductsStatistics>;
   Query: ResolverTypeWrapper<{}>;
@@ -747,6 +767,7 @@ export type ResolversParentTypes = {
   PaymentSession: PaymentSession;
   Product: Product;
   ProductFilter: ProductFilter;
+  ProductFilterInput: ProductFilterInput;
   ProductListResult: ProductListResult;
   ProductsStatistics: ProductsStatistics;
   Query: {};
@@ -782,6 +803,7 @@ export type CategoryResolvers<ContextType = MyContext, ParentType extends Resolv
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  productCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -906,6 +928,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getCategory?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType, RequireFields<QueryGetCategoryArgs, 'id'>>;
   getCustomerPastOrderItems?: Resolver<Maybe<Array<ResolversTypes['OrderItem']>>, ParentType, ContextType, RequireFields<QueryGetCustomerPastOrderItemsArgs, 'customerId'>>;
   getEarningByPeriod?: Resolver<Array<ResolversTypes['Float']>, ParentType, ContextType, Partial<QueryGetEarningByPeriodArgs>>;
+  getFilteredWishList?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType, Partial<QueryGetFilteredWishListArgs>>;
   getMyOrders?: Resolver<Maybe<Array<Maybe<ResolversTypes['Order']>>>, ParentType, ContextType, Partial<QueryGetMyOrdersArgs>>;
   getMyProductsStatistics?: Resolver<ResolversTypes['ProductsStatistics'], ParentType, ContextType>;
   getOrder?: Resolver<ResolversTypes['Order'], ParentType, ContextType, RequireFields<QueryGetOrderArgs, 'orderId'>>;

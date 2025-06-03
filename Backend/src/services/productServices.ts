@@ -1,4 +1,13 @@
-import { Equal, LessThan, Like, MoreThan, Repository } from "typeorm";
+import {
+  Between,
+  Equal,
+  LessThan,
+  LessThanOrEqual,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  Repository,
+} from "typeorm";
 import { OrderItem, Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
 import {
@@ -68,24 +77,38 @@ export class ProductServices {
         orderBy = { price: "DESC" };
         break;
       default:
-        orderBy = { createdAt: "DESC" }; // valeur par défaut
+        orderBy = { createdAt: "DESC" };
         break;
     }
-    console.log("Rating:" + input.orderBy);
-    const products = await this.productRepository.find({
+
+    const whereConditions = {
+      category:
+        input.categoryId !== undefined ? { id: input.categoryId } : undefined,
+      quantity:
+        input.available === undefined
+          ? undefined
+          : input.available
+          ? MoreThan(0)
+          : Equal(0),
+      name: input.name ? Like(`%${input.name}%`) : undefined,
+      price:
+        input.minPrice !== undefined && input.maxPrice !== undefined
+          ? Between(input.minPrice, input.maxPrice)
+          : input.minPrice !== undefined
+          ? MoreThanOrEqual(input.minPrice)
+          : input.maxPrice !== undefined
+          ? LessThanOrEqual(input.maxPrice)
+          : undefined,
+      rating:
+        input.minRating !== undefined
+          ? MoreThanOrEqual(input.minRating)
+          : undefined,
+    };
+
+    // ✅ UNE SEULE REQUÊTE au lieu de deux !
+    const [products, count] = await this.productRepository.findAndCount({
       order: orderBy,
-      where: {
-        category:
-          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
-        quantity:
-          input.available === undefined
-            ? undefined
-            : input.available
-            ? MoreThan(0)
-            : Equal(0),
-        name: input.name ? Like(`%${input.name}%`) : undefined,
-        price: input.price ? LessThan(input.price) : undefined,
-      },
+      where: whereConditions,
       take:
         !input.pageSize || !input.pageNb
           ? Number.MAX_SAFE_INTEGER
@@ -96,19 +119,7 @@ export class ProductServices {
           : (input.pageNb - 1) * input.pageSize,
       relations: { category: true },
     });
-    const count = await this.productRepository.count({
-      where: {
-        category:
-          input.categoryId !== undefined ? { id: input.categoryId } : undefined,
-        quantity:
-          input.available === undefined
-            ? undefined
-            : input.available
-            ? MoreThan(0)
-            : Equal(0),
-        name: input.name ? Like(`%${input.name}%`) : undefined,
-      },
-    });
+
     return { products, count };
   }
   async getAllBySellerId(sellerId: number, input: ProductFilter) {
