@@ -166,7 +166,7 @@ class ProductService {
     const response = await client.query(options);
     return response;
   }
-  async getTopSellingProducts(nbProduct: number) {
+  async getTopSellingProductsForSeller(nbProduct: number) {
     const options: QueryOptions<
       GetSellerTopProductsQueryVariables,
       GetSellerTopProductsQuery

@@ -159,5 +159,8 @@ export const ProductResolver: Resolvers = {
         nbProduct
       );
     },
+    getTopSellingProducts: async (parent, { input }, context) => {
+      return await productService.getTopSellingProducts(input);
+    },
   },
 };

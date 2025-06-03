@@ -105,4 +105,12 @@ export class User {
   })
   @IsOptional()
   role!: Role;
+
+  @Column({ default: new Date() })
+  @IsOptional()
+  createdAt: Date;
+
+  @Column({ default: new Date() })
+  @IsOptional()
+  updatedAt: Date;
 }

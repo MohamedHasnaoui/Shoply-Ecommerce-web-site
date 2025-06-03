@@ -18,6 +18,7 @@ import {
   Review,
   VerificationToken,
 } from "../entities/index.js";
+import { Admin1748883966874 } from "../migrations/1748883966874-admin.js";
 
 export const appDataSource = new DataSource({
   type: "postgres",
@@ -45,6 +46,6 @@ export const appDataSource = new DataSource({
   ],
   logging: false,
   synchronize: true,
-  migrations: ["dist/src/migration/**/*.js"],
+  migrations: [Admin1748883966874],
   subscribers: [],
 });

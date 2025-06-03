@@ -1,8 +1,16 @@
-import { Equal, LessThan, Like, MoreThan, Repository } from "typeorm";
+import {
+  Equal,
+  LessThan,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  Repository,
+} from "typeorm";
 import { OrderItem, Product, Seller } from "../entities/index.js";
 import { appDataSource } from "../database/data-source.js";
 import {
   CreateProductInput,
+  PeriodFilter,
   ProductAndNbOrders,
   ProductFilter,
 } from "../graphql/types/resolvers-types.js";
@@ -10,6 +18,7 @@ import { validateOrReject } from "class-validator";
 import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
 import { orderItemService } from "./OrderItemService.js";
+import { dateUtil } from "../../utils/dateUtil.js";
 
 export class ProductServices {
   constructor(private productRepository: Repository<Product>) {}
@@ -199,11 +208,62 @@ export class ProductServices {
       .addSelect("product.updatedAt", "updatedAt")
       .addSelect("product.rating", "rating")
       .addSelect("SUM(orderItem.quantity)", "totalSold")
+      .where("product.ownerId = :sellerId", { sellerId })
       .groupBy("product.id")
       .orderBy('"totalSold"', "DESC")
       .limit(nbProducts)
       .getRawMany();
     return res.map((elm: any) => {
+      return { product: { ...elm } as Product, totalSold: elm.totalSold };
+    });
+  }
+  async countNewProducts(period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    const productsCount = await this.productRepository.count({
+      where: {
+        createdAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+    });
+    return productsCount;
+  }
+  async getTopSellingProducts(
+    input: ProductFilter
+  ): Promise<ProductAndNbOrders[]> {
+    const products = await this.productRepository
+      .createQueryBuilder("product")
+      .innerJoin("product.orderItems", "orderItem")
+      .innerJoin("product.category", "category")
+      .select("product.id", "id")
+      .addSelect("product.name", "name")
+      .addSelect("product.reference", "reference")
+      .addSelect("product.price", "price")
+      .addSelect("product.description", "description")
+      .addSelect("product.quantity", "quantity")
+      .addSelect("product.createdAt", "createdAt")
+      .addSelect("product.updatedAt", "updatedAt")
+      .addSelect("product.rating", "rating")
+      .addSelect("SUM(orderItem.quantity)", "totalSold")
+      .where(
+        input.categoryId !== undefined ? "category.id = :categoryId" : "1=1",
+        input.categoryId !== undefined
+          ? { categoryId: input.categoryId }
+          : undefined
+      )
+      .andWhere(
+        input.available === undefined
+          ? {}
+          : input.available
+          ? { quantity: MoreThan(0) }
+          : { quantity: Equal(0) }
+      )
+      .andWhere(input.name ? { name: Like(`%${input.name}%`) } : {})
+      .groupBy("product.id")
+      .orderBy('"totalSold"', "DESC")
+      .limit(input.pageSize || 10)
+      .offset(input.pageNb ? (input.pageNb - 1) * (input.pageSize || 10) : 0)
+      .getRawMany();
+
+    return products.map((elm: any) => {
       return { product: { ...elm } as Product, totalSold: elm.totalSold };
     });
   }

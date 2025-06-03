@@ -4,7 +4,7 @@ import { Resolvers, Role, TokenType } from "../types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import { GraphQLDateTime } from "graphql-scalars";
 import bcrypt from "bcrypt";
-import { EmailUtil, emailUtil } from "../../../utils/EmailUtil.js";
+import { emailUtil } from "../../../utils/EmailUtil.js";
 import { verificationTokenService } from "../../services/VerificationTokenService.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
 import { Buyer } from "../../entities/index.js";

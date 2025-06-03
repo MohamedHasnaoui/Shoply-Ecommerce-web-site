@@ -7,7 +7,7 @@ const TopProduct = () => {
     const [topSellingProducts, setTopSellingProducts] = useState<ProductAndNbOrders[]>([]);
     useEffect(()=>{
         const fetch = async ()=>{
-        const response = await productService.getTopSellingProducts(10);
+        const response = await productService.getTopSellingProductsForSeller(10);
         if(response.data.getSellerTopProducts)
             setTopSellingProducts(response.data?.getSellerTopProducts)
         }

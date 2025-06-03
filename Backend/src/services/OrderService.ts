@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { MoreThanOrEqual, Repository } from "typeorm";
 import { Order } from "../entities/index.js";
 import { userService } from "./userService.js";
 import { GraphQLError } from "graphql";
@@ -9,10 +9,12 @@ import {
   OrderItemStatus,
   Role,
   OrderStatus,
+  PeriodFilter,
 } from "../graphql/types/resolvers-types.js";
 import { shoppingCartService } from "./ShoppingCartService.js";
 import { orderItemService } from "./OrderItemService.js";
 import { cartItemService } from "./CartItemServices.js";
+import { dateUtil } from "../../utils/dateUtil.js";
 
 export class OrderService {
   constructor(private orderRepository: Repository<Order>) {}
@@ -124,6 +126,15 @@ export class OrderService {
       relations: { orderItems: { product: true } },
     });
     return res;
+  }
+  async countNewOrders(period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    const productsCount = await this.orderRepository.count({
+      where: {
+        createdAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+    });
+    return productsCount;
   }
 }
 

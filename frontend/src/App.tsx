@@ -16,6 +16,8 @@ import { ErrorCode } from './constants/errors'
 import ShopSection from "./Pages/Buyer/ProductsList";
 import CartPage from "./Pages/Buyer/CartPage";
 import PaymentSuccess from "./Components/buyer/PaymentSuccess";
+import AdminLayout from './layout/AdminLayout'
+import AdminHomePage from './Pages/Admin/AdminHomePage'
 function App() {
   return (
     <>
@@ -29,7 +31,11 @@ function App() {
           <Route path='orders' element={<OrdersSellerPage />} />
           <Route path='customer/:customerId' element={<CustomerInfoPage />} />
         </Route>
+        <Route path='/admin' element={<AdminLayout />} >
+          <Route path='users' element={<AdminHomePage/>} />
+        </Route>
       </Route>
+      
       <Route element={<ClientLayout />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -1,13 +1,13 @@
-import { Repository } from "typeorm";
+import { MoreThanOrEqual, Repository } from "typeorm";
 import { User } from "../entities/index.js";
-import { Buyer } from "../entities/index.js";
-import { SignupIpnut } from "../graphql/types/resolvers-types.js";
+import { PeriodFilter, SignupIpnut } from "../graphql/types/resolvers-types.js";
 import bcrypt from "bcrypt";
-import { shoppingCartService } from "./ShoppingCartService.js";
 import { Role } from "../graphql/types/resolvers-types.js";
-import { validateOrReject, ValidationError } from "class-validator";
+import { validateOrReject } from "class-validator";
 import { GraphQLError } from "graphql";
 import { appDataSource } from "../database/data-source.js";
+import { dateUtil } from "../../utils/dateUtil.js";
+import { addDays, format, getMonth } from "date-fns";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
@@ -49,6 +49,103 @@ export class UserService {
   async remove(user: User) {
     await this.userRepository.remove(user);
     return true;
+  }
+  async countNewBuyersAndSellers(period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    const registeredBuyers = await this.userRepository.count({
+      where: {
+        role: Role.Buyer,
+        createdAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+    });
+    const registeredSeller = await this.userRepository.count({
+      where: {
+        role: Role.Seller,
+        createdAt: period !== undefined ? MoreThanOrEqual(date) : undefined,
+      },
+    });
+    return { registeredBuyers, registeredSeller };
+  }
+  async getRegisteredUsersByPeriod(period: PeriodFilter, role: Role) {
+    const startDate = dateUtil.getStartDateOfPeriod(period);
+    const endDate = dateUtil.getEndDateOfPeriod(period);
+    const nbRegisteredUsers: { RegiteredUsers: number; date: Date }[] =
+      await this.userRepository
+        .createQueryBuilder("user")
+        .select("COUNT(*)", "RegiteredUsers")
+        .addSelect("DATE_TRUNC('day', user.createdAt)", "date")
+        .where("user.role = :role", { role })
+        .andWhere("user.createdAt >= :date", { date: startDate })
+        .groupBy("date")
+        .orderBy("date", "ASC")
+        .getRawMany();
+    const dates = dateUtil.generateDateRange(startDate, addDays(endDate, -1));
+    const nbRegisteredUsersMap = new Map<string, number>();
+    nbRegisteredUsers.forEach((entry) => {
+      nbRegisteredUsersMap.set(
+        format(entry.date, "yyyy-MM-dd"),
+        entry.RegiteredUsers
+      );
+    });
+    if (period === PeriodFilter.Year) {
+      const result = Array(12).fill(0);
+      nbRegisteredUsers.forEach((entry) => {
+        const month = getMonth(entry.date);
+        result[month] = entry.RegiteredUsers;
+      });
+      return result;
+    }
+    const finalResult = dates.map(
+      (date) => nbRegisteredUsersMap.get(date) ?? 0
+    );
+    return finalResult;
+  }
+  async getBestSellers(period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    const result: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      selledProducts: number;
+    }[] = await this.userRepository
+      .createQueryBuilder("user")
+      .select("user.id", "id")
+      .addSelect("user.firstName", "firstName")
+      .addSelect("user.lastName", "lastName")
+      .addSelect("COUNT(orderItem.quantity)", "selledProducts")
+      .innerJoin("user.products", "product")
+      .innerJoin("product.orderItems", "orderItem")
+      .where("orderItem.createdAt >= :date", { date })
+      .andWhere("user.role = :role", { role: Role.Seller })
+      .groupBy("user.id")
+      .orderBy("COUNT(orderItem.quantity)", "DESC")
+      .getRawMany();
+    return result;
+  }
+  async getFrequentBuyers(period?: PeriodFilter) {
+    const date = dateUtil.getStartDateOfPeriod(period);
+    const result: {
+      id: number;
+      firstName: string;
+      lastName: string;
+      nbPurchasedProducts: number;
+      nbPlacedOrders: number;
+    }[] = await this.userRepository
+      .createQueryBuilder("user")
+      .select("user.id", "id")
+      .addSelect("user.firstName", "firstName")
+      .addSelect("user.lastName", "lastName")
+      .addSelect("COUNT(order.id)", "nbPlacedOrders")
+      .addSelect("COUNT(orderItem.quantity)", "nbPurchasedProducts")
+      .innerJoin("user.orders", "order")
+      .innerJoin("order.orderItems", "orderItem")
+      .where("order.createdAt >= :date", { date })
+      .andWhere("user.role = :role", { role: Role.Buyer })
+      .groupBy("user.id")
+      .orderBy("COUNT(orderItem.quantity)", "DESC")
+      .orderBy("COUNT(order.id)", "DESC")
+      .getRawMany();
+    return result;
   }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

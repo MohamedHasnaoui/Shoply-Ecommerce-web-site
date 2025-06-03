@@ -43,6 +43,7 @@ const Login = () => {
         localStorage.setItem("jwt",data.jwt);
         await client.resetStore();
         if(data.user.role === Role.Seller) navigate("/seller/home");
+        if(data.user.role === Role.Admin) navigate("/admin/users");
       }
     } catch (err) {
       setsubmitError((err as Error).message);

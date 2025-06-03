@@ -1,4 +1,4 @@
-import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -34,6 +34,14 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
+};
+
+export type AdminHomeStatistics = {
+  __typename?: 'AdminHomeStatistics';
+  newOrders?: Maybe<Scalars['Int']['output']>;
+  newProducts?: Maybe<Scalars['Int']['output']>;
+  registeredBuyers?: Maybe<Scalars['Int']['output']>;
+  registeredSeller?: Maybe<Scalars['Int']['output']>;
 };
 
 export type AuthResponse = {
@@ -386,14 +394,17 @@ export type ProductsStatistics = {
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
+  getAdminHomeStatistics: AdminHomeStatistics;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
   getAllCategories?: Maybe<Array<Maybe<Category>>>;
   getAllMyProducts: ProductListResult;
   getAllProducts: ProductListResult;
+  getBestSellers: Array<BestSellerInfo>;
   getCartItem: CartItem;
   getCategory?: Maybe<Category>;
   getCustomerPastOrderItems?: Maybe<Array<OrderItem>>;
   getEarningByPeriod: Array<Scalars['Float']['output']>;
+  getFrequentBuyers: Array<FrequentBuyersInfo>;
   getMyOrders?: Maybe<Array<Maybe<Order>>>;
   getMyProductsStatistics: ProductsStatistics;
   getOrder: Order;
@@ -404,11 +415,17 @@ export type Query = {
   getParamUploadImage: UploadCloud;
   getProduct: Product;
   getRecievedOrderItemsStatistics: OrderItemStatistics;
+  getRegisteredUsersByPeriod: Array<Scalars['Int']['output']>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getSellerTopProducts?: Maybe<Array<ProductAndNbOrders>>;
   getShoppingCart?: Maybe<ShoppingCart>;
   getUserById: User;
   getWishList: WishList;
+};
+
+
+export type QueryGetAdminHomeStatisticsArgs = {
+  period?: InputMaybe<PeriodFilter>;
 };
 
 
@@ -419,6 +436,11 @@ export type QueryGetAllMyProductsArgs = {
 
 export type QueryGetAllProductsArgs = {
   input?: InputMaybe<ProductFilter>;
+};
+
+
+export type QueryGetBestSellersArgs = {
+  period?: InputMaybe<PeriodFilter>;
 };
 
 
@@ -438,6 +460,11 @@ export type QueryGetCustomerPastOrderItemsArgs = {
 
 
 export type QueryGetEarningByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
+};
+
+
+export type QueryGetFrequentBuyersArgs = {
   period?: InputMaybe<PeriodFilter>;
 };
 
@@ -485,6 +512,12 @@ export type QueryGetProductArgs = {
 
 export type QueryGetRecievedOrderItemsStatisticsArgs = {
   period?: InputMaybe<PeriodFilter>;
+};
+
+
+export type QueryGetRegisteredUsersByPeriodArgs = {
+  period?: InputMaybe<PeriodFilter>;
+  role: Role;
 };
 
 
@@ -610,6 +643,23 @@ export type WishList = {
   products?: Maybe<Array<Maybe<Product>>>;
 };
 
+export type BestSellerInfo = {
+  __typename?: 'bestSellerInfo';
+  firstName: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  lastName: Scalars['String']['output'];
+  selledProducts: Scalars['Int']['output'];
+};
+
+export type FrequentBuyersInfo = {
+  __typename?: 'frequentBuyersInfo';
+  firstName: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  lastName: Scalars['String']['output'];
+  nbPlacedOrders: Scalars['Int']['output'];
+  nbPurchasedProducts: Scalars['Int']['output'];
+};
+
 export type ProductAndNbOrders = {
   __typename?: 'productAndNbOrders';
   product: Product;
@@ -620,6 +670,35 @@ export enum RndType {
   One = 'ONE',
   Two = 'TWO'
 }
+
+export type GetAdminHomeStatisticsQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetAdminHomeStatisticsQuery = { __typename?: 'Query', getAdminHomeStatistics: { __typename?: 'AdminHomeStatistics', registeredSeller?: number | null, registeredBuyers?: number | null, newOrders?: number | null, newProducts?: number | null } };
+
+export type GetRegisteredUsersByPeriodQueryVariables = Exact<{
+  role: Role;
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetRegisteredUsersByPeriodQuery = { __typename?: 'Query', getRegisteredUsersByPeriod: Array<number> };
+
+export type GetBestSellersQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetBestSellersQuery = { __typename?: 'Query', getBestSellers: Array<{ __typename?: 'bestSellerInfo', id: number, firstName: string, lastName: string, selledProducts: number }> };
+
+export type GetFrequentBuyersQueryVariables = Exact<{
+  period?: InputMaybe<PeriodFilter>;
+}>;
+
+
+export type GetFrequentBuyersQuery = { __typename?: 'Query', getFrequentBuyers: Array<{ __typename?: 'frequentBuyersInfo', id: number, firstName: string, lastName: string, nbPurchasedProducts: number, nbPlacedOrders: number }> };
 
 export type SigninMutationVariables = Exact<{
   input: SignInInput;
@@ -824,6 +903,106 @@ export type GetParamUploadImageQueryVariables = Exact<{
 export type GetParamUploadImageQuery = { __typename?: 'Query', getParamUploadImage: { __typename?: 'UploadCloud', signature: string, timestamp: number, cloudName: string, apiKey: string } };
 
 
+
+export const GetAdminHomeStatisticsDocument = `
+    query GetAdminHomeStatistics($period: PeriodFilter) {
+  getAdminHomeStatistics(period: $period) {
+    registeredSeller
+    registeredBuyers
+    newOrders
+    newProducts
+  }
+}
+    `;
+
+export const useGetAdminHomeStatisticsQuery = <
+      TData = GetAdminHomeStatisticsQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAdminHomeStatisticsQueryVariables,
+      options?: UseQueryOptions<GetAdminHomeStatisticsQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAdminHomeStatisticsQuery, TError, TData>(
+      variables === undefined ? ['GetAdminHomeStatistics'] : ['GetAdminHomeStatistics', variables],
+      fetcher<GetAdminHomeStatisticsQuery, GetAdminHomeStatisticsQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAdminHomeStatisticsDocument, variables),
+      options
+    )};
+
+export const GetRegisteredUsersByPeriodDocument = `
+    query GetRegisteredUsersByPeriod($role: Role!, $period: PeriodFilter) {
+  getRegisteredUsersByPeriod(role: $role, period: $period)
+}
+    `;
+
+export const useGetRegisteredUsersByPeriodQuery = <
+      TData = GetRegisteredUsersByPeriodQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetRegisteredUsersByPeriodQueryVariables,
+      options?: UseQueryOptions<GetRegisteredUsersByPeriodQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetRegisteredUsersByPeriodQuery, TError, TData>(
+      ['GetRegisteredUsersByPeriod', variables],
+      fetcher<GetRegisteredUsersByPeriodQuery, GetRegisteredUsersByPeriodQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetRegisteredUsersByPeriodDocument, variables),
+      options
+    )};
+
+export const GetBestSellersDocument = `
+    query GetBestSellers($period: PeriodFilter) {
+  getBestSellers(period: $period) {
+    id
+    firstName
+    lastName
+    selledProducts
+  }
+}
+    `;
+
+export const useGetBestSellersQuery = <
+      TData = GetBestSellersQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetBestSellersQueryVariables,
+      options?: UseQueryOptions<GetBestSellersQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetBestSellersQuery, TError, TData>(
+      variables === undefined ? ['GetBestSellers'] : ['GetBestSellers', variables],
+      fetcher<GetBestSellersQuery, GetBestSellersQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetBestSellersDocument, variables),
+      options
+    )};
+
+export const GetFrequentBuyersDocument = `
+    query GetFrequentBuyers($period: PeriodFilter) {
+  getFrequentBuyers(period: $period) {
+    id
+    firstName
+    lastName
+    nbPurchasedProducts
+    nbPlacedOrders
+  }
+}
+    `;
+
+export const useGetFrequentBuyersQuery = <
+      TData = GetFrequentBuyersQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetFrequentBuyersQueryVariables,
+      options?: UseQueryOptions<GetFrequentBuyersQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetFrequentBuyersQuery, TError, TData>(
+      variables === undefined ? ['GetFrequentBuyers'] : ['GetFrequentBuyers', variables],
+      fetcher<GetFrequentBuyersQuery, GetFrequentBuyersQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetFrequentBuyersDocument, variables),
+      options
+    )};
 
 export const SigninDocument = `
     mutation Signin($input: SignInInput!) {

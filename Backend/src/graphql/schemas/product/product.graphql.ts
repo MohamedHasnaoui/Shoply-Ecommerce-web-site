@@ -64,6 +64,7 @@ export const productSchema = gql`
     getProduct(id: Int!): Product!
     getMyProductsStatistics: ProductsStatistics!
     getSellerTopProducts(nbProduct: Int!): [productAndNbOrders!]
+    getTopSellingProducts(input: ProductFilter): [productAndNbOrders!]
   }
   type Mutation {
     createProduct(input: CreateProductInput!): Product
