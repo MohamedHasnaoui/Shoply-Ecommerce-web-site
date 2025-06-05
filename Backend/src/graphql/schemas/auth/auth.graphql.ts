@@ -55,6 +55,7 @@ export const authSchema = gql`
     profileImg: String
     coverImg: String
     role: Role
+    isBlocked: Boolean
   }
   type AuthResponse {
     user: User!
@@ -64,9 +65,21 @@ export const authSchema = gql`
     email: String!
     userId: Int!
   }
+  input usersFilter {
+    id: Int
+    role: Role
+    pageNb: Int
+    pageSize: Int
+    isBlocked: Boolean
+  }
+  type UserPaginationResult {
+    users: [User!]!
+    totalCount: Int!
+  }
   type Query {
     currentUser: User
     getUserById(id: Int!): User!
+    getUsers(input: usersFilter): UserPaginationResult!
   }
   type Mutation {
     signup(input: SignupIpnut!): Boolean!

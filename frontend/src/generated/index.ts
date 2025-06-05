@@ -138,8 +138,10 @@ export type Mutation = {
   updateCategory: Category;
   updateOrderItemStatus: OrderItem;
   updateProduct?: Maybe<Product>;
+  updateProductDisableStatus: Scalars['Boolean']['output'];
   updateReview: Review;
   updateUser: User;
+  updateUserBlockStatus: Scalars['Boolean']['output'];
   verifyEmail: Scalars['Boolean']['output'];
   verifyPayment: Scalars['Boolean']['output'];
 };
@@ -249,6 +251,12 @@ export type MutationUpdateProductArgs = {
 };
 
 
+export type MutationUpdateProductDisableStatusArgs = {
+  isDisabled: Scalars['Boolean']['input'];
+  productId: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateReviewArgs = {
   input: UpdateReviewInput;
 };
@@ -256,6 +264,12 @@ export type MutationUpdateReviewArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
+};
+
+
+export type MutationUpdateUserBlockStatusArgs = {
+  isBlocked: Scalars['Boolean']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 
@@ -362,7 +376,9 @@ export type Product = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   images?: Maybe<Array<Scalars['String']['output']>>;
+  isDisabled?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  owner?: Maybe<User>;
   price?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
   rating?: Maybe<Scalars['Int']['output']>;
@@ -373,6 +389,7 @@ export type Product = {
 export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
+  isDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   maxPrice?: InputMaybe<Scalars['Float']['input']>;
   minPrice?: InputMaybe<Scalars['Float']['input']>;
   minRating?: InputMaybe<Scalars['Int']['input']>;
@@ -381,6 +398,7 @@ export type ProductFilter = {
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+  productId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ProductFilterInput = {
@@ -435,6 +453,7 @@ export type Query = {
   getShoppingCart?: Maybe<ShoppingCart>;
   getTopSellingProducts?: Maybe<Array<ProductAndNbOrders>>;
   getUserById: User;
+  getUsers: UserPaginationResult;
   getWishList: WishList;
 };
 
@@ -560,6 +579,11 @@ export type QueryGetUserByIdArgs = {
   id: Scalars['Int']['input'];
 };
 
+
+export type QueryGetUsersArgs = {
+  input?: InputMaybe<UsersFilter>;
+};
+
 export type Review = {
   __typename?: 'Review';
   comment: Scalars['String']['output'];
@@ -654,12 +678,19 @@ export type User = {
   firstName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<Gender>;
   id: Scalars['Int']['output'];
+  isBlocked?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
   street?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserPaginationResult = {
+  __typename?: 'UserPaginationResult';
+  totalCount: Scalars['Int']['output'];
+  users: Array<User>;
 };
 
 export type WishList = {
@@ -696,6 +727,14 @@ export enum RndType {
   Two = 'TWO'
 }
 
+export type UsersFilter = {
+  id?: InputMaybe<Scalars['Int']['input']>;
+  isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  role?: InputMaybe<Role>;
+};
+
 export type GetAdminHomeStatisticsQueryVariables = Exact<{
   period?: InputMaybe<PeriodFilter>;
 }>;
@@ -724,6 +763,22 @@ export type GetFrequentBuyersQueryVariables = Exact<{
 
 
 export type GetFrequentBuyersQuery = { __typename?: 'Query', getFrequentBuyers: Array<{ __typename?: 'frequentBuyersInfo', id: number, firstName: string, lastName: string, nbPurchasedProducts: number, nbPlacedOrders: number }> };
+
+export type UpdateUserBlockStatusMutationVariables = Exact<{
+  userId: Scalars['Int']['input'];
+  isBlocked: Scalars['Boolean']['input'];
+}>;
+
+
+export type UpdateUserBlockStatusMutation = { __typename?: 'Mutation', updateUserBlockStatus: boolean };
+
+export type UpdateProductDisableStatusMutationVariables = Exact<{
+  productId: Scalars['Int']['input'];
+  isDisabled: Scalars['Boolean']['input'];
+}>;
+
+
+export type UpdateProductDisableStatusMutation = { __typename?: 'Mutation', updateProductDisableStatus: boolean };
 
 export type SigninMutationVariables = Exact<{
   input: SignInInput;
@@ -866,7 +921,7 @@ export type GetAllProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', name?: string | null } | null }> } };
+export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, isDisabled?: boolean | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null, owner?: { __typename?: 'User', id: number, firstName?: string | null, lastName?: string | null } | null }> } };
 
 export type GetProductQueryVariables = Exact<{
   productId: Scalars['Int']['input'];
@@ -931,6 +986,13 @@ export type GetParamUploadImageQueryVariables = Exact<{
 
 
 export type GetParamUploadImageQuery = { __typename?: 'Query', getParamUploadImage: { __typename?: 'UploadCloud', signature: string, timestamp: number, cloudName: string, apiKey: string } };
+
+export type GetUsersQueryVariables = Exact<{
+  input?: InputMaybe<UsersFilter>;
+}>;
+
+
+export type GetUsersQuery = { __typename?: 'Query', getUsers: { __typename?: 'UserPaginationResult', totalCount: number, users: Array<{ __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null, isBlocked?: boolean | null }> } };
 
 export type GetWishListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1057,6 +1119,46 @@ export const useGetFrequentBuyersQuery = <
     return useQuery<GetFrequentBuyersQuery, TError, TData>(
       variables === undefined ? ['GetFrequentBuyers'] : ['GetFrequentBuyers', variables],
       fetcher<GetFrequentBuyersQuery, GetFrequentBuyersQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetFrequentBuyersDocument, variables),
+      options
+    )};
+
+export const UpdateUserBlockStatusDocument = `
+    mutation UpdateUserBlockStatus($userId: Int!, $isBlocked: Boolean!) {
+  updateUserBlockStatus(userId: $userId, isBlocked: $isBlocked)
+}
+    `;
+
+export const useUpdateUserBlockStatusMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateUserBlockStatusMutation, TError, UpdateUserBlockStatusMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateUserBlockStatusMutation, TError, UpdateUserBlockStatusMutationVariables, TContext>(
+      ['UpdateUserBlockStatus'],
+      (variables?: UpdateUserBlockStatusMutationVariables) => fetcher<UpdateUserBlockStatusMutation, UpdateUserBlockStatusMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateUserBlockStatusDocument, variables)(),
+      options
+    )};
+
+export const UpdateProductDisableStatusDocument = `
+    mutation UpdateProductDisableStatus($productId: Int!, $isDisabled: Boolean!) {
+  updateProductDisableStatus(productId: $productId, isDisabled: $isDisabled)
+}
+    `;
+
+export const useUpdateProductDisableStatusMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateProductDisableStatusMutation, TError, UpdateProductDisableStatusMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateProductDisableStatusMutation, TError, UpdateProductDisableStatusMutationVariables, TContext>(
+      ['UpdateProductDisableStatus'],
+      (variables?: UpdateProductDisableStatusMutationVariables) => fetcher<UpdateProductDisableStatusMutation, UpdateProductDisableStatusMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateProductDisableStatusDocument, variables)(),
       options
     )};
 
@@ -1622,9 +1724,16 @@ export const GetAllProductsDocument = `
       quantity
       price
       category {
+        id
         name
       }
+      owner {
+        id
+        firstName
+        lastName
+      }
       createdAt
+      isDisabled
     }
     count
   }
@@ -1941,6 +2050,46 @@ export const useGetParamUploadImageQuery = <
     return useQuery<GetParamUploadImageQuery, TError, TData>(
       ['GetParamUploadImage', variables],
       fetcher<GetParamUploadImageQuery, GetParamUploadImageQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetParamUploadImageDocument, variables),
+      options
+    )};
+
+export const GetUsersDocument = `
+    query GetUsers($input: usersFilter) {
+  getUsers(input: $input) {
+    users {
+      id
+      email
+      firstName
+      lastName
+      country
+      city
+      street
+      postalCode
+      phoneNumber
+      birthDay
+      gender
+      profileImg
+      coverImg
+      role
+      isBlocked
+    }
+    totalCount
+  }
+}
+    `;
+
+export const useGetUsersQuery = <
+      TData = GetUsersQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetUsersQueryVariables,
+      options?: UseQueryOptions<GetUsersQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetUsersQuery, TError, TData>(
+      variables === undefined ? ['GetUsers'] : ['GetUsers', variables],
+      fetcher<GetUsersQuery, GetUsersQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetUsersDocument, variables),
       options
     )};
 

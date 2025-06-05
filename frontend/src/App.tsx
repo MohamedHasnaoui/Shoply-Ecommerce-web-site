@@ -1,10 +1,8 @@
 import { Routes, Route, Navigate } from "react-router";
-import Login from "./Pages/Common/LoginPage";
-import ClientLayout from "./layout/ClientLayout";
+import Login from "./Pages/Common/LoginPage"; 
 import Register from "./Pages/Common/RegisterPage";
 import ProtectedRoute from "./Components/common/ProtectedRoute";
-import OTPVerification from "./Pages/Common/OTPVerificationPage";
-import SellerLayout from "./layout/SellerLayout";
+import OTPVerification from "./Pages/Common/OTPVerificationPage"; 
 import ProductListPage from "./Pages/Seller/productListPage";
 import AddProduct from "./Pages/Seller/addProductPage";
 import EditProductPage from "./Pages/Seller/editProductPage";
@@ -20,8 +18,11 @@ import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
 import Wishlist from "./Components/buyer/Wishlist";
 import HomePage from "./Pages/Buyer/HomePage";
 import ProductDetails from "./Pages/Buyer/ProductDetails";
-import AdminLayout from "./layout/AdminLayout";
 import AdminHomePage from "./Pages/Admin/AdminHomePage";
+import SellerLayout from "./layout/SellerLayout";
+import AdminLayout from "./layout/AdminLayout";
+import ClientLayout from "./layout/ClientLayout";
+import ManageUsersAndProducts from "./Pages/Admin/ManageUsersAndProducts";
 function App() {
   return (
     <>
@@ -39,7 +40,8 @@ function App() {
             <Route path="customer/:customerId" element={<CustomerInfoPage />} />
           </Route>
           <Route path='/admin' element={<AdminLayout />} >
-              <Route path='users' element={<AdminHomePage/>} />
+              <Route path='' element={<AdminHomePage/>} />
+              <Route path='manageUsersAndProducts' element={<ManageUsersAndProducts/>} />
           </Route>
         </Route>
         <Route element={<ClientLayout />}>

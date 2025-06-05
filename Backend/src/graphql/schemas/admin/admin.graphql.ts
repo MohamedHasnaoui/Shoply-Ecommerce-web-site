@@ -26,4 +26,8 @@ export const adminShema = gql`
     getBestSellers(period: PeriodFilter): [bestSellerInfo!]!
     getFrequentBuyers(period: PeriodFilter): [frequentBuyersInfo!]!
   }
+  type Mutation {
+    updateUserBlockStatus(userId: Int!, isBlocked: Boolean!): Boolean!
+    updateProductDisableStatus(productId: Int!, isDisabled: Boolean!): Boolean!
+  }
 `;

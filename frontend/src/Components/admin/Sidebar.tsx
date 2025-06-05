@@ -93,7 +93,7 @@ export default function Sidebar(props:propsType) {
               <div className="content-side content-side-full">
                 <ul className="nav-main">
                   <li className="nav-main-item">
-                    <Link to={"/seller/home"} className="nav-main-link active">
+                    <Link to={"/admin"} className="nav-main-link active">
                       <i className="nav-main-link-icon fa fa-house-user"></i>
                       <span className="nav-main-link-name">Dashboard</span>
                     </Link>
@@ -101,22 +101,12 @@ export default function Sidebar(props:propsType) {
                   <li className={`nav-main-item ${isOpenManageMenu ? "open":""}`}>
                         <div role="button" className="nav-main-link nav-main-link-submenu" onClick={()=>setIsOpenManageMenu(!isOpenManageMenu)}>
                         <i className="nav-main-link-icon fa fa-shopping-bag"></i>
-                          <span className="nav-main-link-name">e-Commerce</span>
+                          <span className="nav-main-link-name">admin</span>
                         </div>
                         <ul className="nav-main-submenu"> 
                           <li className="nav-main-item">
-                            <Link to={"/seller/orders"} className="nav-main-link">
-                              <span className="nav-main-link-name">Orders</span>
-                            </Link>
-                          </li>
-                          <li className="nav-main-item">
-                            <Link to={"/seller/product-list"} className="nav-main-link">
-                              <span className="nav-main-link-name">Products</span>
-                            </Link>
-                          </li>
-                          <li className="nav-main-item">
-                            <Link to={"/seller/add-product"} className="nav-main-link">
-                              <span className="nav-main-link-name">Add Product</span>
+                            <Link to={"/admin/manageUsersAndProducts"} className="nav-main-link">
+                              <span className="nav-main-link-name">Manage Users And Products</span>
                             </Link>
                           </li>
                         </ul>

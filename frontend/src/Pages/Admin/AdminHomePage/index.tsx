@@ -1,6 +1,8 @@
 import backgroundImg from "../../../assets/sellerAssets/media/photos/photo26@2x.jpg"
 import ChartsHomePage from "../../../Components/admin/chartsHomePage/ChartsHomePage"
+import FrequentBuyers from "../../../Components/admin/FrequentBuyers"
 import HomeGeneralStatistics from "../../../Components/admin/HomeGeneralStatistics"
+import TopSellers from "../../../Components/admin/TopSellers"
 
 const AdminHomePage = () => {
   
@@ -23,7 +25,7 @@ const AdminHomePage = () => {
     <div className="bg-body-light border-bottom">
       <div className="content py-1 text-center">
         <nav className="breadcrumb bg-body-light py-2 mb-0">
-          <div className="breadcrumb-item">e-Commerce</div>
+          <div className="breadcrumb-item">Admin</div>
           <span className="breadcrumb-item active">Dashboard</span>
         </nav>
       </div>
@@ -43,17 +45,11 @@ const AdminHomePage = () => {
       {/* <!-- Latest Orders and Top Products --> */}
       <div className="row">
         {/* <!-- Latest Orders --> */}
-        <div className="col-xl-6">
-          <h2 className="content-heading">Latest Orders</h2>
-          {/* <LatestOrders /> */}
-        </div>
+          <TopSellers />
         {/* <!-- END Latest Orders --> */}
 
-        {/* <!-- Top Products --> */}
-        <div className="col-xl-6">
-          <h2 className="content-heading">Top Products</h2>
-          {/* <TopProduct /> */}
-        </div>
+        {/* <!-- Top Products --> */} 
+          <FrequentBuyers/>
         {/* <!-- END Top Products --> */}
       </div>
       {/* <!-- END Latest Orders and Top Products --> */}

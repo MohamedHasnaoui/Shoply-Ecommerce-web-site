@@ -1,4 +1,4 @@
-import { QueryOptions } from "@apollo/client";
+import { QueryOptions, MutationOptions } from "@apollo/client";
 import {
   GetAdminHomeStatisticsQueryVariables,
   GetAdminHomeStatisticsQuery,
@@ -10,12 +10,18 @@ import {
   GetBestSellersQuery,
   GetFrequentBuyersQueryVariables,
   GetFrequentBuyersQuery,
+  UpdateUserBlockStatusMutation,
+  UpdateUserBlockStatusMutationVariables,
+  UpdateProductDisableStatusMutation,
+  UpdateProductDisableStatusMutationVariables,
 } from "../../generated";
 import {
   GET_ADMIN_HOME_STATISTICS,
   GET_BEST_SELLERS,
   GET_FREQUENT_BUYERS,
   GET_REGISTERED_USERS_BY_PERIOD,
+  UPDATE_PRODUCT_DISABLED_STATUS,
+  UPDATE_USER_BLOCK_STATUS,
 } from "../../graphql/admin.graphql";
 import { client } from "../../graphqlProvider";
 
@@ -62,6 +68,28 @@ class AdminService {
       variables: { period },
     };
     const response = await client.query(options);
+    return response;
+  }
+  async UpdateUserBlockStatus(userId: number, isBlocked: boolean) {
+    const options: MutationOptions<
+      UpdateUserBlockStatusMutation,
+      UpdateUserBlockStatusMutationVariables
+    > = {
+      mutation: UPDATE_USER_BLOCK_STATUS,
+      variables: { userId, isBlocked },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async UpdateProductDisableStatus(productId: number, isDisabled: boolean) {
+    const options: MutationOptions<
+      UpdateProductDisableStatusMutation,
+      UpdateProductDisableStatusMutationVariables
+    > = {
+      mutation: UPDATE_PRODUCT_DISABLED_STATUS,
+      variables: { isDisabled, productId },
+    };
+    const response = await client.mutate(options);
     return response;
   }
 }

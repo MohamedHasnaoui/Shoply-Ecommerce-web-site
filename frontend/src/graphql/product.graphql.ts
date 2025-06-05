@@ -78,9 +78,16 @@ export const GET_ALL_PRODUCTS_FILTERED = gql`
         quantity
         price
         category {
+          id
           name
         }
+        owner {
+          id
+          firstName
+          lastName
+        }
         createdAt
+        isDisabled
       }
       count
     }

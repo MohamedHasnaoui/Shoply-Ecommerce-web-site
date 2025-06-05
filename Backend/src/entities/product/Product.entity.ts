@@ -57,6 +57,10 @@ export class Product {
   @Column("jsonb")
   images: string[];
 
+  @Column({ default: false })
+  @IsOptional()
+  isDisabled: boolean;
+
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.product)
   orderItems: Relation<OrderItem>[];
 

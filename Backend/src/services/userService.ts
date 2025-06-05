@@ -1,6 +1,11 @@
-import { MoreThanOrEqual, Repository } from "typeorm";
+import { MoreThanOrEqual, Repository, Not } from "typeorm";
 import { User } from "../entities/index.js";
-import { PeriodFilter, SignupIpnut } from "../graphql/types/resolvers-types.js";
+import {
+  PeriodFilter,
+  SignupIpnut,
+  UserPaginationResult,
+  UsersFilter,
+} from "../graphql/types/resolvers-types.js";
 import bcrypt from "bcrypt";
 import { Role } from "../graphql/types/resolvers-types.js";
 import { validateOrReject } from "class-validator";
@@ -8,6 +13,7 @@ import { GraphQLError } from "graphql";
 import { appDataSource } from "../database/data-source.js";
 import { dateUtil } from "../../utils/dateUtil.js";
 import { addDays, format, getMonth } from "date-fns";
+import { ErrorCode } from "../../utils/Errors.js";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
@@ -115,7 +121,10 @@ export class UserService {
       .addSelect("COUNT(orderItem.quantity)", "selledProducts")
       .innerJoin("user.products", "product")
       .innerJoin("product.orderItems", "orderItem")
-      .where("orderItem.createdAt >= :date", { date })
+      .where(
+        date !== undefined ? "orderItem.createdAt >= :date" : "1=1",
+        date !== undefined ? { date } : undefined
+      )
       .andWhere("user.role = :role", { role: Role.Seller })
       .groupBy("user.id")
       .orderBy("COUNT(orderItem.quantity)", "DESC")
@@ -146,6 +155,38 @@ export class UserService {
       .orderBy("COUNT(order.id)", "DESC")
       .getRawMany();
     return result;
+  }
+  async getUsers(input?: UsersFilter): Promise<UserPaginationResult> {
+    const pageSize = input.pageSize || 10;
+    const pageNb = input.pageNb || 1;
+    const users = await this.userRepository.find({
+      where: {
+        id: input.id || undefined,
+        role: input.role || Not(Role.Admin),
+        isBlocked: input.isBlocked,
+      },
+      take: pageSize,
+      skip: (pageNb - 1) * pageSize,
+    });
+    const totalCount = await this.userRepository.count({
+      where: {
+        id: input.id || undefined,
+        role: input.role || Not(Role.Admin),
+        isBlocked: input.isBlocked,
+      },
+    });
+    return { users, totalCount };
+  }
+  async updateUserBlockStatus(userId: number, isBlocked: boolean) {
+    const user = await this.findOneById(userId);
+    if (!user) {
+      throw new GraphQLError("User Not Found", {
+        extensions: { code: ErrorCode.BAD_USER_INPUT },
+      });
+    }
+    user.isBlocked = isBlocked;
+    await this.update(user);
+    return true;
   }
 }
 export const userService = new UserService(appDataSource.getRepository(User));

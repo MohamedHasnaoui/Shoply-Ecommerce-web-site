@@ -106,6 +106,10 @@ export class User {
   @IsOptional()
   role!: Role;
 
+  @Column({ default: false })
+  @IsOptional()
+  isBlocked: boolean;
+
   @Column({ default: new Date() })
   @IsOptional()
   createdAt: Date;

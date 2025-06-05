@@ -120,8 +120,10 @@ export type Mutation = {
   updateCategory: Category;
   updateOrderItemStatus: OrderItem;
   updateProduct?: Maybe<Product>;
+  updateProductDisableStatus: Scalars['Boolean']['output'];
   updateReview: Review;
   updateUser: User;
+  updateUserBlockStatus: Scalars['Boolean']['output'];
   verifyEmail: Scalars['Boolean']['output'];
   verifyPayment: Scalars['Boolean']['output'];
 };
@@ -231,6 +233,12 @@ export type MutationUpdateProductArgs = {
 };
 
 
+export type MutationUpdateProductDisableStatusArgs = {
+  isDisabled: Scalars['Boolean']['input'];
+  productId: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateReviewArgs = {
   input: UpdateReviewInput;
 };
@@ -238,6 +246,12 @@ export type MutationUpdateReviewArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
+};
+
+
+export type MutationUpdateUserBlockStatusArgs = {
+  isBlocked: Scalars['Boolean']['input'];
+  userId: Scalars['Int']['input'];
 };
 
 
@@ -344,7 +358,9 @@ export type Product = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   images?: Maybe<Array<Scalars['String']['output']>>;
+  isDisabled?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  owner?: Maybe<User>;
   price?: Maybe<Scalars['Float']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
   rating?: Maybe<Scalars['Int']['output']>;
@@ -355,6 +371,7 @@ export type Product = {
 export type ProductFilter = {
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
+  isDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   maxPrice?: InputMaybe<Scalars['Float']['input']>;
   minPrice?: InputMaybe<Scalars['Float']['input']>;
   minRating?: InputMaybe<Scalars['Int']['input']>;
@@ -363,6 +380,7 @@ export type ProductFilter = {
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+  productId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ProductFilterInput = {
@@ -417,6 +435,7 @@ export type Query = {
   getShoppingCart?: Maybe<ShoppingCart>;
   getTopSellingProducts?: Maybe<Array<ProductAndNbOrders>>;
   getUserById: User;
+  getUsers: UserPaginationResult;
   getWishList: WishList;
 };
 
@@ -542,6 +561,11 @@ export type QueryGetUserByIdArgs = {
   id: Scalars['Int']['input'];
 };
 
+
+export type QueryGetUsersArgs = {
+  input?: InputMaybe<UsersFilter>;
+};
+
 export type Review = {
   __typename?: 'Review';
   comment: Scalars['String']['output'];
@@ -636,12 +660,19 @@ export type User = {
   firstName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<Gender>;
   id: Scalars['Int']['output'];
+  isBlocked?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   phoneNumber?: Maybe<Scalars['String']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
   street?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserPaginationResult = {
+  __typename?: 'UserPaginationResult';
+  totalCount: Scalars['Int']['output'];
+  users: Array<User>;
 };
 
 export type WishList = {
@@ -677,6 +708,14 @@ export enum RndType {
   One = 'ONE',
   Two = 'TWO'
 }
+
+export type UsersFilter = {
+  id?: InputMaybe<Scalars['Int']['input']>;
+  isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
+  pageNb?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  role?: InputMaybe<Role>;
+};
 
 
 
@@ -794,11 +833,13 @@ export type ResolversTypes = {
   UpdateUserInput: UpdateUserInput;
   UploadCloud: ResolverTypeWrapper<UploadCloud>;
   User: ResolverTypeWrapper<User>;
+  UserPaginationResult: ResolverTypeWrapper<UserPaginationResult>;
   WishList: ResolverTypeWrapper<WishList>;
   bestSellerInfo: ResolverTypeWrapper<BestSellerInfo>;
   frequentBuyersInfo: ResolverTypeWrapper<FrequentBuyersInfo>;
   productAndNbOrders: ResolverTypeWrapper<ProductAndNbOrders>;
   rndType: RndType;
+  usersFilter: UsersFilter;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -841,10 +882,12 @@ export type ResolversParentTypes = {
   UpdateUserInput: UpdateUserInput;
   UploadCloud: UploadCloud;
   User: User;
+  UserPaginationResult: UserPaginationResult;
   WishList: WishList;
   bestSellerInfo: BestSellerInfo;
   frequentBuyersInfo: FrequentBuyersInfo;
   productAndNbOrders: ProductAndNbOrders;
+  usersFilter: UsersFilter;
 };
 
 export type AdminHomeStatisticsResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AdminHomeStatistics'] = ResolversParentTypes['AdminHomeStatistics']> = {
@@ -910,8 +953,10 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, Partial<MutationUpdateCategoryArgs>>;
   updateOrderItemStatus?: Resolver<ResolversTypes['OrderItem'], ParentType, ContextType, RequireFields<MutationUpdateOrderItemStatusArgs, 'orderItemId' | 'status'>>;
   updateProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
+  updateProductDisableStatus?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateProductDisableStatusArgs, 'isDisabled' | 'productId'>>;
   updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationUpdateReviewArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
+  updateUserBlockStatus?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateUserBlockStatusArgs, 'isBlocked' | 'userId'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
   verifyPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyPaymentArgs, 'sessionId'>>;
 };
@@ -967,7 +1012,9 @@ export type ProductResolvers<ContextType = MyContext, ParentType extends Resolve
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   images?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  isDisabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   price?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   quantity?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   rating?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1018,6 +1065,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getShoppingCart?: Resolver<Maybe<ResolversTypes['ShoppingCart']>, ParentType, ContextType>;
   getTopSellingProducts?: Resolver<Maybe<Array<ResolversTypes['productAndNbOrders']>>, ParentType, ContextType, Partial<QueryGetTopSellingProductsArgs>>;
   getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'id'>>;
+  getUsers?: Resolver<ResolversTypes['UserPaginationResult'], ParentType, ContextType, Partial<QueryGetUsersArgs>>;
   getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
 };
 
@@ -1056,12 +1104,19 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  isBlocked?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   postalCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profileImg?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   street?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserPaginationResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UserPaginationResult'] = ResolversParentTypes['UserPaginationResult']> = {
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1115,6 +1170,7 @@ export type Resolvers<ContextType = MyContext> = {
   ShoppingCart?: ShoppingCartResolvers<ContextType>;
   UploadCloud?: UploadCloudResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserPaginationResult?: UserPaginationResultResolvers<ContextType>;
   WishList?: WishListResolvers<ContextType>;
   bestSellerInfo?: BestSellerInfoResolvers<ContextType>;
   frequentBuyersInfo?: FrequentBuyersInfoResolvers<ContextType>;

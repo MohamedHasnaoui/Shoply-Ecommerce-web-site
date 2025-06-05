@@ -12,10 +12,11 @@ export const productSchema = gql`
     description: String
     quantity: Int
     price: Float
-
     category: Category
     createdAt: DateTime
     totalOrders: Int
+    isDisabled: Boolean
+    owner: User
   }
 
   input CreateProductInput {
@@ -47,6 +48,8 @@ export const productSchema = gql`
     countOutOfStock: Int!
   }
   input ProductFilter {
+    productId: Int
+    isDisabled: Boolean
     available: Boolean
     categoryId: Int
     name: String

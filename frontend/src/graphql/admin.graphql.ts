@@ -39,3 +39,14 @@ export const GET_FREQUENT_BUYERS = gql`
     }
   }
 `;
+export const UPDATE_USER_BLOCK_STATUS = gql`
+  mutation UpdateUserBlockStatus($userId: Int!, $isBlocked: Boolean!) {
+    updateUserBlockStatus(userId: $userId, isBlocked: $isBlocked)
+  }
+`;
+
+export const UPDATE_PRODUCT_DISABLED_STATUS = gql`
+  mutation UpdateProductDisableStatus($productId: Int!, $isDisabled: Boolean!) {
+    updateProductDisableStatus(productId: $productId, isDisabled: $isDisabled)
+  }
+`;

@@ -72,5 +72,45 @@ export const AdminRsolver: Resolvers = {
       }
       return await userService.getFrequentBuyers(period);
     },
+    getUsers: async (parent, { input }, context) => {
+      return await userService.getUsers(input);
+    },
+  },
+  Mutation: {
+    updateUserBlockStatus: async (parent, { isBlocked, userId }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not authenticated", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Admin) {
+        throw new GraphQLError("Only Admins Can Access this service", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
+        });
+      }
+      return await userService.updateUserBlockStatus(userId, isBlocked);
+    },
+    updateProductDisableStatus: async (
+      parent,
+      { isDisabled, productId },
+      context
+    ) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("Not authenticated", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Admin) {
+        throw new GraphQLError("Only admins can access this service", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
+        });
+      }
+      return await productService.updateProductDisableStatus(
+        productId,
+        isDisabled
+      );
+    },
   },
 };

@@ -21,6 +21,7 @@ import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
 import { orderItemService } from "./OrderItemService.js";
 import { dateUtil } from "../../utils/dateUtil.js";
+import { i } from "react-router/dist/development/fog-of-war-CCAcUMgB.js";
 
 export class ProductServices {
   constructor(private productRepository: Repository<Product>) {}
@@ -35,7 +36,6 @@ export class ProductServices {
       category,
     });
     try {
-      console.log(product);
       validateOrReject(product);
       console.log("product");
       return await this.productRepository.save(product);
@@ -84,6 +84,8 @@ export class ProductServices {
     }
 
     const whereConditions = {
+      id: input.productId,
+      isDisabled: input.isDisabled,
       category:
         input.categoryId !== undefined ? { id: input.categoryId } : undefined,
       quantity:
@@ -119,7 +121,7 @@ export class ProductServices {
         !input.pageSize || !input.pageNb
           ? 0
           : (input.pageNb - 1) * input.pageSize,
-      relations: { category: true },
+      relations: { category: true, owner: true },
     });
 
     return { products, count };
@@ -270,6 +272,17 @@ export class ProductServices {
     return products.map((elm: any) => {
       return { product: { ...elm } as Product, totalSold: elm.totalSold };
     });
+  }
+  async updateProductDisableStatus(productId: number, isDisabled: boolean) {
+    const product = await this.findById(productId);
+    if (product === null) {
+      throw new GraphQLError("Product not found", {
+        extensions: { code: "BAD USER INPUTS" },
+      });
+    }
+    product.isDisabled = isDisabled;
+    await this.update(product);
+    return true;
   }
 }
 
