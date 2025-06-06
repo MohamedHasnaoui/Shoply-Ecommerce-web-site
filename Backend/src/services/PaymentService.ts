@@ -52,28 +52,7 @@ export class PaymentService {
         extensions: { code: "NOT_FOUND" },
       });
     }
-    // try {
-    //   const buyer = await this.buyerRepository.findOne({ where: { email } });
 
-    //   if (!buyer || !buyer.stripeCustomerId) {
-    //     throw new GraphQLError(
-    //       "Buyer not found or stripe customer id not found",
-    //       {}
-    //     );
-    //   }
-
-    //   const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: 500,
-    //     currency: "mad",
-    //     customer: buyer.stripeCustomerId,
-    //     payment_method_types: ["card"],
-    //   });
-    //   console.log("PaymentIntent", paymentIntent);
-    //   return paymentIntent.client_secret;
-    // } catch (error) {
-    //   console.log("At CreatePaymentIntent PaymentService", error);
-    //   throw new GraphQLError("Failed to create payment intent", error);
-    // }
     try {
       const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
         buyerId
@@ -107,7 +86,15 @@ export class PaymentService {
         customer_email: buyer.email,
 
         metadata: {
-          buyerId,
+          buyerId: buyerId.toString(),
+          totalAmount: totalAmount.toFixed(2), // Ex: "123.45"
+          productImages: JSON.stringify(
+            shoppingCart.cartItems.map((item) => item.product.images[0])
+          ),
+          productNames: JSON.stringify(
+            shoppingCart.cartItems.map((item) => item.product.name)
+          ),
+          fullName: `${buyer.firstName} ${buyer.lastName}`,
         },
       });
 
@@ -119,22 +106,54 @@ export class PaymentService {
   }
   async verifyPayment(sessionId: string) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(sessionId, {
-        expand: ["payment_intent", "line_items"],
-      });
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status !== "paid") {
+        throw new GraphQLError("Paiement non validé", {
+          extensions: { code: "PAYMENT_FAILED" },
+        });
+      }
+      const buyerId = session.metadata?.buyerId;
+      if (!buyerId) {
+        throw new GraphQLError("Identifiant acheteur introuvable");
+      }
 
-      return {
-        status: session.payment_status,
-        isSuccess: session.payment_status === "paid",
-        sessionId: session.id,
-        amount: session.amount_total,
-        currency: session.currency,
-        customerEmail: session.customer_email,
-        created: session.created,
-      };
+      const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
+        Number(buyerId)
+      );
+      if (!shoppingCart) {
+        throw new GraphQLError("Panier introuvable", {
+          extensions: { code: "EMPTY_CART" },
+        });
+      }
+
+      const productRepository = appDataSource.getRepository(Product);
+      for (const cartItem of shoppingCart.cartItems) {
+        const product = await productRepository.findOneBy({
+          id: cartItem.product.id,
+        });
+        if (!product) continue;
+
+        if (product.quantity < cartItem.quantity) {
+          throw new GraphQLError(
+            `Stock insuffisant pour le produit ${product.name}`,
+            {
+              extensions: { code: "INSUFFICIENT_STOCK" },
+            }
+          );
+        }
+
+        product.quantity -= cartItem.quantity;
+        await productRepository.save(product);
+      }
+      await this.paymentRepository.save({
+        paymentDate: new Date(),
+        paymentType: PaymentType.Visa,
+      });
+      await shoppingCartService.cancelShoppingCart(Number(buyerId));
+      return true;
     } catch (error) {
-      console.error("Erreur lors de la vérification du paiement:", error);
-      throw new GraphQLError("Failed to verify payment", {
+      console.error("Erreur lors de la vérification du paiement", error);
+      throw new GraphQLError("Échec de la vérification du paiement", {
         extensions: { code: "PAYMENT_VERIFICATION_ERROR" },
       });
     }

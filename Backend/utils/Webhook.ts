@@ -30,11 +30,11 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     const session = event.data.object as Stripe.Checkout.Session;
     const email = session.customer_email;
 
-    // await emailUtil.sendPaymentFailureEmail(
-    //   email,
-    //   "Échec de paiement",
-    //   `Votre paiement a échoué. Merci de réessayer.`
-    // );
+    await emailUtil.sendPaymentFailureEmail(
+      email,
+      "Échec de paiement",
+      `Votre paiement a échoué. Merci de réessayer.`
+    );
     console.log("📨 Email échec envoyé (async_payment_failed).");
     return res.status(200).send("Async payment failure handled.");
   }
@@ -44,11 +44,11 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
     const paymentIntent = event.data.object as Stripe.PaymentIntent;
     const email = paymentIntent.metadata?.email;
 
-    // await emailUtil.sendPaymentFailureEmail(
-    //   email,
-    //   "Échec de paiement",
-    //   `Votre paiement n'a pas abouti.`
-    // );
+    await emailUtil.sendPaymentFailureEmail(
+      email,
+      "Échec de paiement",
+      `Votre paiement n'a pas abouti.`
+    );
     console.log("📨 Email échec envoyé (payment_intent.payment_failed).");
     return res.status(200).send("Payment intent failure handled.");
   }
@@ -70,11 +70,11 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
 
       if (!shoppingCart) {
         console.error("❌ Panier non trouvé");
-        // await emailUtil.sendPaymentFailureEmail(
-        //   session.customer_email,
-        //   "Erreur Client",
-        //   "Panier non trouvé"
-        // );
+        await emailUtil.sendPaymentFailureEmail(
+          session.customer_email,
+          "Erreur Client",
+          "Panier non trouvé"
+        );
         return res.status(404).send("Panier introuvable");
       }
 
@@ -86,11 +86,11 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
           console.error(
             `❌ Stock insuffisant pour le produit ${item.product.id}`
           );
-          //   await emailUtil.sendPaymentFailureEmail(
-          //     session.customer_email,
-          //     "Erreur de stock",
-          //     `Stock insuffisant pour le produit ${item.product.id}`
-          //   );
+          await emailUtil.sendPaymentFailureEmail(
+            session.customer_email,
+            "Erreur de stock",
+            `Stock insuffisant pour le produit ${item.product.id}`
+          );
           return res.status(400).send("Stock insuffisant");
         }
 
@@ -106,20 +106,26 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
       await paymentRepo.save(payment);
 
       // Email succès
-      //   await emailUtil.sendPaymentSuccessEmail(
-      //     session.customer_email,
-      //     session.amount_total ? session.amount_total / 100 : 0
-      //   );
+      const images = JSON.parse(session.metadata.productImages);
+      const productNames = JSON.parse(session.metadata.productNames);
+      const fullName = session.metadata.fullName;
+      await emailUtil.sendPaymentSuccessEmail(
+        session.customer_email,
+        session.amount_total ? session.amount_total / 100 : 0,
+        images,
+        productNames,
+        fullName
+      );
 
       await shoppingCartService.cancelShoppingCart(Number(buyerId));
       console.log("✅ Paiement traité avec succès pour le buyerId :", buyerId);
     } catch (error) {
       console.error("❌ Erreur traitement webhook :", error);
-      //   await emailUtil.sendPaymentFailureEmail(
-      //     session.customer_email,
-      //     "Erreur Serveur",
-      //     "Une erreur s’est produite pendant le traitement du paiement."
-      //   );
+      await emailUtil.sendPaymentFailureEmail(
+        session.customer_email,
+        "Erreur Serveur",
+        "Une erreur s’est produite pendant le traitement du paiement."
+      );
       return res.status(500).send("Erreur serveur");
     }
   }

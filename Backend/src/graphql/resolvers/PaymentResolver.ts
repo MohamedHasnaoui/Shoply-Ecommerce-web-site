@@ -4,7 +4,6 @@ import { Buyer } from "../../entities/index.js";
 import { userService } from "../../services/userService.js";
 import { paymentService } from "../../services/PaymentService.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
-import { stripe } from "../../../utils/Stripe.js";
 export const PaymentResolver: Resolvers = {
   Mutation: {
     // createCustomerStripeId: async (parent, {}, context) => {
@@ -55,17 +54,8 @@ export const PaymentResolver: Resolvers = {
       //   });
       // }
     },
-  },
-  Query: {
     verifyPayment: async (parent, { sessionId }, context) => {
-      try {
-        const result = await paymentService.verifyPayment(sessionId);
-
-        return result;
-      } catch (err) {
-        console.error("Erreur lors de la vérification du paiement :", err);
-        throw new GraphQLError("Erreur de vérification du paiement");
-      }
+      return await paymentService.verifyPayment(sessionId);
     },
   },
 };

@@ -5,8 +5,8 @@ import {
 } from "../../graphql/payment.graphql";
 import {
   CreatPaymentIntentMutation,
-  VerifyPaymentQuery,
-  VerifyPaymentQueryVariables,
+  VerifyPaymentMutation,
+  VerifyPaymentMutationVariables,
 } from "../../generated";
 
 export class PaymentService {
@@ -18,13 +18,12 @@ export class PaymentService {
     return response.data?.creatPaymentIntent;
   }
   async verifyPayment(sessionId: string) {
-    const response = await client.query<
-      VerifyPaymentQuery,
-      VerifyPaymentQueryVariables
+    const response = await client.mutate<
+      VerifyPaymentMutation,
+      VerifyPaymentMutationVariables
     >({
-      query: VERIFY_PAYMENT,
+      mutation: VERIFY_PAYMENT,
       variables: { sessionId },
-      fetchPolicy: "no-cache",
     });
 
     return response.data?.verifyPayment;

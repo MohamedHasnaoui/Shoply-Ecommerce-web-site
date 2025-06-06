@@ -9,12 +9,7 @@ export const CREATE_PAYMENT_INTENT = gql`
   }
 `;
 export const VERIFY_PAYMENT = gql`
-  query VerifyPayment($sessionId: String!) {
-    verifyPayment(sessionId: $sessionId) {
-      isSuccess
-      amount
-      currency
-      customerEmail
-    }
+  mutation VerifyPayment($sessionId: String!) {
+    verifyPayment(sessionId: $sessionId)
   }
 `;
