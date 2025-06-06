@@ -141,7 +141,6 @@ export type Mutation = {
   updateReview: Review;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
-  verifyPayment: Scalars['Boolean']['output'];
 };
 
 
@@ -264,11 +263,6 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
 
-
-export type MutationVerifyPaymentArgs = {
-  sessionId: Scalars['String']['input'];
-};
-
 export type Order = {
   __typename?: 'Order';
   buyer?: Maybe<User>;
@@ -343,10 +337,27 @@ export type PaymentSession = {
   sessionUrl: Scalars['String']['output'];
 };
 
+export type PaymentStatus = {
+  __typename?: 'PaymentStatus';
+  status: Scalars['String']['output'];
+};
+
 export enum PaymentType {
   Paypal = 'PAYPAL',
   Visa = 'VISA'
 }
+
+export type PaymentVerificationResult = {
+  __typename?: 'PaymentVerificationResult';
+  amount?: Maybe<Scalars['Int']['output']>;
+  created?: Maybe<Scalars['Int']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  customerEmail?: Maybe<Scalars['String']['output']>;
+  isSuccess: Scalars['Boolean']['output'];
+  paymentIntentId?: Maybe<Scalars['String']['output']>;
+  sessionId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
 
 export enum PeriodFilter {
   Day = 'DAY',
@@ -436,6 +447,7 @@ export type Query = {
   getTopSellingProducts?: Maybe<Array<ProductAndNbOrders>>;
   getUserById: User;
   getWishList: WishList;
+  verifyPayment: PaymentVerificationResult;
 };
 
 
@@ -558,6 +570,11 @@ export type QueryGetTopSellingProductsArgs = {
 
 export type QueryGetUserByIdArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryVerifyPaymentArgs = {
+  sessionId: Scalars['String']['input'];
 };
 
 export type Review = {
@@ -835,12 +852,12 @@ export type CreatPaymentIntentMutationVariables = Exact<{ [key: string]: never; 
 
 export type CreatPaymentIntentMutation = { __typename?: 'Mutation', creatPaymentIntent: { __typename?: 'PaymentSession', sessionUrl: string, sessionId: string } };
 
-export type VerifyPaymentMutationVariables = Exact<{
+export type VerifyPaymentQueryVariables = Exact<{
   sessionId: Scalars['String']['input'];
 }>;
 
 
-export type VerifyPaymentMutation = { __typename?: 'Mutation', verifyPayment: boolean };
+export type VerifyPaymentQuery = { __typename?: 'Query', verifyPayment: { __typename?: 'PaymentVerificationResult', isSuccess: boolean, amount?: number | null, currency?: string | null, customerEmail?: string | null } };
 
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1498,22 +1515,28 @@ export const useCreatPaymentIntentMutation = <
     )};
 
 export const VerifyPaymentDocument = `
-    mutation VerifyPayment($sessionId: String!) {
-  verifyPayment(sessionId: $sessionId)
+    query VerifyPayment($sessionId: String!) {
+  verifyPayment(sessionId: $sessionId) {
+    isSuccess
+    amount
+    currency
+    customerEmail
+  }
 }
     `;
 
-export const useVerifyPaymentMutation = <
-      TError = unknown,
-      TContext = unknown
+export const useVerifyPaymentQuery = <
+      TData = VerifyPaymentQuery,
+      TError = unknown
     >(
       dataSource: { endpoint: string, fetchParams?: RequestInit },
-      options?: UseMutationOptions<VerifyPaymentMutation, TError, VerifyPaymentMutationVariables, TContext>
+      variables: VerifyPaymentQueryVariables,
+      options?: UseQueryOptions<VerifyPaymentQuery, TError, TData>
     ) => {
     
-    return useMutation<VerifyPaymentMutation, TError, VerifyPaymentMutationVariables, TContext>(
-      ['VerifyPayment'],
-      (variables?: VerifyPaymentMutationVariables) => fetcher<VerifyPaymentMutation, VerifyPaymentMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerifyPaymentDocument, variables)(),
+    return useQuery<VerifyPaymentQuery, TError, TData>(
+      ['VerifyPayment', variables],
+      fetcher<VerifyPaymentQuery, VerifyPaymentQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerifyPaymentDocument, variables),
       options
     )};
 

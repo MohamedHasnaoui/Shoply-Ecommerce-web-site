@@ -5,16 +5,41 @@ import $ from "jquery";
 import select2 from "select2";
 import { productService } from "../../services/product";
 import { Category, Product } from "../../generated";
-import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { logoutAction } from "../../redux/slices/auth/authSlice";
+import { Dispatch } from "@reduxjs/toolkit";
+import { RootState } from "../../redux/store";
+import { Navigate, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import { clearCart } from "../../redux/slices/cartSlice";
+import { clearWishlist } from "../../redux/slices/wishlistSlice/wishlistSlice";
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  logoutAction: () => {
+    dispatch(logoutAction());
+    dispatch(clearCart());
+    dispatch(clearWishlist());
+  },
+});
 
 const Header = () => {
   const totalItems = useAppSelector((state) => state.cart.totalItems);
   const totalWishlistItems = useAppSelector(
     (state) => state.wishlist.totalWishlistItems
   );
+
   const [productCategories, setProductCategories] = useState<
     Array<Category | null>
   >([]);
+
+  const { logoutAction } = actionDispatch(useAppDispatch());
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.currentUser);
+  const logout = async () => {
+    logoutAction();
+    navigate("/login");
+  };
+
   const {
     selectedCategory,
     setSelectedCategory,
@@ -107,6 +132,7 @@ const Header = () => {
   const handleCategoryIndexClick = (index: number) => {
     setActiveIndexCat(activeIndexCat === index ? -1 : index);
   };
+  // if (!user) return <Navigate to={"/login"} />;
 
   return (
     <>
@@ -627,6 +653,14 @@ const Header = () => {
                     My Account
                   </span>
                 </a>
+              </li>
+              <li className="border-right-item">
+                <button
+                  onClick={logout}
+                  className="text-white hover-text-decoration-underline"
+                >
+                  Logout
+                </button>
               </li>
             </ul>
           </div>

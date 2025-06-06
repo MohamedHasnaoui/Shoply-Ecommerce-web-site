@@ -162,6 +162,9 @@ const Wishlist = () => {
     const fetchWishlistProducts = async () => {
       try {
         const response = await wishListService.getWishList();
+        if (!response?.products) {
+          toast.error("wishlist empty.");
+        }
         console.log("🟢 Wishlist Products:", response?.products);
         const filteredProducts = (response?.products ?? []).filter(
           (p): p is Product => p !== null

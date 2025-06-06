@@ -4,6 +4,7 @@ import { validateOrReject, ValidationError } from "class-validator";
 import { GraphQLError } from "graphql";
 import { appDataSource } from "../database/data-source.js";
 import { cartItemService } from "./CartItemServices.js";
+
 export class ShoppingCartService {
   constructor(private shoppingCartRepository: Repository<ShoppingCart>) {}
 
@@ -33,6 +34,7 @@ export class ShoppingCartService {
       }
     }
   }
+
   async getShoppingCartByBuyerId(buyerId: number) {
     const shoppingCart = await this.shoppingCartRepository.findOne({
       where: { buyer: { id: buyerId } },
@@ -64,6 +66,10 @@ export class ShoppingCartService {
     await Promise.all(
       shoppingCart.cartItems.map((cart) => cartItemService.delete(cart.id))
     );
+
+    // Recalculer le totalAmount après suppression des items
+    await this.recalculateTotalAmount(shoppingCart.id);
+
     return true;
   }
 
@@ -87,6 +93,65 @@ export class ShoppingCartService {
         });
       }
     }
+  }
+
+  // Méthode pour calculer le total du panier
+  private calculateTotalAmount(shoppingCart: ShoppingCart): number {
+    if (!shoppingCart.cartItems || shoppingCart.cartItems.length === 0) {
+      return 0;
+    }
+
+    return shoppingCart.cartItems.reduce((total, item) => {
+      const itemTotal = item.quantity * item.product.price;
+      return total + itemTotal;
+    }, 0);
+  }
+
+  // Méthode pour recalculer et sauvegarder le totalAmount
+  async recalculateTotalAmount(shoppingCartId: number): Promise<ShoppingCart> {
+    const shoppingCart = await this.shoppingCartRepository.findOne({
+      where: { id: shoppingCartId },
+      relations: {
+        cartItems: {
+          product: true,
+        },
+      },
+    });
+
+    if (!shoppingCart) {
+      throw new GraphQLError("ShoppingCart not found", {
+        extensions: { code: "NOT_FOUND" },
+      });
+    }
+
+    const newTotalAmount = this.calculateTotalAmount(shoppingCart);
+    shoppingCart.totalAmount = newTotalAmount;
+    shoppingCart.updatedAt = new Date();
+
+    return await this.shoppingCartRepository.save(shoppingCart);
+  }
+
+  // Méthode pour mettre à jour le total après modification d'un item
+  async updateTotalAfterItemChange(shoppingCartId: number): Promise<void> {
+    await this.recalculateTotalAmount(shoppingCartId);
+  }
+
+  // Getter pour obtenir le panier avec le total calculé en temps réel
+  async getShoppingCartWithCalculatedTotal(
+    buyerId: number
+  ): Promise<ShoppingCart> {
+    const shoppingCart = await this.getShoppingCartByBuyerId(buyerId);
+
+    // Recalculer le total pour s'assurer qu'il est à jour
+    const calculatedTotal = this.calculateTotalAmount(shoppingCart);
+
+    // Mettre à jour si nécessaire
+    if (shoppingCart.totalAmount !== calculatedTotal) {
+      shoppingCart.totalAmount = calculatedTotal;
+      await this.shoppingCartRepository.save(shoppingCart);
+    }
+
+    return shoppingCart;
   }
 }
 

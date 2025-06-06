@@ -123,7 +123,6 @@ export type Mutation = {
   updateReview: Review;
   updateUser: User;
   verifyEmail: Scalars['Boolean']['output'];
-  verifyPayment: Scalars['Boolean']['output'];
 };
 
 
@@ -246,11 +245,6 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
 
-
-export type MutationVerifyPaymentArgs = {
-  sessionId: Scalars['String']['input'];
-};
-
 export type Order = {
   __typename?: 'Order';
   buyer?: Maybe<User>;
@@ -325,10 +319,27 @@ export type PaymentSession = {
   sessionUrl: Scalars['String']['output'];
 };
 
+export type PaymentStatus = {
+  __typename?: 'PaymentStatus';
+  status: Scalars['String']['output'];
+};
+
 export enum PaymentType {
   Paypal = 'PAYPAL',
   Visa = 'VISA'
 }
+
+export type PaymentVerificationResult = {
+  __typename?: 'PaymentVerificationResult';
+  amount?: Maybe<Scalars['Int']['output']>;
+  created?: Maybe<Scalars['Int']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  customerEmail?: Maybe<Scalars['String']['output']>;
+  isSuccess: Scalars['Boolean']['output'];
+  paymentIntentId?: Maybe<Scalars['String']['output']>;
+  sessionId: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+};
 
 export enum PeriodFilter {
   Day = 'DAY',
@@ -418,6 +429,7 @@ export type Query = {
   getTopSellingProducts?: Maybe<Array<ProductAndNbOrders>>;
   getUserById: User;
   getWishList: WishList;
+  verifyPayment: PaymentVerificationResult;
 };
 
 
@@ -540,6 +552,11 @@ export type QueryGetTopSellingProductsArgs = {
 
 export type QueryGetUserByIdArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type QueryVerifyPaymentArgs = {
+  sessionId: Scalars['String']['input'];
 };
 
 export type Review = {
@@ -774,7 +791,9 @@ export type ResolversTypes = {
   OrderItemsListResult: ResolverTypeWrapper<OrderItemsListResult>;
   OrderStatus: OrderStatus;
   PaymentSession: ResolverTypeWrapper<PaymentSession>;
+  PaymentStatus: ResolverTypeWrapper<PaymentStatus>;
   PaymentType: PaymentType;
+  PaymentVerificationResult: ResolverTypeWrapper<PaymentVerificationResult>;
   PeriodFilter: PeriodFilter;
   Product: ResolverTypeWrapper<Product>;
   ProductFilter: ProductFilter;
@@ -825,6 +844,8 @@ export type ResolversParentTypes = {
   OrderItemStatistics: OrderItemStatistics;
   OrderItemsListResult: OrderItemsListResult;
   PaymentSession: PaymentSession;
+  PaymentStatus: PaymentStatus;
+  PaymentVerificationResult: PaymentVerificationResult;
   Product: Product;
   ProductFilter: ProductFilter;
   ProductFilterInput: ProductFilterInput;
@@ -913,7 +934,6 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   updateReview?: Resolver<ResolversTypes['Review'], ParentType, ContextType, RequireFields<MutationUpdateReviewArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
-  verifyPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyPaymentArgs, 'sessionId'>>;
 };
 
 export type OrderResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
@@ -958,6 +978,23 @@ export type OrderItemsListResultResolvers<ContextType = MyContext, ParentType ex
 export type PaymentSessionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentSession'] = ResolversParentTypes['PaymentSession']> = {
   sessionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sessionUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaymentStatusResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentStatus'] = ResolversParentTypes['PaymentStatus']> = {
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaymentVerificationResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentVerificationResult'] = ResolversParentTypes['PaymentVerificationResult']> = {
+  amount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  created?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  customerEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isSuccess?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  paymentIntentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sessionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1019,6 +1056,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getTopSellingProducts?: Resolver<Maybe<Array<ResolversTypes['productAndNbOrders']>>, ParentType, ContextType, Partial<QueryGetTopSellingProductsArgs>>;
   getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'id'>>;
   getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
+  verifyPayment?: Resolver<ResolversTypes['PaymentVerificationResult'], ParentType, ContextType, RequireFields<QueryVerifyPaymentArgs, 'sessionId'>>;
 };
 
 export type ReviewResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
@@ -1107,6 +1145,8 @@ export type Resolvers<ContextType = MyContext> = {
   OrderItemStatistics?: OrderItemStatisticsResolvers<ContextType>;
   OrderItemsListResult?: OrderItemsListResultResolvers<ContextType>;
   PaymentSession?: PaymentSessionResolvers<ContextType>;
+  PaymentStatus?: PaymentStatusResolvers<ContextType>;
+  PaymentVerificationResult?: PaymentVerificationResultResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
   ProductListResult?: ProductListResultResolvers<ContextType>;
   ProductsStatistics?: ProductsStatisticsResolvers<ContextType>;

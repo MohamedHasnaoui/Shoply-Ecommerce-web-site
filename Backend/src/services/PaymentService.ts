@@ -119,55 +119,22 @@ export class PaymentService {
   }
   async verifyPayment(sessionId: string) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
-      if (session.payment_status !== "paid") {
-        throw new GraphQLError("Paiement non validé", {
-          extensions: { code: "PAYMENT_FAILED" },
-        });
-      }
-      const buyerId = session.metadata?.buyerId;
-      if (!buyerId) {
-        throw new GraphQLError("Identifiant acheteur introuvable");
-      }
-
-      const shoppingCart = await shoppingCartService.getShoppingCartByBuyerId(
-        Number(buyerId)
-      );
-      if (!shoppingCart) {
-        throw new GraphQLError("Panier introuvable", {
-          extensions: { code: "EMPTY_CART" },
-        });
-      }
-
-      const productRepository = appDataSource.getRepository(Product);
-      for (const cartItem of shoppingCart.cartItems) {
-        const product = await productRepository.findOneBy({
-          id: cartItem.product.id,
-        });
-        if (!product) continue;
-
-        if (product.quantity < cartItem.quantity) {
-          throw new GraphQLError(
-            `Stock insuffisant pour le produit ${product.name}`,
-            {
-              extensions: { code: "INSUFFICIENT_STOCK" },
-            }
-          );
-        }
-
-        product.quantity -= cartItem.quantity;
-        await productRepository.save(product);
-      }
-      await this.paymentRepository.save({
-        paymentDate: new Date(),
-        paymentType: PaymentType.Visa,
+      const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ["payment_intent", "line_items"],
       });
-      await shoppingCartService.cancelShoppingCart(Number(buyerId));
-      //create order
-      return true;
+
+      return {
+        status: session.payment_status,
+        isSuccess: session.payment_status === "paid",
+        sessionId: session.id,
+        amount: session.amount_total,
+        currency: session.currency,
+        customerEmail: session.customer_email,
+        created: session.created,
+      };
     } catch (error) {
-      console.error("Erreur lors de la vérification du paiement", error);
-      throw new GraphQLError("Échec de la vérification du paiement", {
+      console.error("Erreur lors de la vérification du paiement:", error);
+      throw new GraphQLError("Failed to verify payment", {
         extensions: { code: "PAYMENT_VERIFICATION_ERROR" },
       });
     }

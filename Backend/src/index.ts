@@ -1,3 +1,4 @@
+import bodyParser from "body-parser";
 import * as dotenv from "dotenv";
 dotenv.config();
 import { ApolloServer } from "@apollo/server";
@@ -11,10 +12,15 @@ import jwt from "jsonwebtoken";
 import express from "express";
 import http from "http";
 import cors from "cors";
+import { handleStripeWebhook } from "../utils/Webhook.js";
 
 const app = express();
 const httpServer = http.createServer(app);
-
+app.post(
+  "/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
 const server = new ApolloServer<MyContext>({
   typeDefs,
   resolvers,

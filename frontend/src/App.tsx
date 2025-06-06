@@ -38,8 +38,8 @@ function App() {
             <Route path="orders" element={<OrdersSellerPage />} />
             <Route path="customer/:customerId" element={<CustomerInfoPage />} />
           </Route>
-          <Route path='/admin' element={<AdminLayout />} >
-              <Route path='users' element={<AdminHomePage/>} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="users" element={<AdminHomePage />} />
           </Route>
         </Route>
         <Route element={<ClientLayout />}>
@@ -61,8 +61,8 @@ function App() {
                 </ProtectedPaymentRoute>
               }
             />
-            </Route>
           </Route>
+        </Route>
         <Route path="Error/:errorCode/:message" element={<ErrorPage />} />
         <Route path="Error/:errorCode" element={<ErrorPage />} />
         <Route

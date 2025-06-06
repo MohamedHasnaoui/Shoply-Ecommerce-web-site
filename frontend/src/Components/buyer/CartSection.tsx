@@ -151,7 +151,7 @@ const CartSection = () => {
                         <td>
                           <div className="table-product d-flex align-items-center gap-24">
                             <Link
-                              to="/product-details-two"
+                              to={`/product-details/${item?.product.id}`}
                               className="table-product__thumb border border-gray-100 rounded-8 flex-center "
                             >
                               <img
@@ -162,7 +162,7 @@ const CartSection = () => {
                             <div className="table-product__content text-start w-full max-w-[250px] flex flex-col gap-8">
                               <h6 className="title text-lg fw-semibold mb-8">
                                 <Link
-                                  to="/product-details"
+                                  to={`/product-details/${item?.product.id}`}
                                   className="link w-full text-line-2"
                                   tabIndex={0}
                                 >

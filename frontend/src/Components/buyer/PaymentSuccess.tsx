@@ -11,31 +11,29 @@ const PaymentSuccess: React.FC = () => {
   const sessionId = new URLSearchParams(location.search).get("session_id");
 
   useEffect(() => {
-    const checkPayment = async () => {
-      if (!sessionId) {
-        alert("Session de paiement invalide. Veuillez réessayer.");
-        navigate("/cart");
-        return;
-      }
+    if (!sessionId) {
+      alert("Session de paiement invalide. Veuillez réessayer.");
+      navigate("/cart");
+      return;
+    }
 
-      try {
-        const isSuccess = await paymentService.verifyPayment(sessionId);
-        if (isSuccess) {
-          dispatch(verifyPayment());
+    paymentService
+      .verifyPayment(sessionId)
+      .then((payment) => {
+        if (payment?.isSuccess) {
+          dispatch(verifyPayment({ status: "failed" }));
           alert("Paiement confirmé ! Merci pour votre commande.");
           navigate("/cart");
         } else {
-          alert(" Paiement non confirmé. Veuillez réessayer.");
+          alert("Paiement non confirmé. Veuillez réessayer.");
           navigate("/cart");
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Erreur de vérification :", error);
-        alert(" Une erreur est survenue lors de la vérification.");
+        alert("Une erreur est survenue lors de la vérification.");
         navigate("/cart");
-      }
-    };
-
-    checkPayment();
+      });
   }, [sessionId, dispatch, navigate]);
 
   return (

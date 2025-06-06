@@ -58,7 +58,7 @@ export const AuthResolver: Resolvers = {
         { expiresIn: "7 days" }
       );
       // await whishListService.create(user as Buyer);
-
+      console.log("jwtToken", jwtToken);
       return { user, jwt: jwtToken };
     },
     verifyEmail: async (parent, { email, token }, context) => {

@@ -32,6 +32,7 @@ export class EmailUtil {
       },
     });
   }
+
   async sendEmail(sendEmailInput: SendEmailInput) {
     await this.transporter.sendMail({
       from: `Shoply <${this.SENDER_EMAIL}>`,
@@ -98,6 +99,34 @@ export class EmailUtil {
   `,
     });
   }
+
+  // Email de succès de paiement
+  async sendPaymentSuccessEmail(email: string, amount: number) {
+    const emailInput: SendEmailInput = {
+      emailTitle: "Payment Successful",
+      subject: "Payment Confirmation",
+      messageBody: `<p>Your payment of <strong>${amount}</strong> has been successfully processed. Thank you for your purchase!</p>`,
+      RECIPIENT_EMAIL: email,
+    };
+    await this.sendEmail(emailInput);
+  }
+
+  // Email d'échec de paiement
+  async sendPaymentFailureEmail(
+    email: string,
+    errorType: string,
+    errorMessage: string
+  ) {
+    const emailInput: SendEmailInput = {
+      emailTitle: "Payment Failed",
+      subject: "Payment Failure Notification",
+      messageBody: `<p>We're sorry, but your payment could not be processed. <br> Error Type: ${errorType} <br> Error Message: ${errorMessage}</p>`,
+      RECIPIENT_EMAIL: email,
+    };
+    await this.sendEmail(emailInput);
+  }
+
+  // Autres méthodes déjà présentes
   async sendVerificationEmail(email: string) {
     const token = tokenUtil.generateTokenNumber(6);
     const emailInput: SendEmailInput = {
@@ -109,6 +138,7 @@ export class EmailUtil {
     await verificationTokenService.createToken(email, token, TokenType.Email);
     await this.sendEmail(emailInput);
   }
+
   async sendResetPasswordEmail(user: User) {
     const token = tokenUtil.generateTokenString(100);
     const emailInput: SendEmailInput = {
