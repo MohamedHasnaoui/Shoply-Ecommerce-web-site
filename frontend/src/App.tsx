@@ -63,8 +63,8 @@ function App() {
                 </ProtectedPaymentRoute>
               }
             />
-            </Route>
           </Route>
+        </Route>
         <Route path="Error/:errorCode/:message" element={<ErrorPage />} />
         <Route path="Error/:errorCode" element={<ErrorPage />} />
         <Route

@@ -6,9 +6,25 @@ export const paymentSchema = gql`
     sessionUrl: String!
     sessionId: String!
   }
+  type PaymentStatus {
+    status: String!
+  }
+  type PaymentVerificationResult {
+    status: String!
+    isSuccess: Boolean!
+    sessionId: String!
+    amount: Int
+    currency: String
+    customerEmail: String
+    paymentIntentId: String
+    created: Int
+  }
+
   type Mutation {
     # createCustomerStripeId: String
     creatPaymentIntent: PaymentSession!
-    verifyPayment(sessionId: String!): Boolean!
+  }
+  type Query {
+    verifyPayment(sessionId: String!): PaymentVerificationResult!
   }
 `;

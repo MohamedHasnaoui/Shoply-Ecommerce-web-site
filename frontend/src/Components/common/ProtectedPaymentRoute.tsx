@@ -17,7 +17,7 @@ const ProtectedPaymentRoute = ({ children }: { children: React.ReactNode }) => {
       try {
         const valid = await paymentService.verifyPayment(sessionId);
         setIsValid(!!valid);
-      } catch (e) {
+      } catch {
         setIsValid(false);
       }
     };
