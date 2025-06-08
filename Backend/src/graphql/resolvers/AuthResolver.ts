@@ -30,7 +30,7 @@ export const AuthResolver: Resolvers = {
       if (newUser.role === Role.Buyer) {
         const id = await shoppingCartService.create(newUser as Buyer);
         context.idShoppingCart = id;
-        await whishListService.create(user as Buyer);
+        await whishListService.create(newUser as Buyer);
       }
       return true;
     },
