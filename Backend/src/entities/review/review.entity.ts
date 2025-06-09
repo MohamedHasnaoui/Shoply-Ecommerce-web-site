@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   ManyToOne,
   Relation,
+  JoinColumn,
 } from "typeorm";
 import { IsInt, IsString, IsNotEmpty, Min, Max } from "class-validator";
 import { Buyer, Product } from "../index.js";
@@ -35,5 +36,9 @@ export class Review {
   reviewer: Relation<Buyer>;
 
   @ManyToOne(() => Product, (product) => product.reviews)
+  @JoinColumn({ name: "productId" })
   product: Relation<Product>;
+
+  @Column()
+  productId: number;
 }

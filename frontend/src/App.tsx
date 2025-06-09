@@ -23,6 +23,7 @@ import SellerLayout from "./layout/SellerLayout";
 import AdminLayout from "./layout/AdminLayout";
 import ClientLayout from "./layout/ClientLayout";
 import ManageUsersAndProducts from "./Pages/Admin/ManageUsersAndProducts";
+import OrdersPage from "./Pages/Buyer/OrdersPage";
 function App() {
   return (
     <>
@@ -54,6 +55,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/myOrders" element={<OrdersPage />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route
               path="/payment-success"

@@ -8,7 +8,8 @@ export const productSchema = gql`
     name: String
     reference: String
     images: [String!]
-    rating: Int
+    rating: Float
+    numberOfReviews: Int
     description: String
     quantity: Int
     price: Float
@@ -17,6 +18,7 @@ export const productSchema = gql`
     totalOrders: Int
     isDisabled: Boolean
     owner: User
+    reviews: [Review!]
   }
 
   input CreateProductInput {

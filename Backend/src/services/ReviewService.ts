@@ -9,24 +9,38 @@ import { GraphQLError } from "graphql";
 import { validateOrReject } from "class-validator";
 import { appDataSource } from "../database/data-source.js";
 import { productService } from "./productServices.js";
+import { ErrorCode } from "../../utils/Errors.js";
 
 export class ReviewService {
   constructor(private reviewRepository: Repository<Review>) {}
 
-  async create(createReviewInput: CreateReviewInput, buyerId: number) {
+  async canMakeReview(buyerId: number, productId: number) {
     const orderItem = await orderItemService.findByBuyerIdAndProductId(
+      buyerId,
+      productId,
+      OrderItemStatus.Delivered
+    );
+    return orderItem !== null;
+  }
+
+  async create(createReviewInput: CreateReviewInput, buyerId: number) {
+    const product = await productService.findById(createReviewInput.productId);
+    if (!product) {
+      throw new GraphQLError("Product not found", {
+        extensions: { Code: "BAD_USER_INPUTS" },
+      });
+    }
+    const authorizedUser = await this.canMakeReview(
       buyerId,
       createReviewInput.productId
     );
-    if (orderItem === null) {
-      throw new GraphQLError("You can not Review this product", {
-        extensions: { Code: "UNHOTORIZED" },
-      });
-    }
-    if (orderItem.status !== OrderItemStatus.Delivered) {
-      throw new GraphQLError("Product Not Delivered", {
-        extensions: { Code: "BAD_USER_INPUTS" },
-      });
+    if (!authorizedUser) {
+      throw new GraphQLError(
+        "You can not review this product, either you have never purchased this product or the order is not yet delivered",
+        {
+          extensions: { Code: ErrorCode.NOT_AUTHORIZED },
+        }
+      );
     }
     const oldReview = await this.findOneByProductIdAndBuyerId(
       createReviewInput.productId,
@@ -37,21 +51,17 @@ export class ReviewService {
         extensions: { Code: "BAD_USER_INPUTS" },
       });
     }
-    const product = await productService.findById(createReviewInput.productId);
-    if (!product) {
-      throw new GraphQLError("Product not found", {
-        extensions: { Code: "BAD_USER_INPUTS" },
-      });
-    }
-    const nbReviews = await this.countByProductId(product.id);
-    product.rating += createReviewInput.rating / (nbReviews + 1);
+    product.rating += createReviewInput.rating / (product.numberOfReviews + 1);
     product.rating = parseFloat(product.rating.toFixed(1));
+    product.numberOfReviews += 1;
+    console.log(product.id);
     const review = this.reviewRepository.create({
       rating: createReviewInput.rating,
       comment: createReviewInput.comment,
-      product: product,
+      productId: product.id,
       reviewer: { id: buyerId },
     });
+    product.reviews = undefined;
     try {
       validateOrReject(review);
       await this.reviewRepository.save(review);

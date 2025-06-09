@@ -58,7 +58,7 @@ export class ProductServices {
   async findById(id: number) {
     return await this.productRepository.findOne({
       where: { id },
-      relations: { owner: true, category: true },
+      relations: { owner: true, category: true, reviews: { reviewer: true } },
     });
   }
 

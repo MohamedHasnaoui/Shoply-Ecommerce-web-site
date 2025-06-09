@@ -32,8 +32,12 @@ export const orderSchema = gql`
     createdAt: DateTime
     updatedAt: DateTime
   }
+  type OrderPagination {
+    orders: [Order!]!
+    totalCount: Int!
+  }
   type Query {
-    getMyOrders(pageNb: Int, pageSize: Int): [Order]
+    getMyOrders(pageNb: Int, pageSize: Int): OrderPagination
     getOrder(orderId: Int!): Order!
   }
   type Mutation {

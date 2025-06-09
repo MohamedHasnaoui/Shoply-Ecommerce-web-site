@@ -3,20 +3,21 @@ import { Resolvers, Role } from "../types/resolvers-types.js";
 import { userService } from "../../services/userService.js";
 import { cartItemService } from "../../services/CartItemServices.js";
 import { shoppingCartService } from "../../services/ShoppingCartService.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 export const CartItemResolver: Resolvers = {
   Mutation: {
     creatCartItem: async (parent, { input }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Buyer) {
         throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 
@@ -26,7 +27,7 @@ export const CartItemResolver: Resolvers = {
 
       if (!shoppingCart) {
         throw new GraphQLError("Shopping Cart Not Found", {
-          extensions: { code: "INVALID_INPUTS" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
 
@@ -41,7 +42,7 @@ export const CartItemResolver: Resolvers = {
 
       if (!cartItem) {
         throw new GraphQLError("Failed to create Cart Item", {
-          extensions: { code: "INTERNAL_SERVER_ERROR" },
+          extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }
 
@@ -49,15 +50,15 @@ export const CartItemResolver: Resolvers = {
     },
     updateCartItem: async (parent, { input }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Buyer) {
         throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 
@@ -65,15 +66,15 @@ export const CartItemResolver: Resolvers = {
     },
     removeCartItem: async (parent, { idCartItem }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Buyer) {
         throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 

@@ -109,9 +109,17 @@ export class OrderItemService {
     console.log(orderItems[0].order);
     return { orderItems, count };
   }
-  async findByBuyerIdAndProductId(buyerId: number, productId: number) {
+  async findByBuyerIdAndProductId(
+    buyerId: number,
+    productId: number,
+    status?: OrderItemStatus
+  ) {
     return await this.orderItemRepository.findOne({
-      where: { product: { id: productId }, order: { buyer: { id: buyerId } } },
+      where: {
+        product: { id: productId },
+        order: { buyer: { id: buyerId } },
+        status,
+      },
       order: { createdAt: "DESC" },
     });
   }

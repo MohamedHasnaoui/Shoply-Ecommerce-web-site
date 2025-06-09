@@ -113,6 +113,44 @@ export const GET_PRODUCT_BY_ID = gql`
     }
   }
 `;
+export const GET_PRODUCT_DETAILS = gql`
+  query GetProductDetails($productId: Int!) {
+    getProduct(id: $productId) {
+      id
+      name
+      reference
+      images
+      rating
+      numberOfReviews
+      description
+      quantity
+      price
+      category {
+        id
+        name
+      }
+      createdAt
+      totalOrders
+      isDisabled
+      owner {
+        id
+        firstName
+        lastName
+      }
+      reviews {
+        id
+        rating
+        comment
+        createdAt
+        reviewer {
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
 export const GET_MY_PRODUCTS = gql`
   query GetAllMyProducts($input: ProductFilter) {
     getAllMyProducts(input: $input) {

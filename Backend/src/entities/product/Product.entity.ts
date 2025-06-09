@@ -54,6 +54,12 @@ export class Product {
   @IsOptional()
   rating: number;
 
+  @Column({ default: 0 })
+  @IsInt()
+  @Min(0, { message: "Number of reviews cannot be negative" })
+  @IsOptional()
+  numberOfReviews: number;
+
   @Column("jsonb")
   images: string[];
 

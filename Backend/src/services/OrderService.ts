@@ -10,6 +10,7 @@ import {
   Role,
   OrderStatus,
   PeriodFilter,
+  OrderPagination,
 } from "../graphql/types/resolvers-types.js";
 import { shoppingCartService } from "./ShoppingCartService.js";
 import { orderItemService } from "./OrderItemService.js";
@@ -110,22 +111,23 @@ export class OrderService {
       relations: { orderItems: true, buyer: true },
     });
   }
-  async findByBuyerId(id: number, pageNb?: number, pageSize?: number) {
-    if (pageNb && pageSize) {
-      return await this.orderRepository.find({
-        where: { buyer: { id } },
-        order: { createdAt: "ASC" },
-        relations: { orderItems: { product: true } },
-        skip: (pageNb - 1) * pageSize,
-        take: pageSize,
-      });
-    }
-    const res = await this.orderRepository.find({
+  async findByBuyerId(
+    id: number,
+    pageNb?: number,
+    pageSize?: number
+  ): Promise<OrderPagination> {
+    const orders = await this.orderRepository.find({
       where: { buyer: { id } },
       order: { createdAt: "ASC" },
       relations: { orderItems: { product: true } },
+      skip: !pageNb || !pageSize ? undefined : (pageNb - 1) * pageSize,
+      take: pageSize || 10,
     });
-    return res;
+    const totalCount = await this.orderRepository.count({
+      where: { buyer: { id } },
+      order: { createdAt: "ASC" },
+    });
+    return { orders, totalCount };
   }
   async countNewOrders(period?: PeriodFilter) {
     const date = dateUtil.getStartDateOfPeriod(period);

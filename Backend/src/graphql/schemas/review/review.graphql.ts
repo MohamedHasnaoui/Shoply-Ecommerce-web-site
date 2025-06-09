@@ -3,13 +3,13 @@ import gql from "graphql-tag";
 export const reviewSchema = gql`
   #graphql
   type Review {
-    id: Int!
-    rating: Int!
-    comment: String!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    reviewer: User!
-    product: Product!
+    id: Int
+    rating: Int
+    comment: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    reviewer: User
+    product: Product
   }
   input CreateReviewInput {
     rating: Int!
@@ -18,12 +18,13 @@ export const reviewSchema = gql`
   }
   input UpdateReviewInput {
     id: Int!
-    rating: Int
-    comment: String
-    productId: Int
+    rating: Int!
+    comment: String!
   }
   type Query {
     getReviewsByProductId(productId: Int!): [Review]
+    getMyProductReview(productId: Int!): Review
+    isBuyerAllowedToReview(productId: Int!): Boolean!
   }
   type Mutation {
     createReview(input: CreateReviewInput!): Review!

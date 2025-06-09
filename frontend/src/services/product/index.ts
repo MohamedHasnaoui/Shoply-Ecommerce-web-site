@@ -20,6 +20,8 @@ import {
   GetAllProductsQuery,
   GetAllProductsQueryVariables,
   UpdateProductMutationVariables,
+  GetProductDetailsQueryVariables,
+  GetProductDetailsQuery,
 } from "../../generated";
 import {
   ALL_CATEG_ID_NAME,
@@ -31,6 +33,7 @@ import {
   GET_TOP_SELLING_PRODUCT_,
   UPDATE_PRODUCT_MUTATION,
   GET_ALL_PRODUCTS_FILTERED,
+  GET_PRODUCT_DETAILS,
 } from "../../graphql/product.graphql";
 import { client } from "../../graphqlProvider";
 
@@ -161,6 +164,17 @@ class ProductService {
   async getProductByID(productId: number) {
     const options: QueryOptions<GetProductQueryVariables, GetProductQuery> = {
       query: GET_PRODUCT_BY_ID,
+      variables: { productId },
+    };
+    const response = await client.query(options);
+    return response;
+  }
+  async getProductDetails(productId: number) {
+    const options: QueryOptions<
+      GetProductDetailsQueryVariables,
+      GetProductDetailsQuery
+    > = {
+      query: GET_PRODUCT_DETAILS,
       variables: { productId },
     };
     const response = await client.query(options);

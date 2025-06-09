@@ -6,7 +6,7 @@ import { orderItemService } from "../../../services/orderItem";
 import { Link } from "react-router";
 import { BasicModal, BasicModalRef } from "../../../Components/common/modal";
 import  Select  from "react-select";
-import {Bounce, ToastContainer,toast} from "react-toastify"
+import {toast} from "react-toastify"
 import { client } from "../../../graphqlProvider";
 
 const OrdersSellerPage = () => {
@@ -295,18 +295,6 @@ return (
         </div>
         {/* <!-- END Page Content --> */}
         <BasicModal body={modalBody} title="Change The Order Status" ref={ModalRef} />
-        <ToastContainer 
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          transition={Bounce}/>
       </main>
       )
     }

@@ -6,6 +6,7 @@ import { appDataSource } from "../database/data-source.js";
 import { productService } from "./productServices.js";
 import { shoppingCartService } from "./ShoppingCartService.js";
 import { CartItemUpdateInput } from "../graphql/types/resolvers-types.js";
+import { ErrorCode } from "../../utils/Errors.js";
 
 export class CartItemService {
   constructor(private cartItemRepository: Repository<CartItem>) {}
@@ -23,30 +24,31 @@ export class CartItemService {
     if (!shoppingCart) {
       console.error("ShoppingCart Not Found");
       throw new GraphQLError("ShoppingCart Not Found", {
-        extensions: { code: "INVALID_INPUTS" },
+        extensions: { code: ErrorCode.BAD_USER_INPUT },
       });
     }
-    console.log("ShoppingCart found:", shoppingCart);
 
     const product = await productService.findById(productId);
     if (!product) {
       console.error("Product Not Found");
       throw new GraphQLError("Product Not Found", {
-        extensions: { code: "INVALID_INPUTS" },
+        extensions: { code: ErrorCode.BAD_USER_INPUT },
       });
     }
-    console.log("Product found:", product);
 
     if (quantity <= 0) {
       throw new GraphQLError(" Quantity must be >0", {
-        extensions: { code: "INVALID INPUT" },
+        extensions: { code: ErrorCode.BAD_USER_INPUT },
       });
     }
 
     if (product.quantity < quantity) {
-      throw new GraphQLError("Product's Quantity is not enough", {
-        extensions: { code: "INVALID INPUT" },
-      });
+      throw new GraphQLError(
+        "maximum quantity to choose: " + product.quantity,
+        {
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
+        }
+      );
     }
 
     const cartItem = this.cartItemRepository.create({
@@ -55,8 +57,6 @@ export class CartItemService {
       price: product.price * quantity,
       shoppingCart,
     });
-
-    console.log("CartItem created:", cartItem);
 
     try {
       await validateOrReject(cartItem);
@@ -74,7 +74,7 @@ export class CartItemService {
     } catch (errors) {
       console.error("Validation or DB error:", errors);
       throw new GraphQLError("Validation or DB error", {
-        extensions: { errors, code: "BAD_USER_INPUTS" },
+        extensions: { errors, code: ErrorCode.BAD_USER_INPUT },
       });
     }
   }
