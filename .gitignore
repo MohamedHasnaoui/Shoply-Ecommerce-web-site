@@ -1,1 +1,2 @@
 Backend/src/graphql/types/resolvers-types.ts
+frontend/src/generated/index.ts

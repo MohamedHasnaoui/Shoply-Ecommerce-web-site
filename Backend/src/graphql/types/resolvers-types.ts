@@ -1,15 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import { MyContext } from '../index';
-import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { MyContext } from '../index';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -24,20 +16,9 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  DateTime: { input: any; output: any; }
 };
 
 export type AdminHomeStatistics = {
-  __typename?: 'AdminHomeStatistics';
-  newOrders?: Maybe<Scalars['Int']['output']>;
-  newProducts?: Maybe<Scalars['Int']['output']>;
-  registeredBuyers?: Maybe<Scalars['Int']['output']>;
-  registeredSeller?: Maybe<Scalars['Int']['output']>;
   __typename?: 'AdminHomeStatistics';
   newOrders?: Maybe<Scalars['Int']['output']>;
   newProducts?: Maybe<Scalars['Int']['output']>;
@@ -48,8 +29,6 @@ export type AdminHomeStatistics = {
 export type AuthResponse = {
   __typename?: 'AuthResponse';
   jwt: Scalars['String']['output'];
-  __typename?: 'AuthResponse';
-  jwt: Scalars['String']['output'];
   user: User;
 };
 
@@ -57,24 +36,16 @@ export type CartItem = {
   __typename?: 'CartItem';
   id: Scalars['Int']['output'];
   price: Scalars['Float']['output'];
-  __typename?: 'CartItem';
-  id: Scalars['Int']['output'];
-  price: Scalars['Float']['output'];
   product: Product;
-  quantity: Scalars['Int']['output'];
   quantity: Scalars['Int']['output'];
 };
 
 export type CartItemInput = {
   idProduct: Scalars['Int']['input'];
   quantity: Scalars['Int']['input'];
-  idProduct: Scalars['Int']['input'];
-  quantity: Scalars['Int']['input'];
 };
 
 export type CartItemUpdateInput = {
-  id: Scalars['Int']['input'];
-  quantity: Scalars['Int']['input'];
   id: Scalars['Int']['input'];
   quantity: Scalars['Int']['input'];
 };
@@ -83,29 +54,25 @@ export type Category = {
   __typename?: 'Category';
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   productCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CategoryInput = {
   description: Scalars['String']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type CategoryUpdatedInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateProductInput = {
-  categoryId: Scalars['Int']['input'];
-  description: Scalars['String']['input'];
-  images: Array<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  price: Scalars['Float']['input'];
-  quantity: Scalars['Int']['input'];
-  reference: Scalars['String']['input'];
   categoryId: Scalars['Int']['input'];
   description: Scalars['String']['input'];
   images: Array<Scalars['String']['input']>;
@@ -119,14 +86,9 @@ export type CreateReviewInput = {
   comment: Scalars['String']['input'];
   productId: Scalars['Int']['input'];
   rating: Scalars['Int']['input'];
-  comment: Scalars['String']['input'];
-  productId: Scalars['Int']['input'];
-  rating: Scalars['Int']['input'];
 };
 
 export enum Gender {
-  Female = 'FEMALE',
-  Male = 'MALE'
   Female = 'FEMALE',
   Male = 'MALE'
 }
@@ -135,19 +97,12 @@ export type JwtPayload = {
   __typename?: 'JwtPayload';
   email: Scalars['String']['output'];
   userId: Scalars['Int']['output'];
-  __typename?: 'JwtPayload';
-  email: Scalars['String']['output'];
-  userId: Scalars['Int']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   VerificationEmailRequest: Scalars['Boolean']['output'];
-  __typename?: 'Mutation';
-  VerificationEmailRequest: Scalars['Boolean']['output'];
   addProductToWishList: WishList;
-  addResetPasswordRequest: Scalars['Boolean']['output'];
-  cancelShoppingCart: Scalars['Boolean']['output'];
   addResetPasswordRequest: Scalars['Boolean']['output'];
   cancelShoppingCart: Scalars['Boolean']['output'];
   creatCartItem: CartItem;
@@ -158,51 +113,38 @@ export type Mutation = {
   createReview: Review;
   deleteProductFromWishList: Scalars['Boolean']['output'];
   deleteReview?: Maybe<Scalars['Boolean']['output']>;
-  deleteProductFromWishList: Scalars['Boolean']['output'];
-  deleteReview?: Maybe<Scalars['Boolean']['output']>;
   incrementQuantity?: Maybe<Product>;
   removeCartItem: Scalars['Boolean']['output'];
   removeProduct: Scalars['Boolean']['output'];
   resetPassword: Scalars['Boolean']['output'];
-  removeCartItem: Scalars['Boolean']['output'];
-  removeProduct: Scalars['Boolean']['output'];
-  resetPassword: Scalars['Boolean']['output'];
   signin: AuthResponse;
-  signup: Scalars['Boolean']['output'];
   signup: Scalars['Boolean']['output'];
   updateCartItem: CartItem;
   updateCategory: Category;
   updateOrderItemStatus: OrderItem;
   updateProduct?: Maybe<Product>;
   updateProductDisableStatus: Scalars['Boolean']['output'];
-  updateProductDisableStatus: Scalars['Boolean']['output'];
   updateReview: Review;
   updateUser: User;
   updateUserBlockStatus: Scalars['Boolean']['output'];
   verifyEmail: Scalars['Boolean']['output'];
+  verifyPayment: Scalars['Boolean']['output'];
 };
-
 
 
 export type MutationVerificationEmailRequestArgs = {
   email: Scalars['String']['input'];
-  email: Scalars['String']['input'];
 };
-
 
 
 export type MutationAddProductToWishListArgs = {
   productId: Scalars['Int']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationAddResetPasswordRequestArgs = {
   email: Scalars['String']['input'];
-  email: Scalars['String']['input'];
 };
-
 
 
 export type MutationCreatCartItemArgs = {
@@ -210,18 +152,14 @@ export type MutationCreatCartItemArgs = {
 };
 
 
-
 export type MutationCreateCategoryArgs = {
   input: CategoryInput;
 };
 
 
-
 export type MutationCreateOrderArgs = {
   paymentId: Scalars['Int']['input'];
-  paymentId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationCreateProductArgs = {
@@ -229,59 +167,42 @@ export type MutationCreateProductArgs = {
 };
 
 
-
 export type MutationCreateReviewArgs = {
   input: CreateReviewInput;
 };
 
 
-
 export type MutationDeleteProductFromWishListArgs = {
   productId: Scalars['Int']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationDeleteReviewArgs = {
   reviewId: Scalars['Int']['input'];
-  reviewId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationIncrementQuantityArgs = {
   addedQte: Scalars['Int']['input'];
   productId: Scalars['Int']['input'];
-  addedQte: Scalars['Int']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationRemoveCartItemArgs = {
   idCartItem: Scalars['Int']['input'];
-  idCartItem: Scalars['Int']['input'];
 };
-
 
 
 export type MutationRemoveProductArgs = {
   productId: Scalars['Int']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationResetPasswordArgs = {
   password: Scalars['String']['input'];
   token: Scalars['String']['input'];
   userId: Scalars['Int']['input'];
-  password: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-  userId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationSigninArgs = {
@@ -289,11 +210,9 @@ export type MutationSigninArgs = {
 };
 
 
-
 export type MutationSignupArgs = {
   input: SignupIpnut;
 };
-
 
 
 export type MutationUpdateCartItemArgs = {
@@ -301,19 +220,15 @@ export type MutationUpdateCartItemArgs = {
 };
 
 
-
 export type MutationUpdateCategoryArgs = {
   input?: InputMaybe<CategoryUpdatedInput>;
 };
 
 
-
 export type MutationUpdateOrderItemStatusArgs = {
-  orderItemId: Scalars['Int']['input'];
   orderItemId: Scalars['Int']['input'];
   status: OrderItemStatus;
 };
-
 
 
 export type MutationUpdateProductArgs = {
@@ -321,14 +236,10 @@ export type MutationUpdateProductArgs = {
 };
 
 
-
 export type MutationUpdateProductDisableStatusArgs = {
   isDisabled: Scalars['Boolean']['input'];
   productId: Scalars['Int']['input'];
-  isDisabled: Scalars['Boolean']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationUpdateReviewArgs = {
@@ -336,20 +247,15 @@ export type MutationUpdateReviewArgs = {
 };
 
 
-
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
 
-
 export type MutationUpdateUserBlockStatusArgs = {
   isBlocked: Scalars['Boolean']['input'];
   userId: Scalars['Int']['input'];
-  isBlocked: Scalars['Boolean']['input'];
-  userId: Scalars['Int']['input'];
 };
-
 
 
 export type MutationVerifyEmailArgs = {
@@ -357,18 +263,18 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
 
+
+export type MutationVerifyPaymentArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
 export type Order = {
-  __typename?: 'Order';
   __typename?: 'Order';
   buyer?: Maybe<User>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
   orderItems?: Maybe<Array<Maybe<OrderItem>>>;
   status?: Maybe<OrderStatus>;
-  totalAmount?: Maybe<Scalars['Float']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
   totalAmount?: Maybe<Scalars['Float']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -377,23 +283,15 @@ export type OrderItem = {
   __typename?: 'OrderItem';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
-  __typename?: 'OrderItem';
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['Int']['output'];
   order?: Maybe<Order>;
-  price: Scalars['Float']['output'];
   price: Scalars['Float']['output'];
   product?: Maybe<Product>;
   quantity: Scalars['Int']['output'];
-  quantity: Scalars['Int']['output'];
   status: OrderItemStatus;
-  updatedAt: Scalars['DateTime']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
 export type OrderItemFilter = {
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   period?: InputMaybe<PeriodFilter>;
@@ -401,13 +299,6 @@ export type OrderItemFilter = {
 };
 
 export type OrderItemStatistics = {
-  __typename?: 'OrderItemStatistics';
-  all?: Maybe<Scalars['Int']['output']>;
-  countCanceledOrFailed?: Maybe<Scalars['Int']['output']>;
-  countDelivered?: Maybe<Scalars['Int']['output']>;
-  countPending?: Maybe<Scalars['Int']['output']>;
-  totalEarnings?: Maybe<Scalars['Float']['output']>;
-  totalNewCustomers?: Maybe<Scalars['Int']['output']>;
   __typename?: 'OrderItemStatistics';
   all?: Maybe<Scalars['Int']['output']>;
   countCanceledOrFailed?: Maybe<Scalars['Int']['output']>;
@@ -425,18 +316,9 @@ export enum OrderItemStatus {
   Pending = 'PENDING',
   Refunded = 'REFUNDED',
   Shipped = 'SHIPPED'
-  Cancelled = 'CANCELLED',
-  Confirmed = 'CONFIRMED',
-  Delivered = 'DELIVERED',
-  Failed = 'FAILED',
-  Pending = 'PENDING',
-  Refunded = 'REFUNDED',
-  Shipped = 'SHIPPED'
 }
 
 export type OrderItemsListResult = {
-  __typename?: 'OrderItemsListResult';
-  count: Scalars['Int']['output'];
   __typename?: 'OrderItemsListResult';
   count: Scalars['Int']['output'];
   orderItems: Array<OrderItem>;
@@ -458,15 +340,6 @@ export enum OrderStatus {
   Pending = 'PENDING',
   Refunded = 'REFUNDED',
   Shipped = 'SHIPPED'
-  Cancelled = 'CANCELLED',
-  Confirmed = 'CONFIRMED',
-  Delivered = 'DELIVERED',
-  Failed = 'FAILED',
-  Partiallydelivered = 'PARTIALLYDELIVERED',
-  Partiallyshipped = 'PARTIALLYSHIPPED',
-  Pending = 'PENDING',
-  Refunded = 'REFUNDED',
-  Shipped = 'SHIPPED'
 }
 
 export type PaymentSession = {
@@ -475,35 +348,12 @@ export type PaymentSession = {
   sessionUrl: Scalars['String']['output'];
 };
 
-export type PaymentStatus = {
-  __typename?: 'PaymentStatus';
-  status: Scalars['String']['output'];
-};
-
 export enum PaymentType {
-  Paypal = 'PAYPAL',
-  Visa = 'VISA'
   Paypal = 'PAYPAL',
   Visa = 'VISA'
 }
 
-export type PaymentVerificationResult = {
-  __typename?: 'PaymentVerificationResult';
-  amount?: Maybe<Scalars['Int']['output']>;
-  created?: Maybe<Scalars['Int']['output']>;
-  currency?: Maybe<Scalars['String']['output']>;
-  customerEmail?: Maybe<Scalars['String']['output']>;
-  isSuccess: Scalars['Boolean']['output'];
-  paymentIntentId?: Maybe<Scalars['String']['output']>;
-  sessionId: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-};
-
 export enum PeriodFilter {
-  Day = 'DAY',
-  Month = 'MONTH',
-  Week = 'WEEK',
-  Year = 'YEAR'
   Day = 'DAY',
   Month = 'MONTH',
   Week = 'WEEK',
@@ -511,7 +361,6 @@ export enum PeriodFilter {
 }
 
 export type Product = {
-  __typename?: 'Product';
   __typename?: 'Product';
   category?: Maybe<Category>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -543,27 +392,9 @@ export type ProductFilter = {
   pageSize?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
   productId?: InputMaybe<Scalars['Int']['input']>;
-  available?: InputMaybe<Scalars['Boolean']['input']>;
-  categoryId?: InputMaybe<Scalars['Int']['input']>;
-  isDisabled?: InputMaybe<Scalars['Boolean']['input']>;
-  maxPrice?: InputMaybe<Scalars['Float']['input']>;
-  minPrice?: InputMaybe<Scalars['Float']['input']>;
-  minRating?: InputMaybe<Scalars['Int']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
-  price?: InputMaybe<Scalars['Float']['input']>;
-  productId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ProductFilterInput = {
-  available?: InputMaybe<Scalars['Boolean']['input']>;
-  categoryId?: InputMaybe<Scalars['Int']['input']>;
-  maxPrice?: InputMaybe<Scalars['Float']['input']>;
-  minPrice?: InputMaybe<Scalars['Float']['input']>;
-  minRating?: InputMaybe<Scalars['Float']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   available?: InputMaybe<Scalars['Boolean']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   maxPrice?: InputMaybe<Scalars['Float']['input']>;
@@ -575,8 +406,6 @@ export type ProductFilterInput = {
 export type ProductListResult = {
   __typename?: 'ProductListResult';
   count: Scalars['Int']['output'];
-  __typename?: 'ProductListResult';
-  count: Scalars['Int']['output'];
   products: Array<Product>;
 };
 
@@ -584,13 +413,9 @@ export type ProductsStatistics = {
   __typename?: 'ProductsStatistics';
   countAvailable: Scalars['Int']['output'];
   countOutOfStock: Scalars['Int']['output'];
-  __typename?: 'ProductsStatistics';
-  countAvailable: Scalars['Int']['output'];
-  countOutOfStock: Scalars['Int']['output'];
 };
 
 export type Query = {
-  __typename?: 'Query';
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getAdminHomeStatistics: AdminHomeStatistics;
@@ -603,7 +428,6 @@ export type Query = {
   getCategory?: Maybe<Category>;
   getCustomerPastOrderItems?: Maybe<Array<OrderItem>>;
   getEarningByPeriod: Array<Scalars['Float']['output']>;
-  getEarningByPeriod: Array<Scalars['Float']['output']>;
   getFilteredWishList?: Maybe<Array<Maybe<Product>>>;
   getFrequentBuyers: Array<FrequentBuyersInfo>;
   getMyOrders?: Maybe<OrderPagination>;
@@ -614,11 +438,9 @@ export type Query = {
   getOrderItemsByOrderId: Array<Maybe<OrderItem>>;
   getOrderItemsForSeller: OrderItemsListResult;
   getOrdersByPeriod: Array<Scalars['Float']['output']>;
-  getOrdersByPeriod: Array<Scalars['Float']['output']>;
   getParamUploadImage: UploadCloud;
   getProduct: Product;
   getRecievedOrderItemsStatistics: OrderItemStatistics;
-  getRegisteredUsersByPeriod: Array<Scalars['Int']['output']>;
   getRegisteredUsersByPeriod: Array<Scalars['Int']['output']>;
   getReviewsByProductId?: Maybe<Array<Maybe<Review>>>;
   getSellerTopProducts?: Maybe<Array<ProductAndNbOrders>>;
@@ -628,9 +450,7 @@ export type Query = {
   getUsers: UserPaginationResult;
   getWishList: WishList;
   isBuyerAllowedToReview: Scalars['Boolean']['output'];
-  verifyPayment: PaymentVerificationResult;
 };
-
 
 
 export type QueryGetAdminHomeStatisticsArgs = {
@@ -638,11 +458,9 @@ export type QueryGetAdminHomeStatisticsArgs = {
 };
 
 
-
 export type QueryGetAllMyProductsArgs = {
   input?: InputMaybe<ProductFilter>;
 };
-
 
 
 export type QueryGetAllProductsArgs = {
@@ -650,32 +468,24 @@ export type QueryGetAllProductsArgs = {
 };
 
 
-
 export type QueryGetBestSellersArgs = {
   period?: InputMaybe<PeriodFilter>;
 };
 
 
-
 export type QueryGetCartItemArgs = {
   idCartItem: Scalars['Int']['input'];
-  idCartItem: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetCategoryArgs = {
   id: Scalars['Int']['input'];
-  id: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetCustomerPastOrderItemsArgs = {
   customerId: Scalars['Int']['input'];
-  customerId: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetEarningByPeriodArgs = {
@@ -683,11 +493,9 @@ export type QueryGetEarningByPeriodArgs = {
 };
 
 
-
 export type QueryGetFilteredWishListArgs = {
   input?: InputMaybe<ProductFilterInput>;
 };
-
 
 
 export type QueryGetFrequentBuyersArgs = {
@@ -695,10 +503,7 @@ export type QueryGetFrequentBuyersArgs = {
 };
 
 
-
 export type QueryGetMyOrdersArgs = {
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -711,23 +516,17 @@ export type QueryGetMyProductReviewArgs = {
 
 export type QueryGetOrderArgs = {
   orderId: Scalars['Int']['input'];
-  orderId: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetOrderItemArgs = {
   OrderItemId: Scalars['Int']['input'];
-  OrderItemId: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetOrderItemsByOrderIdArgs = {
   orderId?: InputMaybe<Scalars['Int']['input']>;
-  orderId?: InputMaybe<Scalars['Int']['input']>;
 };
-
 
 
 export type QueryGetOrderItemsForSellerArgs = {
@@ -735,31 +534,24 @@ export type QueryGetOrderItemsForSellerArgs = {
 };
 
 
-
 export type QueryGetOrdersByPeriodArgs = {
   period?: InputMaybe<PeriodFilter>;
 };
 
 
-
 export type QueryGetParamUploadImageArgs = {
   folder: Scalars['String']['input'];
-  folder: Scalars['String']['input'];
 };
-
 
 
 export type QueryGetProductArgs = {
   id: Scalars['Int']['input'];
-  id: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetRecievedOrderItemsStatisticsArgs = {
   period?: InputMaybe<PeriodFilter>;
 };
-
 
 
 export type QueryGetRegisteredUsersByPeriodArgs = {
@@ -768,19 +560,14 @@ export type QueryGetRegisteredUsersByPeriodArgs = {
 };
 
 
-
 export type QueryGetReviewsByProductIdArgs = {
   productId: Scalars['Int']['input'];
-  productId: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetSellerTopProductsArgs = {
   nbProduct: Scalars['Int']['input'];
-  nbProduct: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetTopSellingProductsArgs = {
@@ -788,12 +575,9 @@ export type QueryGetTopSellingProductsArgs = {
 };
 
 
-
 export type QueryGetUserByIdArgs = {
   id: Scalars['Int']['input'];
-  id: Scalars['Int']['input'];
 };
-
 
 
 export type QueryGetUsersArgs = {
@@ -803,11 +587,6 @@ export type QueryGetUsersArgs = {
 
 export type QueryIsBuyerAllowedToReviewArgs = {
   productId: Scalars['Int']['input'];
-};
-
-
-export type QueryVerifyPaymentArgs = {
-  sessionId: Scalars['String']['input'];
 };
 
 export type Review = {
@@ -825,17 +604,11 @@ export enum Role {
   Admin = 'ADMIN',
   Buyer = 'BUYER',
   Seller = 'SELLER'
-  Admin = 'ADMIN',
-  Buyer = 'BUYER',
-  Seller = 'SELLER'
 }
 
 export type ShoppingCart = {
   __typename?: 'ShoppingCart';
-  __typename?: 'ShoppingCart';
   cartItems?: Maybe<Array<Maybe<CartItem>>>;
-  id: Scalars['Int']['output'];
-  totalAmount: Scalars['Float']['output'];
   id: Scalars['Int']['output'];
   totalAmount: Scalars['Float']['output'];
 };
@@ -843,15 +616,9 @@ export type ShoppingCart = {
 export type SignInInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
 };
 
 export type SignupIpnut = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  password: Scalars['String']['input'];
   email: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
@@ -862,20 +629,9 @@ export type SignupIpnut = {
 export enum TokenType {
   Email = 'EMAIL',
   Password = 'PASSWORD'
-  Email = 'EMAIL',
-  Password = 'PASSWORD'
 }
 
 export type UpdateProductInput = {
-  categoryId?: InputMaybe<Scalars['Int']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['Int']['input'];
-  images?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  price?: InputMaybe<Scalars['Float']['input']>;
-  quantity?: InputMaybe<Scalars['Int']['input']>;
-  rating?: InputMaybe<Scalars['Int']['input']>;
-  reference?: InputMaybe<Scalars['String']['input']>;
   categoryId?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
@@ -899,18 +655,7 @@ export type UpdateUserInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   coverImg?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
-  birthDay?: InputMaybe<Scalars['DateTime']['input']>;
-  city?: InputMaybe<Scalars['String']['input']>;
-  country?: InputMaybe<Scalars['String']['input']>;
-  coverImg?: InputMaybe<Scalars['String']['input']>;
-  firstName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<Gender>;
-  lastName?: InputMaybe<Scalars['String']['input']>;
-  password?: InputMaybe<Scalars['String']['input']>;
-  phoneNumber?: InputMaybe<Scalars['String']['input']>;
-  postalCode?: InputMaybe<Scalars['String']['input']>;
-  profileImg?: InputMaybe<Scalars['String']['input']>;
-  street?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   phoneNumber?: InputMaybe<Scalars['String']['input']>;
@@ -920,11 +665,6 @@ export type UpdateUserInput = {
 };
 
 export type UploadCloud = {
-  __typename?: 'UploadCloud';
-  apiKey: Scalars['String']['output'];
-  cloudName: Scalars['String']['output'];
-  signature: Scalars['String']['output'];
-  timestamp: Scalars['Int']['output'];
   __typename?: 'UploadCloud';
   apiKey: Scalars['String']['output'];
   cloudName: Scalars['String']['output'];
@@ -940,20 +680,7 @@ export type User = {
   coverImg?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
-  __typename?: 'User';
-  birthDay?: Maybe<Scalars['DateTime']['output']>;
-  city?: Maybe<Scalars['String']['output']>;
-  country?: Maybe<Scalars['String']['output']>;
-  coverImg?: Maybe<Scalars['String']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  firstName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<Gender>;
-  id: Scalars['Int']['output'];
-  isBlocked?: Maybe<Scalars['Boolean']['output']>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  phoneNumber?: Maybe<Scalars['String']['output']>;
-  postalCode?: Maybe<Scalars['String']['output']>;
-  profileImg?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   isBlocked?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
@@ -962,12 +689,9 @@ export type User = {
   profileImg?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
   street?: Maybe<Scalars['String']['output']>;
-  street?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserPaginationResult = {
-  __typename?: 'UserPaginationResult';
-  totalCount: Scalars['Int']['output'];
   __typename?: 'UserPaginationResult';
   totalCount: Scalars['Int']['output'];
   users: Array<User>;
@@ -976,17 +700,10 @@ export type UserPaginationResult = {
 export type WishList = {
   __typename?: 'WishList';
   id: Scalars['Int']['output'];
-  __typename?: 'WishList';
-  id: Scalars['Int']['output'];
   products?: Maybe<Array<Maybe<Product>>>;
 };
 
 export type BestSellerInfo = {
-  __typename?: 'bestSellerInfo';
-  firstName: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
-  lastName: Scalars['String']['output'];
-  selledProducts: Scalars['Int']['output'];
   __typename?: 'bestSellerInfo';
   firstName: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -1001,25 +718,15 @@ export type FrequentBuyersInfo = {
   lastName: Scalars['String']['output'];
   nbPlacedOrders: Scalars['Int']['output'];
   nbPurchasedProducts: Scalars['Int']['output'];
-  __typename?: 'frequentBuyersInfo';
-  firstName: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
-  lastName: Scalars['String']['output'];
-  nbPlacedOrders: Scalars['Int']['output'];
-  nbPurchasedProducts: Scalars['Int']['output'];
 };
 
 export type ProductAndNbOrders = {
   __typename?: 'productAndNbOrders';
-  __typename?: 'productAndNbOrders';
   product: Product;
-  totalSold: Scalars['Int']['output'];
   totalSold: Scalars['Int']['output'];
 };
 
 export enum RndType {
-  One = 'ONE',
-  Two = 'TWO'
   One = 'ONE',
   Two = 'TWO'
 }
@@ -1029,25 +736,17 @@ export type UsersFilter = {
   isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
   pageNb?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
-  id?: InputMaybe<Scalars['Int']['input']>;
-  isBlocked?: InputMaybe<Scalars['Boolean']['input']>;
-  pageNb?: InputMaybe<Scalars['Int']['input']>;
-  pageSize?: InputMaybe<Scalars['Int']['input']>;
   role?: InputMaybe<Role>;
 };
-
-
 
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
 
-
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
@@ -1074,9 +773,6 @@ export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
 export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
   subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
   resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
-export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
-  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
-  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
 }
 
 export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
@@ -1085,12 +781,9 @@ export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
 }
 
 export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
-export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
-  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
 export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
@@ -1102,11 +795,9 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
 export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
 export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
@@ -1117,13 +808,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 
 
-
-
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AdminHomeStatistics: ResolverTypeWrapper<AdminHomeStatistics>;
   AuthResponse: ResolverTypeWrapper<AuthResponse>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CartItem: ResolverTypeWrapper<CartItem>;
   CartItemInput: CartItemInput;
@@ -1135,10 +823,7 @@ export type ResolversTypes = {
   CreateReviewInput: CreateReviewInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
-  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
-  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   Gender: Gender;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JwtPayload: ResolverTypeWrapper<JwtPayload>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -1165,7 +850,6 @@ export type ResolversTypes = {
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   TokenType: TokenType;
   UpdateProductInput: UpdateProductInput;
   UpdateReviewInput: UpdateReviewInput;
@@ -1186,7 +870,6 @@ export type ResolversParentTypes = {
   AdminHomeStatistics: AdminHomeStatistics;
   AuthResponse: AuthResponse;
   Boolean: Scalars['Boolean']['output'];
-  Boolean: Scalars['Boolean']['output'];
   CartItem: CartItem;
   CartItemInput: CartItemInput;
   CartItemUpdateInput: CartItemUpdateInput;
@@ -1195,9 +878,6 @@ export type ResolversParentTypes = {
   CategoryUpdatedInput: CategoryUpdatedInput;
   CreateProductInput: CreateProductInput;
   CreateReviewInput: CreateReviewInput;
-  DateTime: Scalars['DateTime']['output'];
-  Float: Scalars['Float']['output'];
-  Int: Scalars['Int']['output'];
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
@@ -1221,7 +901,6 @@ export type ResolversParentTypes = {
   SignInInput: SignInInput;
   SignupIpnut: SignupIpnut;
   String: Scalars['String']['output'];
-  String: Scalars['String']['output'];
   UpdateProductInput: UpdateProductInput;
   UpdateReviewInput: UpdateReviewInput;
   UpdateUserInput: UpdateUserInput;
@@ -1240,28 +919,15 @@ export type AdminHomeStatisticsResolvers<ContextType = MyContext, ParentType ext
   newProducts?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   registeredBuyers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   registeredSeller?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-export type AdminHomeStatisticsResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AdminHomeStatistics'] = ResolversParentTypes['AdminHomeStatistics']> = {
-  newOrders?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  newProducts?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  registeredBuyers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  registeredSeller?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
   jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-export type AuthResponseResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthResponse'] = ResolversParentTypes['AuthResponse']> = {
-  jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CartItemResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CartItem'] = ResolversParentTypes['CartItem']> = {
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 export type CartItemResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['CartItem'] = ResolversParentTypes['CartItem']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -1273,6 +939,7 @@ export type CartItemResolvers<ContextType = MyContext, ParentType extends Resolv
 export type CategoryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   productCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1280,13 +947,8 @@ export type CategoryResolvers<ContextType = MyContext, ParentType extends Resolv
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
-export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
-  name: 'DateTime';
 }
 
-export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['JwtPayload'] = ResolversParentTypes['JwtPayload']> = {
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 export type JwtPayloadResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['JwtPayload'] = ResolversParentTypes['JwtPayload']> = {
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1321,16 +983,9 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   updateUserBlockStatus?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateUserBlockStatusArgs, 'isBlocked' | 'userId'>>;
   verifyEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyEmailArgs, 'email' | 'token'>>;
+  verifyPayment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationVerifyPaymentArgs, 'sessionId'>>;
 };
 
-export type OrderResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
-  buyer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  orderItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['OrderItem']>>>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['OrderStatus']>, ParentType, ContextType>;
-  totalAmount?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
 export type OrderResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
   buyer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1351,15 +1006,6 @@ export type OrderItemResolvers<ContextType = MyContext, ParentType extends Resol
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['OrderItemStatus'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-export type OrderItemResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrderItem'] = ResolversParentTypes['OrderItem']> = {
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType>;
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['OrderItemStatus'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1370,19 +1016,9 @@ export type OrderItemStatisticsResolvers<ContextType = MyContext, ParentType ext
   countPending?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   totalEarnings?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   totalNewCustomers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-export type OrderItemStatisticsResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrderItemStatistics'] = ResolversParentTypes['OrderItemStatistics']> = {
-  all?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  countCanceledOrFailed?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  countDelivered?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  countPending?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  totalEarnings?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
-  totalNewCustomers?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type OrderItemsListResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrderItemsListResult'] = ResolversParentTypes['OrderItemsListResult']> = {
-  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  orderItems?: Resolver<Array<ResolversTypes['OrderItem']>, ParentType, ContextType>;
 export type OrderItemsListResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['OrderItemsListResult'] = ResolversParentTypes['OrderItemsListResult']> = {
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   orderItems?: Resolver<Array<ResolversTypes['OrderItem']>, ParentType, ContextType>;
@@ -1398,23 +1034,6 @@ export type OrderPaginationResolvers<ContextType = MyContext, ParentType extends
 export type PaymentSessionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentSession'] = ResolversParentTypes['PaymentSession']> = {
   sessionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sessionUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type PaymentStatusResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentStatus'] = ResolversParentTypes['PaymentStatus']> = {
-  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type PaymentVerificationResultResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['PaymentVerificationResult'] = ResolversParentTypes['PaymentVerificationResult']> = {
-  amount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  created?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  customerEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  isSuccess?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  paymentIntentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  sessionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1483,7 +1102,6 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getUsers?: Resolver<ResolversTypes['UserPaginationResult'], ParentType, ContextType, Partial<QueryGetUsersArgs>>;
   getWishList?: Resolver<ResolversTypes['WishList'], ParentType, ContextType>;
   isBuyerAllowedToReview?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryIsBuyerAllowedToReviewArgs, 'productId'>>;
-  verifyPayment?: Resolver<ResolversTypes['PaymentVerificationResult'], ParentType, ContextType, RequireFields<QueryVerifyPaymentArgs, 'sessionId'>>;
 };
 
 export type ReviewResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = {
@@ -1594,5 +1212,4 @@ export type Resolvers<ContextType = MyContext> = {
   frequentBuyersInfo?: FrequentBuyersInfoResolvers<ContextType>;
   productAndNbOrders?: ProductAndNbOrdersResolvers<ContextType>;
 };
-
 
