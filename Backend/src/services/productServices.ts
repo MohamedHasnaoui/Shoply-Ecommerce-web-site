@@ -21,7 +21,6 @@ import { GraphQLError } from "graphql";
 import { categoryService } from "./categoryServices.js";
 import { orderItemService } from "./OrderItemService.js";
 import { dateUtil } from "../../utils/dateUtil.js";
-import { i } from "react-router/dist/development/fog-of-war-CCAcUMgB.js";
 
 export class ProductServices {
   constructor(private productRepository: Repository<Product>) {}

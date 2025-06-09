@@ -101,13 +101,41 @@ export class EmailUtil {
   }
 
   // Email de succès de paiement
-  async sendPaymentSuccessEmail(email: string, amount: number) {
+  async sendPaymentSuccessEmail(
+    email: string,
+    amount: number,
+    images: string[],
+    productNames: string[],
+    fullName: string
+  ) {
+    const productsHtml = images
+      .map((img, i) => {
+        const name = productNames[i];
+        return `
+        <tr>
+          <td style="padding: 10px 0;">
+            <img src="${img}" alt="${name}" style="width: 100px; height: auto; border-radius: 4px;" />
+            <p style="margin: 5px 0; font-weight: bold;">${name}</p>
+          </td>
+        </tr>
+      `;
+      })
+      .join("");
+
     const emailInput: SendEmailInput = {
       emailTitle: "Payment Successful",
       subject: "Payment Confirmation",
-      messageBody: `<p>Your payment of <strong>${amount}</strong> has been successfully processed. Thank you for your purchase!</p>`,
+      messageBody: `
+        <p>Hi  <strong>${fullName}</strong></p>
+        <p>Your payment of <strong>$${amount.toFixed(
+          2
+        )}</strong> has been successfully processed.</p>
+        <p>Here are the items you purchased:</p>
+        <table>${productsHtml}</table>
+      `,
       RECIPIENT_EMAIL: email,
     };
+
     await this.sendEmail(emailInput);
   }
 

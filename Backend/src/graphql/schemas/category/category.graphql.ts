@@ -6,6 +6,7 @@ export const categorySchema = gql`
     id: Int
     name: String
     description: String
+    image: String
     productCount: Int
   }
 
@@ -13,11 +14,13 @@ export const categorySchema = gql`
     id: Int!
     name: String
     description: String
+    image: String
   }
 
   input CategoryInput {
     name: String!
     description: String!
+    image: String
   }
 
   type Query {

@@ -13,8 +13,6 @@ interface propsType {
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => {
     dispatch(logoutAction());
-    dispatch(clearCart());
-    dispatch(clearWishlist());
   },
 });
 export default function Header(props: propsType) {

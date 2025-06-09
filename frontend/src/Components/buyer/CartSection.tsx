@@ -243,7 +243,7 @@ const CartSection = () => {
                 <button
                   onClick={handleClearCart}
                   type="button"
-                  className="text-lg text-gray-500 hover-text-main-600"
+                  className="btn btn-main mt-40 py-18 rounded-8"
                 >
                   Clear ShoppingCart
                 </button>

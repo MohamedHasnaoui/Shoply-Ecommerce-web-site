@@ -1,8 +1,10 @@
 import { GraphQLError } from "graphql";
 import { categoryService } from "../../services/categoryServices.js";
-import { Resolvers } from "../types/resolvers-types";
+import { Resolvers, Role } from "../types/resolvers-types.js";
 import { Product } from "../../entities/product/Product.entity.js";
 import { appDataSource } from "../../database/data-source.js";
+import { userService } from "../../services/userService.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 const productRepository = appDataSource.getRepository(Product);
 export const CategoryResolver: Resolvers = {
@@ -17,6 +19,12 @@ export const CategoryResolver: Resolvers = {
   Mutation: {
     createCategory: async (parent, { input }, context) => {
       try {
+        const user = await userService.findOneById(context.currentUser.userId);
+        if (user.role !== Role.Admin) {
+          throw new GraphQLError("UNAUTHORIZED", {
+            extensions: { code: ErrorCode.NOT_AUTHORIZED },
+          });
+        }
         const category = await categoryService.create(input);
 
         if (!category) {

@@ -13,6 +13,7 @@ import { setCartItems } from "../../../redux/slices/cartSlice";
 import { setWishlist } from "../../../redux/slices/wishlistSlice/wishlistSlice";
 import { shoppingCartService } from "../../../services/shoppingCart";
 import { wishListService } from "../../../services/wishlist";
+import { ApolloError } from "@apollo/client";
 
 const ShopSection = () => {
   //Add to Cart Code
@@ -38,15 +39,14 @@ const ShopSection = () => {
     }
   };
 
-  const [tempPriceRange, setTempPriceRange] = useState<[number, number]>([
-    0, 100,
-  ]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
-  const [rating, setRating] = useState<number>(0);
+  const [priceRange, setPriceRange] = useState<
+    [number | undefined, number | undefined]
+  >([undefined, undefined]);
 
-  const handleFilter = () => {
-    setPriceRange(tempPriceRange);
-  };
+  const [minPriceInput, setMinPriceInput] = useState<string>(""); // string pour input
+  const [maxPriceInput, setMaxPriceInput] = useState<string>("");
+  const [isAllPrices, setIsAllPrices] = useState<boolean>(true);
+  const [rating, setRating] = useState<number>(0);
 
   const [grid, setGrid] = useState<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
@@ -87,7 +87,6 @@ const ShopSection = () => {
   const [countFilteredProducts, setCountFilteredProducts] = useState(0);
 
   const resetFilters = () => {
-    setTempPriceRange([0, 100]);
     setPriceRange([0, 100]);
     setRating(0);
     setSelectedCategory(undefined);
@@ -110,33 +109,78 @@ const ShopSection = () => {
 
   const handleCategoryClick = (category: Category | undefined) => {
     setSelectedCategory(category);
-    alert(`Category selected: ${category?.name}`);
+    console.log(`Category selected: ${category?.name}`);
   };
+  useEffect(() => {
+    const initializeWishlist = async () => {
+      try {
+        const response = await wishListService.getWishList();
+        console.log("🟢 Wishlist initialisée:", response?.products);
 
+        const wishlistedIds = (
+          response?.products?.map((p) => p?.id) ?? []
+        ).filter((id): id is number => typeof id === "number");
+
+        setWishlistProductIds(wishlistedIds);
+        dispatch(setWishlist(response ?? null));
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation de la wishlist:", error);
+        // En cas d'erreur, initialiser avec un tableau vide
+        setWishlistProductIds([]);
+      }
+    };
+
+    initializeWishlist();
+  }, []);
   const toggleWishlist = async (productId: number) => {
     try {
-      if (wishlistProductIds.includes(productId)) {
+      // Récupérer la wishlist actuelle une seule fois au début
+      const responseW = await wishListService.getWishList();
+      console.log("🟢 Wishlist Products:", responseW?.products);
+
+      const wishlistedIds = (
+        responseW?.products?.map((p) => p?.id) ?? []
+      ).filter((id): id is number => typeof id === "number");
+
+      // Vérifier si le produit est déjà dans la wishlist
+      if (wishlistedIds.includes(productId)) {
+        // Retirer le produit de la wishlist
         await wishListService.deleteProductFromWishList(productId);
         setWishlistProductIds((prev) => prev.filter((id) => id !== productId));
+        toast.success("Produit retiré de la wishlist");
       } else {
+        // Ajouter le produit à la wishlist
         await wishListService.addProductToWishList(productId);
         setWishlistProductIds((prev) => [...prev, productId]);
+        toast.success("Produit ajouté à la wishlist");
       }
-      const res = await wishListService.getWishList();
-      dispatch(setWishlist(res ?? null));
-    } catch (error) {
-      console.error("Erreur lors de la modification de la wishlist :", error);
+
+      // Récupérer la wishlist mise à jour et mettre à jour le store
+      const updatedWishlist = await wishListService.getWishList();
+      dispatch(setWishlist(updatedWishlist ?? null));
+    } catch (e) {
+      console.error("Erreur lors de la modification de la wishlist :", e);
+
+      const err = e as ApolloError;
+      const graphErr = err.graphQLErrors?.[0];
+
+      if (graphErr?.extensions?.code === "UNAUTHORIZED") {
+        toast.error("Veuillez vous connecter pour utiliser la wishlist.");
+      } else if (graphErr?.extensions?.code === "BAD_USER_INPUT") {
+        toast.error(graphErr.message);
+      } else {
+        toast.error(
+          "Une erreur est survenue lors de la modification de la wishlist."
+        );
+        // Optionnel: navigation vers une page d'erreur
+        // navigate(`/Error/${graphErr?.extensions?.code}/${graphErr?.message}`);
+      }
     }
   };
 
   useEffect(() => {
     const fetchMyProducts = async () => {
       try {
-        const responseW = await wishListService.getWishList();
-        console.log("🟢 Wishlist Products:", responseW?.products);
-        const wishlistedIds = responseW?.products?.map((p) => p?.id) ?? [];
-        setWishlistProductIds(wishlistedIds);
-
         const response = await productService.getProductsFiltered({
           name: productNameFilter,
           available: selectedStatus
@@ -144,8 +188,8 @@ const ShopSection = () => {
             : undefined,
           categoryId: selectedCategory?.id,
           pageNb: pageNb,
-          minPrice: priceRange[0],
-          maxPrice: priceRange[1],
+          minPrice: isAllPrices ? undefined : priceRange[0],
+          maxPrice: isAllPrices ? undefined : priceRange[1],
           minRating: rating,
           pageSize: pageSz,
           orderBy: sortedBy,
@@ -177,7 +221,7 @@ const ShopSection = () => {
     sortedBy,
     priceRange,
     rating,
-    // Retiré toggleWishlist des dépendances pour éviter les re-renders infinis
+    isAllPrices,
   ]);
   // Calculer le nombre total de pages
   useEffect(() => {
@@ -207,6 +251,7 @@ const ShopSection = () => {
     { id: 3, progress: 35 },
     { id: 2, progress: 20 },
     { id: 1, progress: 5 },
+    { id: undefined, pogress: 0 },
   ];
 
   // Rendu des produits (pas de pagination côté client, les produits viennent déjà paginés du serveur)
@@ -369,6 +414,12 @@ const ShopSection = () => {
                   Product Category
                 </h6>
                 <ul className="max-h-540 overflow-y-auto scroll-sm">
+                  <li
+                    className="mb-24 cursor-pointer"
+                    onClick={() => handleCategoryClick(undefined)}
+                  >
+                    <div className="text-gray-900 hover:text-main-600">All</div>
+                  </li>
                   {productCategories
                     .filter(
                       (category): category is Category => category !== null
@@ -395,41 +446,55 @@ const ShopSection = () => {
                 <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
                   Filter by Price
                 </h6>
-                <div className="custom--range">
-                  <ReactSlider
-                    value={tempPriceRange}
-                    onChange={(value) =>
-                      setTempPriceRange(value as [number, number])
-                    }
-                    className="horizontal-slider"
-                    thumbClassName="example-thumb"
-                    trackClassName="example-track"
-                    defaultValue={[0, 100]}
-                    ariaLabel={["Lower thumb", "Upper thumb"]}
-                    ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
-                    renderThumb={(props, state) => {
-                      const { key, ...restProps } = props;
-                      return (
-                        <div {...restProps} key={state.index}>
-                          {state.valueNow}
-                        </div>
-                      );
-                    }}
-                    pearling
-                    minDistance={10}
-                  />
-                  <br />
-                  <br />
-                  <div className="flex-between flex-wrap-reverse gap-8 mt-24">
-                    <button
-                      type="button"
-                      title="button"
-                      onClick={handleFilter}
-                      className="btn btn-main h-40 flex-align"
-                    >
-                      Filter
-                    </button>
-                  </div>
+
+                <div className="space-y-4">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={isAllPrices}
+                      onChange={() => setIsAllPrices(!isAllPrices)}
+                    />
+                    <span className="ml-2">All Products</span>
+                  </label>
+
+                  {!isAllPrices && (
+                    <div className="flex gap-4">
+                      <input
+                        type="number"
+                        placeholder="Min Price"
+                        value={minPriceInput}
+                        onChange={(e) => setMinPriceInput(e.target.value)}
+                        className="input input-bordered w-full max-w-xs"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Max Price"
+                        value={maxPriceInput}
+                        onChange={(e) => setMaxPriceInput(e.target.value)}
+                        className="input input-bordered w-full max-w-xs"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isAllPrices) {
+                            setPriceRange([undefined, undefined]);
+                          } else {
+                            const min = minPriceInput
+                              ? parseFloat(minPriceInput)
+                              : undefined;
+                            const max = maxPriceInput
+                              ? parseFloat(maxPriceInput)
+                              : undefined;
+                            setPriceRange([min, max]);
+                          }
+                        }}
+                        className="btn btn-main h-40 mt-2"
+                      >
+                        Filter
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -442,7 +507,7 @@ const ShopSection = () => {
                   <div
                     key={ratingItem.id}
                     className={`flex-align gap-8 position-relative mb-${
-                      ratingItem.id === 1 ? "0" : "20"
+                      ratingItem.id === undefined ? "0" : "20"
                     }`}
                   >
                     <label
