@@ -3,7 +3,6 @@ import {
   CreateProductInput,
   CreateProductMutation,
   CreateProductMutationVariables,
-  GetAllCategoriesQuery,
   GetAllMyProductsQuery,
   GetAllMyProductsQueryVariables,
   GetMyProductsStatisticsQuery,
@@ -24,7 +23,6 @@ import {
   GetProductDetailsQuery,
 } from "../../generated";
 import {
-  ALL_CATEG_ID_NAME,
   CREATE_PRODUCT_MUTATION,
   DELETE_PRODUCT_MUTATION,
   GET_MY_PRODUCTS,
@@ -36,15 +34,7 @@ import {
   GET_PRODUCT_DETAILS,
 } from "../../graphql/product.graphql";
 import { client } from "../../graphqlProvider";
-
 class ProductService {
-  async getCatgories() {
-    const options: QueryOptions<GetAllCategoriesQuery> = {
-      query: ALL_CATEG_ID_NAME,
-    };
-    const response = await client.query<GetAllCategoriesQuery>(options);
-    return response;
-  }
   async getProductsFiltered(input: ProductFilter) {
     const options: QueryOptions<
       GetAllProductsQueryVariables,

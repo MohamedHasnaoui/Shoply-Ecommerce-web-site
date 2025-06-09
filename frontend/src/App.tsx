@@ -24,6 +24,9 @@ import AdminLayout from "./layout/AdminLayout";
 import ClientLayout from "./layout/ClientLayout";
 import ManageUsersAndProducts from "./Pages/Admin/ManageUsersAndProducts";
 import OrdersPage from "./Pages/Buyer/OrdersPage";
+import CategoriesList from "./Pages/Admin/CategoriesList";
+import CreateCategory from "./Pages/Admin/CreateCategory";
+import EditCategory from "./Pages/Admin/EditCategory";
 function App() {
   return (
     <>
@@ -43,6 +46,9 @@ function App() {
           <Route path='/admin' element={<AdminLayout />} >
               <Route path='' element={<AdminHomePage/>} />
               <Route path='manageUsersAndProducts' element={<ManageUsersAndProducts/>} />
+              <Route path='categories' element={<CategoriesList/>} />
+              <Route path='categories/add' element={<CreateCategory />} />
+              <Route path='categories/edit/:categId' element={<EditCategory />} />
           </Route>
         </Route>
         <Route element={<ClientLayout />}>

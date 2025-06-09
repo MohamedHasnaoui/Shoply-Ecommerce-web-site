@@ -8,6 +8,8 @@ export const categorySchema = gql`
     description: String
     image: String
     productCount: Int
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   input CategoryUpdatedInput {
@@ -24,7 +26,7 @@ export const categorySchema = gql`
   }
 
   type Query {
-    getAllCategories: [Category]
+    getAllCategories: [Category!]!
     getCategory(id: Int!): Category
   }
   type Mutation {

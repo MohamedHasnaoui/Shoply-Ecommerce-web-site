@@ -11,6 +11,7 @@ import  { BasicModal, BasicModalRef }  from "../../../Components/common/modal";
 import { client } from "../../../graphqlProvider";
 import { ErrorCode } from "../../../constants/errors";
 import { ApolloError } from "@apollo/client";
+import { categoryService } from "../../../services/category";
 
 const EditProductPage = () => {
     const ModalRef = useRef<BasicModalRef>(null);
@@ -26,7 +27,7 @@ const EditProductPage = () => {
         const fetchCateg = async () => {
           try{
             setLoadingCategories(true);
-            const response = await productService.getCatgories();
+            const response = await categoryService.getCatgories();
             if(response.data.getAllCategories){
               setProductCategories(response.data.getAllCategories);  
             }}catch(e){

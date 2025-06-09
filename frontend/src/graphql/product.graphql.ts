@@ -1,16 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const ALL_CATEG_ID_NAME = gql`
-  query GetAllCategories {
-    getAllCategories {
-      id
-      name
-      description
-      productCount
-    }
-  }
-`;
-
 // export const GET_PRODUCTS_BY_CATEGORY = gql`
 //   query GetProductsByCategory($categoryId: Int!, $pageNb: Int, $pageSize: Int) {
 //     getProductsByCategory(

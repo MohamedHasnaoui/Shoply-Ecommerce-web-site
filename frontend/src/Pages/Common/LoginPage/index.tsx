@@ -39,18 +39,18 @@ const Login = () => {
     setData(null);
     try {
       const response = await authService.login(formState);
-      if (response.errors) setsubmitError(response.errors[0].message);
+      console.log("res",response);
       if (response.data) {
         const data = response.data.signin;
         setData(data);
         loginUser(data.user);
         localStorage.setItem("jwt", data.jwt);
-        const res = await wishListService.getWishList();
-        dispatch(setWishlist(res ?? null));
-
         await client.resetStore();
         if(data.user.role === Role.Seller) navigate("/seller/home");
         if(data.user.role === Role.Admin) navigate("/admin");
+        const res = await wishListService.getWishList();
+        dispatch(setWishlist(res ?? null));
+
       }
     } catch (err) {
       setsubmitError((err as Error).message);

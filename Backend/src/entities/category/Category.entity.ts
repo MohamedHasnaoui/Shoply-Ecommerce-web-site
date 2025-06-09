@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
+  UpdateDateColumn,
 } from "typeorm";
 import { IsString, IsNotEmpty, Length } from "class-validator";
 import { Product } from "../index.js";
@@ -24,9 +26,16 @@ export class Category {
   @IsNotEmpty()
   @Length(10, 255) // Description must be between 10 and 255 characters
   description: string;
+
   @Column({ default: "default.jpg" })
   @IsString()
   image: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Product, (product: Product) => product.category)
   products: Relation<Product>[];

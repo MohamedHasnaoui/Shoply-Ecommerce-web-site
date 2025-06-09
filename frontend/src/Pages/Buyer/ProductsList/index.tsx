@@ -14,6 +14,7 @@ import { setWishlist } from "../../../redux/slices/wishlistSlice/wishlistSlice";
 import { shoppingCartService } from "../../../services/shoppingCart";
 import { wishListService } from "../../../services/wishlist";
 import { ApolloError } from "@apollo/client";
+import { categoryService } from "../../../services/category";
 
 const ShopSection = () => {
   //Add to Cart Code
@@ -98,7 +99,7 @@ const ShopSection = () => {
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await productService.getCatgories();
+      const response = await categoryService.getCatgories();
       if (response.data.getAllCategories) {
         setProductCategories(response.data.getAllCategories);
       }

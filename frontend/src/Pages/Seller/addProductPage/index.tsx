@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router";
 import { client } from "../../../graphqlProvider"
 import { ErrorCode } from "../../../constants/errors";
 import { ApolloError } from "@apollo/client";
+import { categoryService } from "../../../services/category";
 export default function AddProduct() {
   const navigate = useNavigate();
   const [productCategories,setProductCategories] = useState<Array<Category | null>>([]);
@@ -20,7 +21,7 @@ export default function AddProduct() {
 
     const fetch = async () => {
       try{
-        const response = await productService.getCatgories();
+        const response = await categoryService.getCatgories();
         if(response.data.getAllCategories){
           setProductCategories(response.data.getAllCategories);  
         }
@@ -35,10 +36,7 @@ export default function AddProduct() {
     }
     fetch();
   },[navigate]);
-const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
-  maxFiles: 1,
-  multiple: false
-});
+const { getRootProps, getInputProps, acceptedFiles } = useDropzone();
 const productImages = acceptedFiles.map((image) => {
     if(image.type.includes("image")){
       return <img alt="product" width={200} src={URL.createObjectURL(image)} style={{margin:5}} />

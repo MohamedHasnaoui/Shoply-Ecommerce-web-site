@@ -52,11 +52,13 @@ export type CartItemUpdateInput = {
 
 export type Category = {
   __typename?: 'Category';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   productCount?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CategoryInput = {
@@ -420,7 +422,7 @@ export type Query = {
   currentUser?: Maybe<User>;
   getAdminHomeStatistics: AdminHomeStatistics;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
-  getAllCategories?: Maybe<Array<Maybe<Category>>>;
+  getAllCategories: Array<Category>;
   getAllMyProducts: ProductListResult;
   getAllProducts: ProductListResult;
   getBestSellers: Array<BestSellerInfo>;
@@ -937,11 +939,13 @@ export type CartItemResolvers<ContextType = MyContext, ParentType extends Resolv
 };
 
 export type CategoryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   productCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1072,7 +1076,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getAdminHomeStatistics?: Resolver<ResolversTypes['AdminHomeStatistics'], ParentType, ContextType, Partial<QueryGetAdminHomeStatisticsArgs>>;
   getAllCartItems?: Resolver<Maybe<Array<Maybe<ResolversTypes['CartItem']>>>, ParentType, ContextType>;
-  getAllCategories?: Resolver<Maybe<Array<Maybe<ResolversTypes['Category']>>>, ParentType, ContextType>;
+  getAllCategories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   getAllMyProducts?: Resolver<ResolversTypes['ProductListResult'], ParentType, ContextType, Partial<QueryGetAllMyProductsArgs>>;
   getAllProducts?: Resolver<ResolversTypes['ProductListResult'], ParentType, ContextType, Partial<QueryGetAllProductsArgs>>;
   getBestSellers?: Resolver<Array<ResolversTypes['bestSellerInfo']>, ParentType, ContextType, Partial<QueryGetBestSellersArgs>>;

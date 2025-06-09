@@ -109,6 +109,16 @@ export default function Sidebar(props:propsType) {
                               <span className="nav-main-link-name">Manage Users And Products</span>
                             </Link>
                           </li>
+                          <li className="nav-main-item">
+                            <Link to={"/admin/categories"} className="nav-main-link">
+                              <span className="nav-main-link-name">Categories</span>
+                            </Link>
+                          </li>
+                          <li className="nav-main-item">
+                            <Link to={"/admin/categories/add"} className="nav-main-link">
+                              <span className="nav-main-link-name">Add Category</span>
+                            </Link>
+                          </li>
                         </ul>
                   </li>          
                 </ul>

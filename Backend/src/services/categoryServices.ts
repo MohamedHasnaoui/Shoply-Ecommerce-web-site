@@ -54,7 +54,7 @@ export class CategoryService {
     }
     return category;
   }
-  async update(category: CategoryUpdatedInput) {
+  async update(category: Category) {
     return await this.categoryRepository.update(category.id, category);
   }
 }

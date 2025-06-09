@@ -18,69 +18,63 @@ export const CategoryResolver: Resolvers = {
   },
   Mutation: {
     createCategory: async (parent, { input }, context) => {
-      try {
-        const user = await userService.findOneById(context.currentUser.userId);
-        if (user.role !== Role.Admin) {
-          throw new GraphQLError("UNAUTHORIZED", {
-            extensions: { code: ErrorCode.NOT_AUTHORIZED },
-          });
-        }
-        const category = await categoryService.create(input);
-
-        if (!category) {
-          throw new GraphQLError("Category creation failed", {
-            extensions: { code: "CATEGORY_CREATION_FAILED" },
-          });
-        }
-
-        return category;
-      } catch (error) {
-        if (error instanceof GraphQLError) {
-          throw error;
-        }
-
-        throw new GraphQLError(
-          "An unexpected error occurred while adding category",
-          { extensions: { code: "UNKNOWN_ERROR", error } }
-        );
-      }
-    },
-    updateCategory: async (parent, { input }, context) => {
-      const updatedCategory = await categoryService.update(input);
-
-      if (!updatedCategory) {
-        throw new GraphQLError("Category update failed", {
-          extensions: { code: "INTERNAL_SERVER_ERROR" },
+      if (!context.currentUser) {
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
-
-      const category = await categoryService.findById(input.id);
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Admin) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
+        });
+      }
+      const category = await categoryService.create(input);
 
       if (!category) {
-        throw new GraphQLError("Category not found after update", {
-          extensions: { code: "NOT_FOUND" },
+        throw new GraphQLError("Category creation failed", {
+          extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }
 
       return category;
     },
-  },
-  Query: {
-    getAllCategories: async (parent, args, context) => {
-      const categories = await categoryService.getAllCategories();
-      if (!categories || categories.length === 0) {
-        throw new GraphQLError("No categories available", {
-          extensions: { code: "NO_CATEGORIES_FOUND" },
+    updateCategory: async (parent, { input }, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError("UNAUTHENTICATED", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
+        });
+      }
+      const user = await userService.findOneById(context.currentUser.userId);
+      if (user.role !== Role.Admin) {
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 
-      return categories;
+      const category = await categoryService.findById(input.id);
+      if (!category) {
+        throw new GraphQLError("Category not found after update", {
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
+        });
+      }
+      category.description = input.description || category.description;
+      category.name = input.name || category.name;
+      category.image = input.image || category.image;
+      category.description = input.description;
+      await categoryService.update(category);
+      return category;
+    },
+  },
+  Query: {
+    getAllCategories: async (parent, z, context) => {
+      return await categoryService.getAllCategories();
     },
     getCategory: async (parent, args, context) => {
       const category = await categoryService.findById(args.id);
       if (!category) {
         throw new GraphQLError("Category not found", {
-          extensions: { code: "NOT_FOUND" },
+          extensions: { code: ErrorCode.BAD_USER_INPUT },
         });
       }
 

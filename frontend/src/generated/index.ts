@@ -70,11 +70,13 @@ export type CartItemUpdateInput = {
 
 export type Category = {
   __typename?: 'Category';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   productCount?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CategoryInput = {
@@ -438,7 +440,7 @@ export type Query = {
   currentUser?: Maybe<User>;
   getAdminHomeStatistics: AdminHomeStatistics;
   getAllCartItems?: Maybe<Array<Maybe<CartItem>>>;
-  getAllCategories?: Maybe<Array<Maybe<Category>>>;
+  getAllCategories: Array<Category>;
   getAllMyProducts: ProductListResult;
   getAllProducts: ProductListResult;
   getBestSellers: Array<BestSellerInfo>;
@@ -864,6 +866,32 @@ export type RemoveCartItemMutationVariables = Exact<{
 
 export type RemoveCartItemMutation = { __typename?: 'Mutation', removeCartItem: boolean };
 
+export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, createdAt?: any | null, updatedAt?: any | null, productCount?: number | null }> };
+
+export type CreateCategoryMutationVariables = Exact<{
+  input: CategoryInput;
+}>;
+
+
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, image?: string | null, createdAt?: any | null, updatedAt?: any | null } };
+
+export type GetCategoryQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetCategoryQuery = { __typename?: 'Query', getCategory?: { __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, image?: string | null } | null };
+
+export type UpdateCategoryMutationVariables = Exact<{
+  input?: InputMaybe<CategoryUpdatedInput>;
+}>;
+
+
+export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, image?: string | null } };
+
 export type GetMyOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -923,11 +951,6 @@ export type VerifyPaymentMutationVariables = Exact<{
 
 
 export type VerifyPaymentMutation = { __typename?: 'Mutation', verifyPayment: boolean };
-
-export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories?: Array<{ __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, productCount?: number | null } | null> | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -1471,6 +1494,112 @@ export const useRemoveCartItemMutation = <
       options
     )};
 
+export const GetAllCategoriesDocument = `
+    query GetAllCategories {
+  getAllCategories {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+    productCount
+  }
+}
+    `;
+
+export const useGetAllCategoriesQuery = <
+      TData = GetAllCategoriesQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables?: GetAllCategoriesQueryVariables,
+      options?: UseQueryOptions<GetAllCategoriesQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetAllCategoriesQuery, TError, TData>(
+      variables === undefined ? ['GetAllCategories'] : ['GetAllCategories', variables],
+      fetcher<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllCategoriesDocument, variables),
+      options
+    )};
+
+export const CreateCategoryDocument = `
+    mutation CreateCategory($input: CategoryInput!) {
+  createCategory(input: $input) {
+    id
+    name
+    description
+    image
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export const useCreateCategoryMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<CreateCategoryMutation, TError, CreateCategoryMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<CreateCategoryMutation, TError, CreateCategoryMutationVariables, TContext>(
+      ['CreateCategory'],
+      (variables?: CreateCategoryMutationVariables) => fetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CreateCategoryDocument, variables)(),
+      options
+    )};
+
+export const GetCategoryDocument = `
+    query GetCategory($id: Int!) {
+  getCategory(id: $id) {
+    id
+    name
+    description
+    image
+  }
+}
+    `;
+
+export const useGetCategoryQuery = <
+      TData = GetCategoryQuery,
+      TError = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      variables: GetCategoryQueryVariables,
+      options?: UseQueryOptions<GetCategoryQuery, TError, TData>
+    ) => {
+    
+    return useQuery<GetCategoryQuery, TError, TData>(
+      ['GetCategory', variables],
+      fetcher<GetCategoryQuery, GetCategoryQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetCategoryDocument, variables),
+      options
+    )};
+
+export const UpdateCategoryDocument = `
+    mutation UpdateCategory($input: CategoryUpdatedInput) {
+  updateCategory(input: $input) {
+    id
+    name
+    description
+    image
+  }
+}
+    `;
+
+export const useUpdateCategoryMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<UpdateCategoryMutation, TError, UpdateCategoryMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<UpdateCategoryMutation, TError, UpdateCategoryMutationVariables, TContext>(
+      ['UpdateCategory'],
+      (variables?: UpdateCategoryMutationVariables) => fetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, UpdateCategoryDocument, variables)(),
+      options
+    )};
+
 export const GetMyOrdersDocument = `
     query GetMyOrders {
   getMyOrders {
@@ -1725,32 +1854,6 @@ export const useVerifyPaymentMutation = <
     return useMutation<VerifyPaymentMutation, TError, VerifyPaymentMutationVariables, TContext>(
       ['VerifyPayment'],
       (variables?: VerifyPaymentMutationVariables) => fetcher<VerifyPaymentMutation, VerifyPaymentMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, VerifyPaymentDocument, variables)(),
-      options
-    )};
-
-export const GetAllCategoriesDocument = `
-    query GetAllCategories {
-  getAllCategories {
-    id
-    name
-    description
-    productCount
-  }
-}
-    `;
-
-export const useGetAllCategoriesQuery = <
-      TData = GetAllCategoriesQuery,
-      TError = unknown
-    >(
-      dataSource: { endpoint: string, fetchParams?: RequestInit },
-      variables?: GetAllCategoriesQueryVariables,
-      options?: UseQueryOptions<GetAllCategoriesQuery, TError, TData>
-    ) => {
-    
-    return useQuery<GetAllCategoriesQuery, TError, TData>(
-      variables === undefined ? ['GetAllCategories'] : ['GetAllCategories', variables],
-      fetcher<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, GetAllCategoriesDocument, variables),
       options
     )};
 
