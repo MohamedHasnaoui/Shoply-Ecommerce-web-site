@@ -24,6 +24,9 @@ export class Category {
   @IsNotEmpty()
   @Length(10, 255) // Description must be between 10 and 255 characters
   description: string;
+  @Column({ default: "default.jpg" })
+  @IsString()
+  image: string;
 
   @OneToMany(() => Product, (product: Product) => product.category)
   products: Relation<Product>[];

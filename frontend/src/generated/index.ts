@@ -72,18 +72,21 @@ export type Category = {
   __typename?: 'Category';
   description?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   productCount?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CategoryInput = {
   description: Scalars['String']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type CategoryUpdatedInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
+  image?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
