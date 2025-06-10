@@ -6,6 +6,8 @@ import { PaymentType } from "../src/graphql/types/resolvers-types.js";
 import { stripe } from "./Stripe.js";
 import { emailUtil } from "./EmailUtil.js";
 import Stripe from "stripe";
+import { orderItemService } from "../src/services/OrderItemService.js";
+import { orderService } from "../src/services/OrderService.js";
 
 export const handleStripeWebhook = async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"] as string;
@@ -117,8 +119,10 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
         fullName
       );
 
-      await shoppingCartService.cancelShoppingCart(Number(buyerId));
+      //await shoppingCartService.cancelShoppingCart(Number(buyerId));
       console.log("✅ Paiement traité avec succès pour le buyerId :", buyerId);
+
+      await orderService.create(Number(buyerId), payment.id);
     } catch (error) {
       console.error("❌ Erreur traitement webhook :", error);
       await emailUtil.sendPaymentFailureEmail(
