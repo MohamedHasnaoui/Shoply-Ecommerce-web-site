@@ -7,7 +7,10 @@ interface StarRatingInputProps {
   setRating: (rating: number) => void;
 }
 
-export const StarRatingInput: React.FC<StarRatingInputProps> = ({ rating, setRating }) => {
+export const StarRatingInput: React.FC<StarRatingInputProps> = ({
+  rating,
+  setRating,
+}) => {
   const [hoverRating, setHoverRating] = useState<number>(0);
 
   const handleStarClick = (starValue: number) => {
@@ -30,7 +33,9 @@ export const StarRatingInput: React.FC<StarRatingInputProps> = ({ rating, setRat
         <FontAwesomeIcon
           key={starValue}
           icon={faStar}
-          className={`star-rating-input-icon ${starValue <= displayRating ? 'filled' : 'empty'}`}
+          className={`star-rating-input-icon ${
+            starValue <= displayRating ? "filled" : "empty"
+          }`}
           onClick={() => handleStarClick(starValue)}
           onMouseEnter={() => handleStarHover(starValue)}
           onMouseLeave={handleStarLeave}

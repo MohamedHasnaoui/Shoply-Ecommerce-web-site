@@ -1,7 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
-
+import { useCategory } from "../../helpers/useCategory";
+import { Category } from "../../generated";
+import { productService } from "../../services/product";
 interface ArrowProps {
   className?: string;
   onClick?: () => void;
@@ -32,6 +34,29 @@ const SamplePrevArrow: React.FC<ArrowProps> = ({ className, onClick }) => {
 };
 
 const FeatureOne: React.FC = () => {
+  const { selectedCategory, setSelectedCategory, productNameFilter } =
+    useCategory();
+
+  const [productCategories, setProductCategories] = useState<
+    Array<Category | null>
+  >([]);
+  const navigate = useNavigate();
+
+  const handleCategoryClick = (category: Category | undefined) => {
+    setSelectedCategory(category);
+    navigate("/products-list");
+    alert(`Category selected: ${category?.name}`);
+  };
+
+  useEffect(() => {
+    const fetchCategoryProducts = async () => {
+      const response = await productService.getCatgories();
+      if (response.data.getAllCategories) {
+        setProductCategories(response.data.getAllCategories);
+      }
+    };
+    fetchCategoryProducts();
+  }, [selectedCategory, productNameFilter]);
   const settings = {
     dots: false,
     arrows: true,
@@ -76,35 +101,30 @@ const FeatureOne: React.FC = () => {
           </div>
           <div className="feature-item-wrapper">
             <Slider {...settings}>
-              {[
-                { img: "feature-img1.png", label: "Vegetables" },
-                { img: "feature-img2.png", label: "Fish & Meats" },
-                { img: "feature-img3.png", label: "Desserts" },
-                { img: "feature-img4.png", label: "Drinks & Juice" },
-                { img: "feature-img5.png", label: "Animals Food" },
-                { img: "feature-img6.png", label: "Fresh Fruits" },
-                { img: "feature-img7.png", label: "Yummy Candy" },
-                { img: "feature-img2.png", label: "Fish & Meats" },
-                { img: "feature-img8.png", label: "Dairy & Eggs" },
-                { img: "feature-img9.png", label: "Snacks" },
-                { img: "feature-img10.png", label: "Frozen Foods" },
-              ].map((item, index) => (
+              {productCategories.map((item, index) => (
                 <div className="feature-item text-center" key={index}>
                   <div className="feature-item__thumb rounded-circle">
-                    <Link to="/shop" className="w-100 h-100 flex-center">
-                      <img
-                        src={`assets/images/thumbs/${item.img}`}
-                        alt={item.label}
-                      />
+                    <Link
+                      onClick={() => handleCategoryClick(category ?? undefined)}
+                      to="/products-list"
+                      className="w-100 h-100 flex-center"
+                    >
+                      <img src={item?.image ?? ""} alt={item?.name ?? ""} />
                     </Link>
                   </div>
                   <div className="feature-item__content mt-16">
                     <h6 className="text-lg mb-8">
-                      <Link to="/shop" className="text-inherit">
-                        {item.label}
+                      <Link
+                        onClick={() => handleCategoryClick(item ?? undefined)}
+                        to="/products-list"
+                        className="text-inherit"
+                      >
+                        {item?.name}
                       </Link>
                     </h6>
-                    <span className="text-sm text-gray-400">125+ Products</span>
+                    <span className="text-sm text-gray-400">
+                      {item?.productCount} Products
+                    </span>
                   </div>
                 </div>
               ))}

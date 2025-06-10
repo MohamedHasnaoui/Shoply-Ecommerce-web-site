@@ -106,9 +106,14 @@ const ShopSection = () => {
 
     fetchCategoryProducts();
   }, [selectedCategory]);
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
 
   const handleCategoryClick = (category: Category | undefined) => {
     setSelectedCategory(category);
+    setActiveCategoryId(
+      category && category.id !== undefined ? category.id : null
+    );
+
     console.log(`Category selected: ${category?.name}`);
   };
   useEffect(() => {
@@ -406,7 +411,7 @@ const ShopSection = () => {
                 onClick={resetFilters}
                 className="btn btn-secondary mb-10 "
               >
-                Réinitialiser les filtres
+                Reset Filter
               </button>
               {/* Categories */}
               <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
@@ -432,6 +437,9 @@ const ShopSection = () => {
                         key={category.id}
                         className="mb-24 cursor-pointer"
                         onClick={() => handleCategoryClick(category)}
+                        style={{
+                          opacity: activeCategoryId === category.id ? 0.5 : 1, // Change opacity on click
+                        }}
                       >
                         <div className="text-gray-900 hover:text-main-600">
                           {category.name} ({category.productCount})
@@ -554,106 +562,6 @@ const ShopSection = () => {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Brand Filter - Reste inchangé */}
-              <div className="shop-sidebar__box border border-gray-100 rounded-8 p-32 mb-32">
-                <h6 className="text-xl border-bottom border-gray-100 pb-24 mb-24">
-                  Filter by Brand
-                </h6>
-                <ul className="max-h-540 overflow-y-auto scroll-sm">
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="brand1"
-                      />
-                      <label className="form-check-label" htmlFor="brand1">
-                        Apple
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="brand2"
-                      />
-                      <label className="form-check-label" htmlFor="brand2">
-                        Samsung
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="brand3"
-                      />
-                      <label className="form-check-label" htmlFor="brand3">
-                        Microsoft
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="brand4"
-                      />
-                      <label className="form-check-label" htmlFor="brand4">
-                        Apple
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="brand5"
-                      />
-                      <label className="form-check-label" htmlFor="brand5">
-                        HP
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-24">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="DELL"
-                      />
-                      <label className="form-check-label" htmlFor="DELL">
-                        DELL
-                      </label>
-                    </div>
-                  </li>
-                  <li className="mb-0">
-                    <div className="form-check common-check common-radio">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="color"
-                        id="Redmi"
-                      />
-                      <label className="form-check-label" htmlFor="Redmi">
-                        Redmi
-                      </label>
-                    </div>
-                  </li>
-                </ul>
               </div>
 
               <div className="shop-sidebar__box rounded-8">
