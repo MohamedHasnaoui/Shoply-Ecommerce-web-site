@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import Logo from "../../assets/ClientAssets/images/logo/logo.png";
-import { useCategory, useCartContext } from "../../helpers/useCategory";
+import { useCategory } from "../../helpers/useCategory";
 import $ from "jquery";
 import select2 from "select2";
-import { productService } from "../../services/product";
-import { Category, Product } from "../../generated";
+import { Category } from "../../generated";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logoutAction } from "../../redux/slices/auth/authSlice";
 import { Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../../redux/store";
-import { Navigate, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { clearCart } from "../../redux/slices/cartSlice";
 import { clearWishlist } from "../../redux/slices/wishlistSlice/wishlistSlice";
-
+import logo from "../../assets/ClientAssets/images/logo/logo.png";
+import { categoryService } from "../../services/category";
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => {
     dispatch(logoutAction());
@@ -66,7 +66,7 @@ const Header = () => {
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await productService.getCatgories();
+      const response = await categoryService.getCatgories();
       if (response.data.getAllCategories) {
         setProductCategories(response.data.getAllCategories);
       }
@@ -194,9 +194,9 @@ const Header = () => {
           <i className="ph ph-x" />{" "}
         </button>
         <div className="mobile-menu__inner">
-          <a href="/" className="mobile-menu__logo">
+          <Link to="/" className="mobile-menu__logo">
             <img src={Logo} alt="Logo" />
-          </a>
+          </Link>
           <div className="mobile-menu__menu">
             {/* Nav Menu Start */}
             <ul className="nav-menu flex-align nav-menu--mobile">
@@ -216,14 +216,14 @@ const Header = () => {
                   }`}
                 >
                   <li className="common-dropdown__item nav-submenu__item">
-                    <a
-                      href="/"
+                    <Link
+                      to={"/"}
                       className="common-dropdown__a nav-submenu__a hover-bg-neutral-100"
                       onClick={() => setActiveIndex(-1)}
                     >
                       {" "}
                       Home One
-                    </a>
+                    </Link>
                   </li>
                   <li className="common-dropdown__item nav-submenu__item">
                     <a
@@ -245,23 +245,23 @@ const Header = () => {
                   activeIndex === 1 ? "d-block" : ""
                 }`}
               >
-                <a href="/products-list" className="nav-menu__a">
+                <Link to={"/shop"} className="nav-menu__a">
                   Shop
-                </a>
+                </Link>
                 <ul
                   className={`on-hover-dropdown common-dropdown nav-submenu scroll-sm ${
                     activeIndex === 1 ? "open" : ""
                   }`}
                 >
                   <li className="common-dropdown__item nav-submenu__item">
-                    <a
-                      href="/shop"
+                    <Link
+                      to={"/shop"}
                       className="common-dropdown__a nav-submenu__a hover-bg-neutral-100"
                       onClick={() => setActiveIndex(-1)}
                     >
                       {" "}
                       Shop
-                    </a>
+                    </Link>
                   </li>
                   <li className="common-dropdown__item nav-submenu__item">
                     <a
@@ -302,34 +302,34 @@ const Header = () => {
                   }`}
                 >
                   <li className="common-dropdown__item nav-submenu__item">
-                    <a
-                      href="/cart"
+                    <Link
+                      to="/cart"
                       className="common-dropdown__a nav-submenu__a hover-bg-neutral-100"
                       onClick={() => setActiveIndex(-1)}
                     >
                       {" "}
                       Cart
-                    </a>
+                    </Link>
                   </li>
                   <li className="common-dropdown__item nav-submenu__item">
-                    <a
-                      href="/checkout"
+                    <Link
+                      to="/checkout"
                       className="common-dropdown__a nav-submenu__a hover-bg-neutral-100"
                       onClick={() => setActiveIndex(-1)}
                     >
                       {" "}
                       Checkout{" "}
-                    </a>
+                    </Link>
                   </li>
                   <li className="common-dropdown__item nav-submenu__item">
-                    <a
-                      href="/account"
+                    <Link
+                      to="/account"
                       className="common-dropdown__a nav-submenu__a hover-bg-neutral-100"
                       onClick={() => setActiveIndex(-1)}
                     >
                       {" "}
                       Account
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -673,9 +673,9 @@ const Header = () => {
           <nav className="header-inner flex-between">
             {/* Logo Start */}
             <div className="logo">
-              <a href="/" className="a">
+              <Link to={"/"} className="a">
                 <img src={Logo} alt="Logo" />
-              </a>
+              </Link>
             </div>
             {/* Logo End  */}
             {/* form location Start */}
@@ -717,7 +717,7 @@ const Header = () => {
                     <i className="ph ph-magnifying-glass" />
                   </span>
                 </button>
-                <a href="/wishlist" className="flex-align gap-4 item-hover">
+                <Link to="/wishlist" className="flex-align gap-4 item-hover">
                   <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                     <i className="ph ph-heart" />
                     <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
@@ -727,8 +727,8 @@ const Header = () => {
                   <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
                     Wishlist
                   </span>
-                </a>
-                <a href="/cart" className="flex-align gap-4 item-hover">
+                </Link>
+                <Link to="/cart" className="flex-align gap-4 item-hover">
                   <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                     <i className="ph ph-shopping-cart-simple" />
                     <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
@@ -738,7 +738,7 @@ const Header = () => {
                   <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
                     Cart
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
             {/* Header Middle Right End  */}
@@ -788,9 +788,9 @@ const Header = () => {
                   </button>
                   {/* Logo Start */}
                   <div className="logo px-16 d-lg-none d-block">
-                    <a href="/" className="a">
-                      <img src="assets/images/logo/logo.png" alt="Logo" />
-                    </a>
+                    <Link to="/" className="a">
+                      <img src={logo} alt="Logo" />
+                    </Link>
                   </div>
                   {/* Logo End */}
                   <ul className="scroll-sm p-0 py-8 w-300 max-h-400 overflow-y-auto">
@@ -857,9 +857,9 @@ const Header = () => {
                 {/* Nav Menu Start */}
                 <ul className="nav-menu flex-align ">
                   <li className="on-hover-item nav-menu__item ">
-                    <a href="/" className="nav-menu__link">
+                    <Link to="/" className="nav-menu__link">
                       Home
-                    </a>
+                    </Link>
                     {/* <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
                       <li className="common-dropdown__item nav-submenu__item">
                         <a
@@ -882,9 +882,9 @@ const Header = () => {
                     </ul> */}
                   </li>
                   <li className="on-hover-item nav-menu__item ">
-                    <a href="/products-list" className="nav-menu__link">
+                    <Link to={"/shop"} className="nav-menu__link">
                       Shop
-                    </a>
+                    </Link>
                     {/* <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
                       <li className="common-dropdown__item nav-submenu__item">
                         <a
@@ -921,51 +921,51 @@ const Header = () => {
                     </a>
                     <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
                       <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/cart"
+                        <Link
+                          to="/cart"
                           className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
                         >
                           {" "}
                           Cart
-                        </a>
+                        </Link>
                       </li>
                       <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/wishlist"
+                        <Link
+                          to="/wishlist"
                           className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
                         >
                           {" "}
                           Wishlist{" "}
-                        </a>
+                        </Link>
                       </li>
                       <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/checkout"
+                        <Link
+                          to="/checkout"
                           className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
                         >
                           {" "}
                           Checkout{" "}
-                        </a>
+                        </Link>
                       </li>
                       <li className="common-dropdown__item nav-submenu__item">
-                        <a
-                          href="/account"
+                        <Link
+                          to="/account"
                           className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
                         >
                           {" "}
                           Account
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </li>
 
                   <li className="nav-menu__item">
-                    <a
-                      href="/contact"
+                    <Link
+                      to="/contact"
                       className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
                     >
                       Contact Us
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 {/* Nav Menu End */}
@@ -995,7 +995,7 @@ const Header = () => {
                       <i className="ph ph-magnifying-glass" />
                     </span>
                   </button>
-                  <a href="/cart" className="flex-align gap-4 item-hover">
+                  <Link to="/cart" className="flex-align gap-4 item-hover">
                     <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                       <i className="ph ph-heart" />
                       <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
@@ -1005,8 +1005,8 @@ const Header = () => {
                     <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
                       Wishlist
                     </span>
-                  </a>
-                  <a href="/cart" className="flex-align gap-4 item-hover">
+                  </Link>
+                  <Link href="/cart" className="flex-align gap-4 item-hover">
                     <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                       <i className="ph ph-shopping-cart-simple" />
                       <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
@@ -1016,7 +1016,7 @@ const Header = () => {
                     <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
                       Cart
                     </span>
-                  </a>
+                  </Link>
                 </div>
               </div>
               <button

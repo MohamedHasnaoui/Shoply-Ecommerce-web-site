@@ -9,6 +9,7 @@ export const GET_ALL_CATEG = gql`
       createdAt
       updatedAt
       productCount
+      image
     }
   }
 `;

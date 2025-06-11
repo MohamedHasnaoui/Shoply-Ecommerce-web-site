@@ -11,7 +11,7 @@ import SellerHomePage from "./Pages/Seller/SellerHomePage";
 import CustomerInfoPage from "./Pages/Seller/customerInfoPage";
 import ErrorPage from "./Pages/Common/errorPage";
 import { ErrorCode } from "./constants/errors";
-import ShopSection from "./Pages/Buyer/ProductsList";
+import ShopSection from "./Pages/Buyer/Shop";
 import CartPage from "./Pages/Buyer/CartPage";
 import PaymentSuccess from "./Components/buyer/PaymentSuccess";
 import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
@@ -27,6 +27,7 @@ import OrdersPage from "./Pages/Buyer/OrdersPage";
 import CategoriesList from "./Pages/Admin/CategoriesList";
 import CreateCategory from "./Pages/Admin/CreateCategory";
 import EditCategory from "./Pages/Admin/EditCategory";
+import { Bounce, ToastContainer } from "react-toastify";
 function App() {
   return (
     <>
@@ -55,7 +56,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<OTPVerification />} />
-          <Route path="/products-list" element={<ShopSection />} />
+          <Route path="/shop" element={<ShopSection />} />
           <Route path="/product-details/:id" element={<ProductDetails />} />
 
           <Route path="/" element={<HomePage />} />
@@ -80,6 +81,18 @@ function App() {
           element={<Navigate to={`/Error/${ErrorCode.NOT_FOUND}`} />}
         />
       </Routes>
+      <ToastContainer 
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}/>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { JSX } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
-
+import banner1 from "../../assets/ClientAssets/images/bg/promo-bg-img1.png"
 interface ArrowProps {
   className?: string;
   onClick?: () => void;
@@ -60,7 +60,7 @@ const BannerOne: React.FC = () => {
             </span>
           </a>
           <img
-            src="/assets/images/bg/banner-bg.png"
+            src={banner1}
             alt=""
             className="banner-img position-absolute inset-block-start-0 inset-inline-start-0 w-100 h-100 z-n1 object-fit-cover rounded-24"
           />
@@ -71,7 +71,7 @@ const BannerOne: React.FC = () => {
                 <div className="banner-slider__inner flex-between position-relative">
                   <div className="banner-item__content">
                     <h1 className="banner-item__title bounce">
-                      Daily Grocery Order and Get Express Delivery
+                      A world of quality products is waiting to be explored.
                     </h1>
                     <Link
                       to="/shop"
@@ -83,16 +83,13 @@ const BannerOne: React.FC = () => {
                       </span>
                     </Link>
                   </div>
-                  <div className="banner-item__thumb">
-                    <img src="assets/images/thumbs/banner-img1.png" alt="" />
-                  </div>
                 </div>
               </div>
               <div className="banner-slider__item">
                 <div className="banner-slider__inner flex-between position-relative">
                   <div className="banner-item__content">
                     <h1 className="banner-item__title">
-                      Daily Grocery Order and Get Express Delivery
+                     Explore our collection and find your next favourite.
                     </h1>
                     <Link
                       to="/shop"

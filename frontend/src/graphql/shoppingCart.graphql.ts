@@ -15,6 +15,8 @@ export const GET_SHOPPING_CART = gql`
           reference
           images
           price
+          rating
+          numberOfReviews
           category {
             name
           }

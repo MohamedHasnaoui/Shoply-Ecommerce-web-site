@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import { useCategory } from "../../helpers/useCategory";
 import { Category } from "../../generated";
-import { productService } from "../../services/product";
+import { categoryService } from "../../services/category";
 interface ArrowProps {
   className?: string;
   onClick?: () => void;
@@ -44,13 +44,12 @@ const FeatureOne: React.FC = () => {
 
   const handleCategoryClick = (category: Category | undefined) => {
     setSelectedCategory(category);
-    navigate("/products-list");
-    alert(`Category selected: ${category?.name}`);
+    navigate("/shop");
   };
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await productService.getCatgories();
+      const response = await categoryService.getCatgories();
       if (response.data.getAllCategories) {
         setProductCategories(response.data.getAllCategories);
       }
@@ -103,20 +102,24 @@ const FeatureOne: React.FC = () => {
             <Slider {...settings}>
               {productCategories.map((item, index) => (
                 <div className="feature-item text-center" key={index}>
-                  <div className="feature-item__thumb rounded-circle">
-                    <Link
-                      onClick={() => handleCategoryClick(category ?? undefined)}
-                      to="/products-list"
-                      className="w-100 h-100 flex-center"
+                  <div style={{
+                      backgroundImage: `url("${item?.image ? item.image : ""}")`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      width: "100%",
+                      height: "100%",
+                    }} className="feature-item__thumb rounded-circle">
+                    <button
+                      onClick={() => handleCategoryClick(item ?? undefined)}
+                      className="w-100 h-100 flex-center btn btn-link"
                     >
-                      <img src={item?.image ?? ""} alt={item?.name ?? ""} />
-                    </Link>
+                    </button>
                   </div>
                   <div className="feature-item__content mt-16">
                     <h6 className="text-lg mb-8">
                       <Link
                         onClick={() => handleCategoryClick(item ?? undefined)}
-                        to="/products-list"
+                        to="/shop"
                         className="text-inherit"
                       >
                         {item?.name}

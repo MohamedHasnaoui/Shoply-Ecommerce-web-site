@@ -13,7 +13,6 @@ const CartSection = () => {
   const [cart, setCart] = useState<ShoppingCart | null>(null);
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [quantity, setQuantity] = useState<number>(1);
 
   const handleClearCart = async () => {
     setLoading(true);
@@ -182,7 +181,7 @@ const CartSection = () => {
                                   |
                                 </span>
                                 <span className="text-neutral-600 w-full text-sm">
-                                  128 Reviews
+                                  {item?.product.numberOfReviews} Reviews
                                 </span>
                               </div>
                               <div className="flex flex-wrap gap-8">
@@ -204,7 +203,7 @@ const CartSection = () => {
                         </td>
                         <td>
                           <span className="text-lg h6 mb-0 fw-semibold">
-                            ${item?.product.price}
+                            {item?.product.price} DH
                           </span>
                         </td>
                         <td>
@@ -218,7 +217,7 @@ const CartSection = () => {
                         </td>
                         <td>
                           <span className="text-lg h6 mb-0 fw-semibold">
-                            ${item?.price}
+                            {item?.price} DH
                           </span>
                         </td>
                       </tr>
@@ -254,17 +253,11 @@ const CartSection = () => {
             <div className="cart-sidebar border border-gray-100 rounded-8 px-24 py-40">
               <h6 className="text-xl mb-32">Cart Totals</h6>
               <div className="bg-color-three rounded-8 p-24">
-                <div className="mb-32 flex-between gap-8">
+                <div className="flex-between gap-8">
                   <span className="text-gray-900 font-heading-two">
                     Extimated Delivery
                   </span>
                   <span className="text-gray-900 fw-semibold">Free</span>
-                </div>
-                <div className="mb-0 flex-between gap-8">
-                  <span className="text-gray-900 font-heading-two">
-                    Extimated Taxs
-                  </span>
-                  <span className="text-gray-900 fw-semibold">USD 10.00</span>
                 </div>
               </div>
               <div className="bg-color-three rounded-8 p-24 mt-24">
@@ -273,7 +266,7 @@ const CartSection = () => {
                     Total
                   </span>
                   <span className="text-gray-900 text-xl fw-semibold">
-                    ${cart.totalAmount}
+                    {cart.totalAmount} DH
                   </span>
                 </div>
               </div>

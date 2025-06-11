@@ -1,13 +1,8 @@
 import React from "react";
-import Preloader from "../../../helper/Preloader";
-import ColorInit from "../../../helper/ColorInit";
-import HeaderTwo from "../../../Components/buyer/HeaderTwo";
-import Breadcrumb from "../../../Components/buyer/Breadcrumb";
 import FooterTwo from "../../../Components/buyer/FooterTwo";
 import BottomFooter from "../../../Components/buyer/BottomFooter";
 import CartSection from "../../../Components/buyer/CartSection";
 import ShippingOne from "../../../Components/buyer/ShippingOne";
-import ScrollToTop from "react-scroll-to-top";
 
 const CartPage: React.FC = () => {
   return (

@@ -8,7 +8,6 @@ import bootstrapStyles from "../assets/ClientAssets/css/bootstrap.min.css?inline
 import mainScopedSCSS from "../assets/ClientAssets/sass/main.scoped.scss?inline";
 import mainScopedCSS from "../assets/ClientAssets/css/main.scoped.css?inline";
 import jqueryUICSS from "../assets/ClientAssets/css/jquery-ui.scoped.css?inline";
-import {Bounce, ToastContainer} from "react-toastify"
 import { CategoryProvider } from "../helpers/CategoryProvider";
 import FooterTwo from "../Components/buyer/FooterTwo";
 import BottomFooter from "../Components/buyer/BottomFooter";
@@ -31,18 +30,6 @@ export default function ClientLayout() {
         <FooterTwo />
         <BottomFooter />
       </CategoryProvider>
-         <ToastContainer 
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          transition={Bounce}/>
       {/* </CategoryContext.Provider> */}
     </>
   );

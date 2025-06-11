@@ -18,7 +18,7 @@ import {
   Review,
   VerificationToken,
 } from "../entities/index.js";
-import { Admin1748883966874 } from "../migrations/1748883966874-admin.js";
+import { SeedDB1749579231936 } from "../migrations/1749579231936-SeedDB.js";
 
 export const appDataSource = new DataSource({
   type: "postgres",
@@ -46,6 +46,6 @@ export const appDataSource = new DataSource({
   ],
   logging: false,
   synchronize: true,
-  migrations: [Admin1748883966874],
+  migrations: [SeedDB1749579231936],
   subscribers: [],
 });

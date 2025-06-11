@@ -1,6 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import ReactSlider from "react-slider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -15,7 +14,7 @@ import { shoppingCartService } from "../../../services/shoppingCart";
 import { wishListService } from "../../../services/wishlist";
 import { ApolloError } from "@apollo/client";
 import { categoryService } from "../../../services/category";
-
+import Preloader from "../../../helper/Preloader";
 const ShopSection = () => {
   //Add to Cart Code
   const dispatch = useAppDispatch();
@@ -56,7 +55,7 @@ const ShopSection = () => {
     setActive(!active);
   };
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[] | undefined>(undefined);
   const [wishlistProductIds, setWishlistProductIds] = useState<number[]>([]);
 
   const {
@@ -77,8 +76,8 @@ const ShopSection = () => {
     productStatus | undefined
   >(undefined);
   const [productCategories, setProductCategories] = useState<
-    Array<Category | null>
-  >([]);
+    Array<Category> | undefined
+  >(undefined);
 
   // États pour la pagination et l'affichage
   const [pageNb, setPageNb] = useState<number>(1); // Page courante
@@ -261,7 +260,7 @@ const ShopSection = () => {
   ];
 
   // Rendu des produits (pas de pagination côté client, les produits viennent déjà paginés du serveur)
-  const displayProducts = products.map((product, index) => {
+  const displayProducts = products?.map((product, index) => {
     return (
       <div
         key={product.id ?? index}
@@ -302,12 +301,15 @@ const ShopSection = () => {
         <Link
           to={`/product-details/${product.id}`}
           className="product-card__thumb w-full h-full object-contain flex-center rounded-8 bg-gray-50"
+         
         >
-          <img
-            src={product?.images?.[0] ?? "default-image-url.jpg"}
-            alt=""
-            className="w-full h-full object-contain"
-          />
+        <div  style={{
+            backgroundImage: `url("${product?.images ? product.images[0] : ""}")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            width: "100%",
+            height: "100%",
+          }} className="w-100 h-100"></div>
           <span className="product-card__badge bg-primary-600 px-8 py-4 text-sm text-white position-absolute inset-inline-start-0 inset-block-start-0">
             Best Sale
           </span>
@@ -331,7 +333,7 @@ const ShopSection = () => {
             <span className="text-15 fw-medium text-warning-600 d-flex">
               <i className="ph-fill ph-star" />
             </span>
-            <span className="text-xs fw-medium text-gray-500">(17k)</span>
+            <span className="text-xs fw-medium text-gray-500">({product.numberOfReviews})</span>
           </div>
 
           <div
@@ -391,6 +393,8 @@ const ShopSection = () => {
     countFilteredProducts === 0
       ? 0
       : Math.min(pageNb * pageSz, countFilteredProducts);
+    
+  if(!products || !productCategories) return <Preloader />
   return (
     <section className="shop py-80">
       <ToastContainer />

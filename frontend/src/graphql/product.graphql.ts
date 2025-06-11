@@ -51,6 +51,7 @@ export const UPDATE_PRODUCT_MUTATION = gql`
         id
       }
       createdAt
+      numberOfReviews
     }
   }
 `;
@@ -77,6 +78,8 @@ export const GET_ALL_PRODUCTS_FILTERED = gql`
         }
         createdAt
         isDisabled
+        numberOfReviews
+        totalOrders
       }
       count
     }
