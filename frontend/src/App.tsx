@@ -1,92 +1,112 @@
 import { Routes, Route, Navigate } from "react-router";
-import Login from "./Pages/Common/LoginPage"; 
-import Register from "./Pages/Common/RegisterPage";
-import ProtectedRoute from "./Components/common/ProtectedRoute";
-import OTPVerification from "./Pages/Common/OTPVerificationPage"; 
-import ProductListPage from "./Pages/Seller/productListPage";
-import AddProduct from "./Pages/Seller/addProductPage";
-import EditProductPage from "./Pages/Seller/editProductPage";
-import OrdersSellerPage from "./Pages/Seller/ordersPage";
-import SellerHomePage from "./Pages/Seller/SellerHomePage";
-import CustomerInfoPage from "./Pages/Seller/customerInfoPage";
-import ErrorPage from "./Pages/Common/errorPage";
+import { Suspense, lazy } from "react";
+import { Bounce, ToastContainer } from "react-toastify";
 import { ErrorCode } from "./constants/errors";
-import ShopSection from "./Pages/Buyer/Shop";
-import CartPage from "./Pages/Buyer/CartPage";
-import PaymentSuccess from "./Components/buyer/PaymentSuccess";
+
+// Layouts et routes protégées (pas lazy si petits ou essentiels)
+import ProtectedRoute from "./Components/common/ProtectedRoute";
 import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
-import Wishlist from "./Components/buyer/Wishlist";
-import HomePage from "./Pages/Buyer/HomePage";
-import ProductDetails from "./Pages/Buyer/ProductDetails";
-import AdminHomePage from "./Pages/Admin/AdminHomePage";
 import SellerLayout from "./layout/SellerLayout";
 import AdminLayout from "./layout/AdminLayout";
 import ClientLayout from "./layout/ClientLayout";
-import ManageUsersAndProducts from "./Pages/Admin/ManageUsersAndProducts";
-import OrdersPage from "./Pages/Buyer/OrdersPage";
-import CategoriesList from "./Pages/Admin/CategoriesList";
-import CreateCategory from "./Pages/Admin/CreateCategory";
-import EditCategory from "./Pages/Admin/EditCategory";
-import { Bounce, ToastContainer } from "react-toastify";
+import Preloader from "./helper/Preloader";
+const Login = lazy(() => import("./Pages/Common/LoginPage"));
+const Register = lazy(() => import("./Pages/Common/RegisterPage"));
+const OTPVerification = lazy(
+  () => import("./Pages/Common/OTPVerificationPage")
+);
+const ProductListPage = lazy(() => import("./Pages/Seller/productListPage"));
+const AddProduct = lazy(() => import("./Pages/Seller/addProductPage"));
+const EditProductPage = lazy(() => import("./Pages/Seller/editProductPage"));
+const OrdersSellerPage = lazy(() => import("./Pages/Seller/ordersPage"));
+const SellerHomePage = lazy(() => import("./Pages/Seller/SellerHomePage"));
+const CustomerInfoPage = lazy(() => import("./Pages/Seller/customerInfoPage"));
+const ErrorPage = lazy(() => import("./Pages/Common/errorPage"));
+const ShopSection = lazy(() => import("./Pages/Buyer/Shop"));
+const CartPage = lazy(() => import("./Pages/Buyer/CartPage"));
+const PaymentSuccess = lazy(() => import("./Components/buyer/PaymentSuccess"));
+const Wishlist = lazy(() => import("./Components/buyer/Wishlist"));
+const HomePage = lazy(() => import("./Pages/Buyer/HomePage"));
+const ProductDetails = lazy(() => import("./Pages/Buyer/ProductDetails"));
+const AdminHomePage = lazy(() => import("./Pages/Admin/AdminHomePage"));
+const ManageUsersAndProducts = lazy(
+  () => import("./Pages/Admin/ManageUsersAndProducts")
+);
+const OrdersPage = lazy(() => import("./Pages/Buyer/OrdersPage"));
+const CategoriesList = lazy(() => import("./Pages/Admin/CategoriesList"));
+const CreateCategory = lazy(() => import("./Pages/Admin/CreateCategory"));
+const EditCategory = lazy(() => import("./Pages/Admin/EditCategory"));
+
 import ResetPasswordRequest from "./Pages/Common/ResetPasswordRequest";
 import ResetPassword from "./Pages/Common/ResetPassword";
 import PublicRoute from "./Components/common/PublicRoute";
 function App() {
   return (
     <>
-      <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/seller" element={<SellerLayout />}>
-            <Route path="home" element={<SellerHomePage />} />
-            <Route path="add-product" element={<AddProduct />} />
-            <Route
-              path="edit-product/:productId"
-              element={<EditProductPage />}
-            />
-            <Route path="product-list" element={<ProductListPage />} />
-            <Route path="orders" element={<OrdersSellerPage />} />
-            <Route path="customer/:customerId" element={<CustomerInfoPage />} />
-          </Route>
-          <Route path='/admin' element={<AdminLayout />} >
-              <Route path='' element={<AdminHomePage/>} />
-              <Route path='manageUsersAndProducts' element={<ManageUsersAndProducts/>} />
-              <Route path='categories' element={<CategoriesList/>} />
-              <Route path='categories/add' element={<CreateCategory />} />
-              <Route path='categories/edit/:categId' element={<EditCategory />} />
-          </Route>
-        </Route>
-        <Route element={<ClientLayout />}>
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<OTPVerification />} />
-            <Route path="/resetpassword" element={<ResetPasswordRequest />} />
-            <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
-          </Route>
-          <Route path="/shop" element={<ShopSection />} />
-          <Route path="/product-details/:id" element={<ProductDetails />} />
-          <Route path="/" element={<HomePage />} />
+      <Suspense fallback={<Preloader />}>
+        <Routes>
           <Route element={<ProtectedRoute />}>
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/myOrders" element={<OrdersPage />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route
-              path="/payment-success"
-              element={
-                <ProtectedPaymentRoute>
-                  <PaymentSuccess />
-                </ProtectedPaymentRoute>
-              }
-            />
+            <Route path="/seller" element={<SellerLayout />}>
+              <Route path="home" element={<SellerHomePage />} />
+              <Route path="add-product" element={<AddProduct />} />
+              <Route
+                path="edit-product/:productId"
+                element={<EditProductPage />}
+              />
+              <Route path="product-list" element={<ProductListPage />} />
+              <Route path="orders" element={<OrdersSellerPage />} />
+              <Route
+                path="customer/:customerId"
+                element={<CustomerInfoPage />}
+              />
+            </Route>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="" element={<AdminHomePage />} />
+              <Route
+                path="manageUsersAndProducts"
+                element={<ManageUsersAndProducts />}
+              />
+              <Route path="categories" element={<CategoriesList />} />
+              <Route path="categories/add" element={<CreateCategory />} />
+              <Route
+                path="categories/edit/:categId"
+                element={<EditCategory />}
+              />
+            </Route>
           </Route>
-        </Route>
-        <Route path="Error/:errorCode/:message" element={<ErrorPage />} />
-        <Route path="Error/:errorCode" element={<ErrorPage />} />
-        <Route
-          path="*"
-          element={<Navigate to={`/Error/${ErrorCode.NOT_FOUND}`} />}
-        />
+          <Route element={<ClientLayout />}>
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<OTPVerification />} />
+              <Route path="/resetpassword" element={<ResetPasswordRequest />} />
+              <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
+            </Route>
+            <Route path="/shop" element={<ShopSection />} />
+            <Route path="/product-details/:id" element={<ProductDetails />} />
+            <Route path="/" element={<HomePage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/myOrders" element={<OrdersPage />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route
+                path="/payment-success"
+                element={
+                  <ProtectedPaymentRoute>
+                    <PaymentSuccess />
+                  </ProtectedPaymentRoute>
+                }
+              />
+            </Route>
+          </Route>
+          <Route path="Error/:errorCode/:message" element={<ErrorPage />} />
+          <Route path="Error/:errorCode" element={<ErrorPage />} />
+          <Route
+            path="*"
+            element={<Navigate to={`/Error/${ErrorCode.NOT_FOUND}`} />}
+          />
       </Routes>
+      </Suspense>
       <ToastContainer 
           position="top-right"
           autoClose={5000}

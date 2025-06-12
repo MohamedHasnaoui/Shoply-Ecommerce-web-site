@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import plcaeholder from "../assets/ClientAssets/images/icon/preloader.gif"
+import plcaeholder from "../assets/ClientAssets/images/icon/preloader.gif";
 const Preloader: React.FC = () => {
   const [active, setActive] = useState<boolean>(true);
 
@@ -14,7 +14,16 @@ const Preloader: React.FC = () => {
   return (
     <>
       {active ? (
-        <div className="preloader">
+        <div
+          className="preloader"
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          {" "}
           <img src={plcaeholder} alt="Loading..." />
         </div>
       ) : (
