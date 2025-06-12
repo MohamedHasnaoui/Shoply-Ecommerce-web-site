@@ -83,3 +83,13 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+export const ADD_RESET_PASSWORD_REQUEST = gql`
+  mutation AddResetPasswordRequest($email: String!) {
+    addResetPasswordRequest(email: $email)
+  }
+`;
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword($userId: Int!, $token: String!, $password: String!) {
+    resetPassword(userId: $userId, token: $token, password: $password)
+  }
+`;

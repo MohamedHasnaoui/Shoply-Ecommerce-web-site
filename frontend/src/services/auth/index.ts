@@ -1,6 +1,10 @@
 import { MutationOptions, QueryOptions } from "@apollo/client";
 import {
+  AddResetPasswordRequestMutation,
+  AddResetPasswordRequestMutationVariables,
   CurrentUserQuery,
+  ResetPasswordMutation,
+  ResetPasswordMutationVariables,
   SignInInput,
   SigninMutation,
   SigninMutationVariables,
@@ -16,7 +20,9 @@ import {
   VerifyEmailMutationVariables,
 } from "../../generated";
 import {
+  ADD_RESET_PASSWORD_REQUEST,
   GET_CURRENT_USER,
+  RESET_PASSWORD,
   SIGNIN_MUTATION,
   SIGNUP_MUTATION,
   UPDATE_USER,
@@ -78,6 +84,28 @@ class AuthService {
     > = {
       mutation: UPDATE_USER,
       variables: { input },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async addResetPasswordRequest(email: string) {
+    const options: MutationOptions<
+      AddResetPasswordRequestMutation,
+      AddResetPasswordRequestMutationVariables
+    > = {
+      mutation: ADD_RESET_PASSWORD_REQUEST,
+      variables: { email },
+    };
+    const response = await client.mutate(options);
+    return response;
+  }
+  async resetPassword(userId: number, token: string, password: string) {
+    const options: MutationOptions<
+      ResetPasswordMutation,
+      ResetPasswordMutationVariables
+    > = {
+      mutation: RESET_PASSWORD,
+      variables: { password, token, userId },
     };
     const response = await client.mutate(options);
     return response;

@@ -28,6 +28,8 @@ import CategoriesList from "./Pages/Admin/CategoriesList";
 import CreateCategory from "./Pages/Admin/CreateCategory";
 import EditCategory from "./Pages/Admin/EditCategory";
 import { Bounce, ToastContainer } from "react-toastify";
+import ResetPasswordRequest from "./Pages/Common/ResetPasswordRequest";
+import ResetPassword from "./Pages/Common/ResetPassword";
 function App() {
   return (
     <>
@@ -58,7 +60,8 @@ function App() {
           <Route path="/verify-email" element={<OTPVerification />} />
           <Route path="/shop" element={<ShopSection />} />
           <Route path="/product-details/:id" element={<ProductDetails />} />
-
+          <Route path="/resetpassword" element={<ResetPasswordRequest />} />
+          <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
           <Route path="/" element={<HomePage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<CartPage />} />

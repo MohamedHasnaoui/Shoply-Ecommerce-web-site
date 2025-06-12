@@ -845,6 +845,22 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: number, email?: string | null, firstName?: string | null, lastName?: string | null, country?: string | null, city?: string | null, street?: string | null, postalCode?: string | null, phoneNumber?: string | null, birthDay?: any | null, gender?: Gender | null, profileImg?: string | null, coverImg?: string | null, role?: Role | null } };
 
+export type AddResetPasswordRequestMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type AddResetPasswordRequestMutation = { __typename?: 'Mutation', addResetPasswordRequest: boolean };
+
+export type ResetPasswordMutationVariables = Exact<{
+  userId: Scalars['Int']['input'];
+  token: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type ResetPasswordMutation = { __typename?: 'Mutation', resetPassword: boolean };
+
 export type CreateCartItemMutationVariables = Exact<{
   input: CartItemInput;
 }>;
@@ -869,7 +885,7 @@ export type RemoveCartItemMutation = { __typename?: 'Mutation', removeCartItem: 
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, createdAt?: any | null, updatedAt?: any | null, productCount?: number | null }> };
+export type GetAllCategoriesQuery = { __typename?: 'Query', getAllCategories: Array<{ __typename?: 'Category', id?: number | null, name?: string | null, description?: string | null, createdAt?: any | null, updatedAt?: any | null, productCount?: number | null, image?: string | null }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CategoryInput;
@@ -964,14 +980,14 @@ export type UpdateProductMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, category?: { __typename?: 'Category', id?: number | null } | null } | null };
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, numberOfReviews?: number | null, category?: { __typename?: 'Category', id?: number | null } | null } | null };
 
 export type GetAllProductsQueryVariables = Exact<{
   input?: InputMaybe<ProductFilter>;
 }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, isDisabled?: boolean | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null, owner?: { __typename?: 'User', id: number, firstName?: string | null, lastName?: string | null } | null }> } };
+export type GetAllProductsQuery = { __typename?: 'Query', getAllProducts: { __typename?: 'ProductListResult', count: number, products: Array<{ __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, rating?: number | null, description?: string | null, quantity?: number | null, price?: number | null, createdAt?: any | null, isDisabled?: boolean | null, numberOfReviews?: number | null, totalOrders?: number | null, category?: { __typename?: 'Category', id?: number | null, name?: string | null } | null, owner?: { __typename?: 'User', id: number, firstName?: string | null, lastName?: string | null } | null }> } };
 
 export type GetProductQueryVariables = Exact<{
   productId: Scalars['Int']['input'];
@@ -1058,7 +1074,7 @@ export type GetCustomerPastOrderItemsQuery = { __typename?: 'Query', getCustomer
 export type GetShoppingCartQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetShoppingCartQuery = { __typename?: 'Query', getShoppingCart?: { __typename?: 'ShoppingCart', id: number, totalAmount: number, cartItems?: Array<{ __typename?: 'CartItem', id: number, price: number, quantity: number, product: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, price?: number | null, category?: { __typename?: 'Category', name?: string | null } | null } } | null> | null } | null };
+export type GetShoppingCartQuery = { __typename?: 'Query', getShoppingCart?: { __typename?: 'ShoppingCart', id: number, totalAmount: number, cartItems?: Array<{ __typename?: 'CartItem', id: number, price: number, quantity: number, product: { __typename?: 'Product', id: number, name?: string | null, reference?: string | null, images?: Array<string> | null, price?: number | null, rating?: number | null, numberOfReviews?: number | null, category?: { __typename?: 'Category', name?: string | null } | null } } | null> | null } | null };
 
 export type CancelShoppingCartMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -1416,6 +1432,46 @@ export const useUpdateUserMutation = <
       options
     )};
 
+export const AddResetPasswordRequestDocument = `
+    mutation AddResetPasswordRequest($email: String!) {
+  addResetPasswordRequest(email: $email)
+}
+    `;
+
+export const useAddResetPasswordRequestMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<AddResetPasswordRequestMutation, TError, AddResetPasswordRequestMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<AddResetPasswordRequestMutation, TError, AddResetPasswordRequestMutationVariables, TContext>(
+      ['AddResetPasswordRequest'],
+      (variables?: AddResetPasswordRequestMutationVariables) => fetcher<AddResetPasswordRequestMutation, AddResetPasswordRequestMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, AddResetPasswordRequestDocument, variables)(),
+      options
+    )};
+
+export const ResetPasswordDocument = `
+    mutation ResetPassword($userId: Int!, $token: String!, $password: String!) {
+  resetPassword(userId: $userId, token: $token, password: $password)
+}
+    `;
+
+export const useResetPasswordMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      dataSource: { endpoint: string, fetchParams?: RequestInit },
+      options?: UseMutationOptions<ResetPasswordMutation, TError, ResetPasswordMutationVariables, TContext>
+    ) => {
+    
+    return useMutation<ResetPasswordMutation, TError, ResetPasswordMutationVariables, TContext>(
+      ['ResetPassword'],
+      (variables?: ResetPasswordMutationVariables) => fetcher<ResetPasswordMutation, ResetPasswordMutationVariables>(dataSource.endpoint, dataSource.fetchParams || {}, ResetPasswordDocument, variables)(),
+      options
+    )};
+
 export const CreateCartItemDocument = `
     mutation CreateCartItem($input: CartItemInput!) {
   creatCartItem(input: $input) {
@@ -1503,6 +1559,7 @@ export const GetAllCategoriesDocument = `
     createdAt
     updatedAt
     productCount
+    image
   }
 }
     `;
@@ -1905,6 +1962,7 @@ export const UpdateProductDocument = `
       id
     }
     createdAt
+    numberOfReviews
   }
 }
     `;
@@ -1946,6 +2004,8 @@ export const GetAllProductsDocument = `
       }
       createdAt
       isDisabled
+      numberOfReviews
+      totalOrders
     }
     count
   }
@@ -2349,6 +2409,8 @@ export const GetShoppingCartDocument = `
         reference
         images
         price
+        rating
+        numberOfReviews
         category {
           name
         }

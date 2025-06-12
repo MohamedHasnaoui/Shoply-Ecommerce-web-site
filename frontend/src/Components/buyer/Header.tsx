@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Logo from "../../assets/ClientAssets/images/logo/logo.png";
 import { useCategory } from "../../helpers/useCategory";
 import $ from "jquery";
 import select2 from "select2";
@@ -7,12 +6,10 @@ import { Category } from "../../generated";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logoutAction } from "../../redux/slices/auth/authSlice";
 import { Dispatch } from "@reduxjs/toolkit";
-import { RootState } from "../../redux/store";
 import { Link, useNavigate } from "react-router";
-import { useSelector } from "react-redux";
 import { clearCart } from "../../redux/slices/cartSlice";
 import { clearWishlist } from "../../redux/slices/wishlistSlice/wishlistSlice";
-import logo from "../../assets/ClientAssets/images/logo/logo.png";
+import logo from "../../assets/ClientAssets/images/logo/shoply-logo.svg";
 import { categoryService } from "../../services/category";
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => {
@@ -34,7 +31,7 @@ const Header = () => {
 
   const { logoutAction } = actionDispatch(useAppDispatch());
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.currentUser);
+  //const user = useSelector((state: RootState) => state.auth.currentUser);
   const logout = async () => {
     logoutAction();
     navigate("/login");
@@ -195,7 +192,7 @@ const Header = () => {
         </button>
         <div className="mobile-menu__inner">
           <Link to="/" className="mobile-menu__logo">
-            <img src={Logo} alt="Logo" />
+            <img src={logo} alt="Logo" />
           </Link>
           <div className="mobile-menu__menu">
             {/* Nav Menu Start */}
@@ -674,7 +671,7 @@ const Header = () => {
             {/* Logo Start */}
             <div className="logo">
               <Link to={"/"} className="a">
-                <img src={Logo} alt="Logo" />
+                <img src={logo} alt="Logo" />
               </Link>
             </div>
             {/* Logo End  */}
@@ -1006,7 +1003,7 @@ const Header = () => {
                       Wishlist
                     </span>
                   </Link>
-                  <Link href="/cart" className="flex-align gap-4 item-hover">
+                  <Link to="/cart" className="flex-align gap-4 item-hover">
                     <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
                       <i className="ph ph-shopping-cart-simple" />
                       <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">

@@ -1,6 +1,4 @@
 import React from "react";
-import FooterTwo from "../../../Components/buyer/FooterTwo";
-import BottomFooter from "../../../Components/buyer/BottomFooter";
 import CartSection from "../../../Components/buyer/CartSection";
 import ShippingOne from "../../../Components/buyer/ShippingOne";
 
@@ -27,10 +25,6 @@ const CartPage: React.FC = () => {
 
       {/* Infos livraison */}
       <ShippingOne />
-
-      {/* Pied de page */}
-      <FooterTwo />
-      <BottomFooter />
     </>
   );
 };

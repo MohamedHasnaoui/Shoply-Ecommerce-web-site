@@ -171,7 +171,7 @@ const Register = () => {
             {submitError && <p className="text-danger">Error: {submitError}</p>}
                 <div className="mt-48">
                   <button type="submit" className="btn btn-main py-18 px-40" disabled={loading}>
-                    {loading ? "wait..." : "Loging"}
+                    {loading ? "wait..." : "Resgister"}
                   </button>
                 </div>
             <div className="mt-28">

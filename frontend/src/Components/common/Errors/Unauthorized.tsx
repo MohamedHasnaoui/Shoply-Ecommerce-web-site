@@ -15,9 +15,6 @@ const Unauthorized = ({message}:PropsType) => {
             <h1 className="fw-bold mt-5 mb-2">Oops.. You just found an error page..</h1>
             <h2 className="fs-4 fw-medium text-muted mb-5">We are sorry but you are not authorized to access this page..</h2>
             <h2 className="fs-4 fw-medium text-muted mb-5">{message}</h2>
-            <a className="btn btn-lg btn-alt-secondary" href="be_pages_error_all.html">
-              <i className="fa fa-arrow-left opacity-50 me-1"></i> Back to Home Page 
-            </a>
           </div>
         </div>
       </div>

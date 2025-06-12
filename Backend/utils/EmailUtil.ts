@@ -172,7 +172,7 @@ export class EmailUtil {
     const emailInput: SendEmailInput = {
       emailTitle: "Reset Password",
       subject: "Reset Password",
-      messageBody: `<p>Your Reset Password Token: <a href="https://${process.env.FRONT_URL}/resetpassword/${user.id}?token=${token}">Reset Password</a></p>`,
+      messageBody: `<p>Your Reset Password Token: <a href="https://${process.env.FRONT_URL}/resetpassword/${user.id}/${token}">Reset Password</a></p>`,
       RECIPIENT_EMAIL: user.email,
     };
     await verificationTokenService.createToken(

@@ -7,7 +7,8 @@ import { CartItem, ShoppingCart } from "../../generated";
 import { paymentService } from "../../services/payment";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCartItems } from "../../redux/slices/cartSlice";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import { Package, ShoppingBag } from "lucide-react";
 
 const CartSection = () => {
   const [cart, setCart] = useState<ShoppingCart | null>(null);
@@ -115,10 +116,15 @@ const CartSection = () => {
   }, []);
 
   if (loading) return <p>Chargement du panier...</p>;
-  if (!cart || !cart.cartItems?.length) return <p>Votre panier est vide.</p>;
+  if (!cart || !cart.cartItems || cart.cartItems.length===0) return (
+   <div className="text-center py-5 my-40">
+      <ShoppingBag size={64} className="text-muted mb-3" />
+      <h4 className="text-muted mb-2">Your Cart Is Empty</h4>
+      <p className="text-muted">You haven't added any product yet.</p>
+    </div>
+  )
   return (
     <section className="cart py-80">
-      <ToastContainer />
       <div className="container container-lg">
         <div className="row gy-4">
           <div className="col-xl-9 col-lg-8">

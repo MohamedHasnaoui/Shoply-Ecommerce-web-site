@@ -48,6 +48,7 @@ const Login = () => {
         await client.resetStore();
         if(data.user.role === Role.Seller) navigate("/seller/home");
         if(data.user.role === Role.Admin) navigate("/admin");
+        else navigate("/");
         const res = await wishListService.getWishList();
         dispatch(setWishlist(res ?? null));
 
@@ -58,7 +59,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
   return (
     <section className="account py-80 ">
       <div className="container container-sm" style={{ maxWidth: 700 }}>
@@ -114,6 +114,7 @@ const Login = () => {
               <button
                 type="button"
                 className="text-danger-600 text-sm fw-semibold hover-text-decoration-underline"
+                onClick={()=>{navigate("/resetpassword")}}
               >
                 Forgot your password?
               </button>
