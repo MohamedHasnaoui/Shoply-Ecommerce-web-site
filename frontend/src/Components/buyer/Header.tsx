@@ -11,6 +11,9 @@ import { clearCart } from "../../redux/slices/cartSlice";
 import { clearWishlist } from "../../redux/slices/wishlistSlice/wishlistSlice";
 import logo from "../../assets/ClientAssets/images/logo/shoply-logo.svg";
 import { categoryService } from "../../services/category";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => {
     dispatch(logoutAction());
@@ -24,6 +27,7 @@ const Header = () => {
   const totalWishlistItems = useAppSelector(
     (state) => state.wishlist.totalWishlistItems
   );
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
 
   const [productCategories, setProductCategories] = useState<
     Array<Category | null>
@@ -652,12 +656,21 @@ const Header = () => {
                 </a>
               </li>
               <li className="border-right-item">
-                <button
-                  onClick={logout}
-                  className="text-white hover-text-decoration-underline"
-                >
-                  Logout
-                </button>
+                {currentUser ? (
+                  <button
+                    onClick={logout}
+                    className="text-white hover-text-decoration-underline"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <a
+                    href="/login"
+                    className="text-white hover-text-decoration-underline"
+                  >
+                    Login
+                  </a>
+                )}
               </li>
             </ul>
           </div>

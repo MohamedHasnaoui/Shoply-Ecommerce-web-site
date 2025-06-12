@@ -11,6 +11,7 @@ import AdminLayout from "./layout/AdminLayout";
 import ClientLayout from "./layout/ClientLayout";
 import PublicRoute from "./Components/common/PublicRoute";
 import Preloader from "./helper/Preloader";
+import UpdateProfile from "./Pages/Common/UpdateProfile";
 const Login = lazy(() => import("./Pages/Common/LoginPage"));
 const Register = lazy(() => import("./Pages/Common/RegisterPage"));
 const OTPVerification = lazy(
@@ -38,7 +39,9 @@ const CategoriesList = lazy(() => import("./Pages/Admin/CategoriesList"));
 const CreateCategory = lazy(() => import("./Pages/Admin/CreateCategory"));
 const EditCategory = lazy(() => import("./Pages/Admin/EditCategory"));
 
-const ResetPasswordRequest =  lazy(() => import("./Pages/Common/ResetPasswordRequest"))
+const ResetPasswordRequest = lazy(
+  () => import("./Pages/Common/ResetPasswordRequest")
+);
 const ResetPassword = lazy(() => import("./Pages/Common/ResetPassword"));
 function App() {
   return (
@@ -80,13 +83,18 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<OTPVerification />} />
               <Route path="/resetpassword" element={<ResetPasswordRequest />} />
-              <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
+              <Route
+                path="/resetpassword/:userId/:token"
+                element={<ResetPassword />}
+              />
             </Route>
             <Route path="/shop" element={<ShopSection />} />
             <Route path="/product-details/:id" element={<ProductDetails />} />
             <Route path="/" element={<HomePage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/cart" element={<CartPage />} />
+              <Route path="/account" element={<UpdateProfile />} />
+
               <Route path="/myOrders" element={<OrdersPage />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route
@@ -105,20 +113,21 @@ function App() {
             path="*"
             element={<Navigate to={`/Error/${ErrorCode.NOT_FOUND}`} />}
           />
-      </Routes>
+        </Routes>
       </Suspense>
-      <ToastContainer 
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          transition={Bounce}/>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </>
   );
 }

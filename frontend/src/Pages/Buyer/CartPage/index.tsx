@@ -1,6 +1,7 @@
 import React from "react";
 import CartSection from "../../../Components/buyer/CartSection";
 import ShippingOne from "../../../Components/buyer/ShippingOne";
+import Preloader from "../../../helper/Preloader";
 
 const CartPage: React.FC = () => {
   return (
@@ -12,7 +13,7 @@ const CartPage: React.FC = () => {
       {/* <ScrollToTop smooth color="#FA6400" /> */}
 
       {/* Préchargement */}
-      {/* <Preloader /> */}
+      <Preloader />
 
       {/* En-tête */}
       {/* <HeaderTwo category="cart" /> */}

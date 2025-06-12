@@ -22,8 +22,18 @@ const authSlice = createSlice({
     deleteSignupEmail(state) {
       state.signupEmail = null;
     },
+    updateUserAction(state, action) {
+      if (state.currentUser) {
+        state.currentUser = { ...state.currentUser, ...action.payload };
+      }
+    },
   },
 });
-export const { loginAction, logoutAction, setSignupEmail, deleteSignupEmail } =
-  authSlice.actions;
+export const {
+  loginAction,
+  logoutAction,
+  setSignupEmail,
+  deleteSignupEmail,
+  updateUserAction,
+} = authSlice.actions;
 export const authReducer = authSlice.reducer;

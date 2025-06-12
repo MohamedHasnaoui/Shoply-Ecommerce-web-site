@@ -79,10 +79,10 @@ export class User {
   @IsOptional()
   phoneNumber: string;
 
-  @Column({ type: "date", nullable: true })
+  @Column({ nullable: true })
   @IsDate({ message: "BirthDay must be a valid date." })
   @IsOptional()
-  birthDay: Date;
+  birthDay: string;
 
   @Column({ nullable: true })
   @IsEnum(Gender, {

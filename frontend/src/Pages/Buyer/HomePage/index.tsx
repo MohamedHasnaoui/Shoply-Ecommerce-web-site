@@ -11,7 +11,7 @@ import ShortProductOne from "../../../Components/buyer/ShortProductOne";
 const HomePage = () => {
   return (
     <>
-      <Preloader />
+      {/* <Preloader /> */}
       <ScrollToTop smooth color="#008000" />
       <ColorInit color={false} />
       <BannerOne />

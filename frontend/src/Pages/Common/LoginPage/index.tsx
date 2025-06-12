@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../../redux/hooks";
 import { client } from "../../../graphqlProvider";
 import { wishListService } from "../../../services/wishlist";
 import { setWishlist } from "../../../redux/slices/wishlistSlice/wishlistSlice";
+import { toast, ToastContainer } from "react-toastify";
 
 const actionDispatch = (dispatch: Dispatch) => ({
   loginUser: (auth: SigninMutation["signin"]["user"]) =>
@@ -39,19 +40,24 @@ const Login = () => {
     setData(null);
     try {
       const response = await authService.login(formState);
-      console.log("res",response);
+      console.log("res", response);
       if (response.data) {
         const data = response.data.signin;
         setData(data);
         loginUser(data.user);
         localStorage.setItem("jwt", data.jwt);
         await client.resetStore();
-        if(data.user.role === Role.Seller) navigate("/seller/home");
-        if(data.user.role === Role.Admin) navigate("/admin");
+        if (data.user.role === Role.Seller) navigate("/seller/home");
+        if (data.user.role === Role.Admin) navigate("/admin");
         else navigate("/");
         const res = await wishListService.getWishList();
         dispatch(setWishlist(res ?? null));
-
+        toast.success(
+          `Profile updated successfully, ${data?.user.firstName}+" "+ ${data?.user.lastName}!`,
+          {
+            position: "top-center",
+          }
+        );
       }
     } catch (err) {
       setsubmitError((err as Error).message);
@@ -61,8 +67,9 @@ const Login = () => {
   };
   return (
     <section className="account py-80 ">
+      <ToastContainer />
       <div className="container container-sm" style={{ maxWidth: 700 }}>
-        {data && <h5>hi {data.user.firstName}</h5>}
+        {/* {data && <h5>hi {data.user.firstName}</h5>} */}
         <form onSubmit={handleSubmit}>
           <div className="border border-gray-100 hover-border-main-600 transition-1 rounded-16 px-24 py-40">
             <h6 className="text-xl mb-32">Login</h6>
@@ -114,7 +121,9 @@ const Login = () => {
               <button
                 type="button"
                 className="text-danger-600 text-sm fw-semibold hover-text-decoration-underline"
-                onClick={()=>{navigate("/resetpassword")}}
+                onClick={() => {
+                  navigate("/resetpassword");
+                }}
               >
                 Forgot your password?
               </button>
