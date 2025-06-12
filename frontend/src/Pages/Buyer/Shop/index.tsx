@@ -86,6 +86,24 @@ const ShopSection = () => {
   const [sortedBy, setSortedBy] = useState<string>("");
   const [countFilteredProducts, setCountFilteredProducts] = useState(0);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        // Mobile
+        setProductsPerRow(2);
+      } else {
+        // Desktop
+        setProductsPerRow(3);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    // Nettoyage
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const resetFilters = () => {
     setPriceRange([0, 100]);
     setRating(0);
@@ -301,15 +319,19 @@ const ShopSection = () => {
         <Link
           to={`/product-details/${product.id}`}
           className="product-card__thumb w-full h-full object-contain flex-center rounded-8 bg-gray-50"
-         
         >
-        <div  style={{
-            backgroundImage: `url("${product?.images ? product.images[0] : ""}")`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: "100%",
-            height: "100%",
-          }} className="w-100 h-100"></div>
+          <div
+            style={{
+              backgroundImage: `url("${
+                product?.images ? product.images[0] : ""
+              }")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "100%",
+            }}
+            className="w-100 h-100"
+          ></div>
           <span className="product-card__badge bg-primary-600 px-8 py-4 text-sm text-white position-absolute inset-inline-start-0 inset-block-start-0">
             Best Sale
           </span>
@@ -333,7 +355,9 @@ const ShopSection = () => {
             <span className="text-15 fw-medium text-warning-600 d-flex">
               <i className="ph-fill ph-star" />
             </span>
-            <span className="text-xs fw-medium text-gray-500">({product.numberOfReviews})</span>
+            <span className="text-xs fw-medium text-gray-500">
+              ({product.numberOfReviews})
+            </span>
           </div>
 
           <div
@@ -393,8 +417,8 @@ const ShopSection = () => {
     countFilteredProducts === 0
       ? 0
       : Math.min(pageNb * pageSz, countFilteredProducts);
-    
-  if(!products || !productCategories) return <Preloader />
+
+  if (!products || !productCategories) return <Preloader />;
   return (
     <section className="shop py-80">
       <ToastContainer />
@@ -585,30 +609,6 @@ const ShopSection = () => {
                 results
               </span>
               <div className="position-relative flex-align gap-16 flex-wrap">
-                {/* List/Grid Toggle */}
-                <div className="list-grid-btns flex-align gap-16">
-                  <button
-                    onClick={() => setGrid(true)}
-                    type="button"
-                    title="List View"
-                    className={`w-44 h-44 flex-center border rounded-6 text-2xl list-btn border-gray-100 ${
-                      grid === true && "border-main-600 text-white bg-main-600"
-                    }`}
-                  >
-                    <i className="ph-bold ph-list-dashes" />
-                  </button>
-                  <button
-                    onClick={() => setGrid(false)}
-                    type="button"
-                    title="Grid View"
-                    className={`w-44 h-44 flex-center border rounded-6 text-2xl grid-btn border-gray-100 ${
-                      grid === false && "border-main-600 text-white bg-main-600"
-                    }`}
-                  >
-                    <i className="ph ph-squares-four" />
-                  </button>
-                </div>
-
                 {/* Sort By */}
                 <div className="position-relative text-gray-500 flex-align gap-4 text-14">
                   <label
@@ -653,7 +653,7 @@ const ShopSection = () => {
 
                 {/* Products per row (seulement en mode grille) */}
                 {!grid && (
-                  <div className="position-relative text-gray-500 flex-align gap-4 text-14">
+                  <div className="hidden md:flex position-relative text-gray-500 flex-align gap-4 text-14">
                     <label
                       htmlFor="perRow"
                       className="text-inherit flex-shrink-0"
