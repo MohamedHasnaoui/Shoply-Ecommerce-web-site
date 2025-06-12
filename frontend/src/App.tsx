@@ -30,6 +30,7 @@ import EditCategory from "./Pages/Admin/EditCategory";
 import { Bounce, ToastContainer } from "react-toastify";
 import ResetPasswordRequest from "./Pages/Common/ResetPasswordRequest";
 import ResetPassword from "./Pages/Common/ResetPassword";
+import PublicRoute from "./Components/common/PublicRoute";
 function App() {
   return (
     <>
@@ -55,13 +56,15 @@ function App() {
           </Route>
         </Route>
         <Route element={<ClientLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email" element={<OTPVerification />} />
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<OTPVerification />} />
+            <Route path="/resetpassword" element={<ResetPasswordRequest />} />
+            <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
+          </Route>
           <Route path="/shop" element={<ShopSection />} />
           <Route path="/product-details/:id" element={<ProductDetails />} />
-          <Route path="/resetpassword" element={<ResetPasswordRequest />} />
-          <Route path="/resetpassword/:userId/:token" element={<ResetPassword />} />
           <Route path="/" element={<HomePage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<CartPage />} />
