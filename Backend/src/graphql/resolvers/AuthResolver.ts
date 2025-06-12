@@ -174,11 +174,7 @@ export const AuthResolver: Resolvers = {
   },
   Query: {
     currentUser: async (parent, {}, context) => {
-      if (!context.currentUser) {
-        throw new GraphQLError(ErrorCode.UNAUTHENTICATED, {
-          extensions: { code: ErrorCode.UNAUTHENTICATED },
-        });
-      }
+      if (!context.currentUser?.userId) return null;
       return await userService.findOneById(context.currentUser.userId);
     },
     getUserById: async (parent, { id }, context) => {
