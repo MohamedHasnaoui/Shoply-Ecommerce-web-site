@@ -9,6 +9,7 @@ import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
 import SellerLayout from "./layout/SellerLayout";
 import AdminLayout from "./layout/AdminLayout";
 import ClientLayout from "./layout/ClientLayout";
+import PublicRoute from "./Components/common/PublicRoute";
 import Preloader from "./helper/Preloader";
 const Login = lazy(() => import("./Pages/Common/LoginPage"));
 const Register = lazy(() => import("./Pages/Common/RegisterPage"));
@@ -37,9 +38,8 @@ const CategoriesList = lazy(() => import("./Pages/Admin/CategoriesList"));
 const CreateCategory = lazy(() => import("./Pages/Admin/CreateCategory"));
 const EditCategory = lazy(() => import("./Pages/Admin/EditCategory"));
 
-import ResetPasswordRequest from "./Pages/Common/ResetPasswordRequest";
-import ResetPassword from "./Pages/Common/ResetPassword";
-import PublicRoute from "./Components/common/PublicRoute";
+const ResetPasswordRequest =  lazy(() => import("./Pages/Common/ResetPasswordRequest"))
+const ResetPassword = lazy(() => import("./Pages/Common/ResetPassword"));
 function App() {
   return (
     <>
