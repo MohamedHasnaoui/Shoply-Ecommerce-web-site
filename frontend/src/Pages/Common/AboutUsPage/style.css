@@ -1,0 +1,333 @@
+/* AboutUs.css */
+
+/* Container principal */
+.about-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  padding: 3rem 1rem;
+}
+
+.about-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header-section {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.logo-green {
+  color: #10b981;
+}
+
+.logo-gray {
+  color: #6b7280;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.main-description {
+  font-size: 1.25rem;
+  color: #6b7280;
+  max-width: 768px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* Team Grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Team Cards */
+.team-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+
+.team-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
+}
+
+.card-content {
+  padding: 2rem;
+}
+
+/* Profile Section */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-image {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.profile-img:hover {
+  transform: scale(1.1);
+}
+
+.profile-icon {
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+/* Member Info */
+.member-info {
+  text-align: center;
+}
+
+.member-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.member-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.title-icon {
+  width: 20px;
+  height: 20px;
+  color: #10b981;
+  margin-right: 0.5rem;
+}
+
+.member-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.member-education-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.education-icon {
+  width: 20px;
+  height: 20px;
+  color: #6b7280;
+  margin-right: 0.5rem;
+}
+
+.member-education {
+  color: #6b7280;
+}
+
+/* Skills */
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skills-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.skill-primary {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.skill-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Card Accent */
+.card-accent {
+  height: 8px;
+  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+}
+
+/* Mission Section */
+.mission-section {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.mission-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.mission-title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1.5rem;
+}
+
+.mission-description {
+  font-size: 1.125rem;
+  color: #6b7280;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+/* Values Grid */
+.values-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .values-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.value-item {
+  text-align: center;
+}
+
+.value-icon {
+  width: 64px;
+  height: 64px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+}
+
+.emoji {
+  font-size: 1.5rem;
+}
+
+.value-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.value-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .about-container {
+    padding: 2rem 1rem;
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .main-description {
+    font-size: 1rem;
+  }
+
+  .logo-text {
+    font-size: 2rem;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .mission-card {
+    padding: 1.5rem;
+  }
+
+  .mission-title {
+    font-size: 1.5rem;
+  }
+
+  .mission-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .skill-tag {
+    width: fit-content;
+  }
+}

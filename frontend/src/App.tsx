@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router";
 import { Suspense, lazy } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import { ErrorCode } from "./constants/errors";
-
 // Layouts et routes protégées (pas lazy si petits ou essentiels)
 import ProtectedRoute from "./Components/common/ProtectedRoute";
 import ProtectedPaymentRoute from "./Components/common/ProtectedPaymentRoute";
@@ -13,6 +12,7 @@ import PublicRoute from "./Components/common/PublicRoute";
 import Preloader from "./helper/Preloader";
 import UpdateProfile from "./Pages/Common/UpdateProfile";
 const Login = lazy(() => import("./Pages/Common/LoginPage"));
+const AboutUs = lazy(() => import("./Pages/Common/AboutUsPage"));
 const Register = lazy(() => import("./Pages/Common/RegisterPage"));
 const OTPVerification = lazy(
   () => import("./Pages/Common/OTPVerificationPage")
@@ -79,6 +79,8 @@ function App() {
           </Route>
           <Route element={<ClientLayout />}>
             <Route element={<PublicRoute />}>
+              <Route path="/about-us" element={<AboutUs />} />
+
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<OTPVerification />} />

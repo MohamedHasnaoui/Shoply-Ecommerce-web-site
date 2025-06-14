@@ -26,19 +26,28 @@ const ProductListOne: React.FC = () => {
           pageNb: 1,
         });
         setProducts(result.data.getAllProducts.products);
-      } catch (e) {
-        const err = e as ApolloError;
-        if (
-          err.graphQLErrors[0].extensions?.code === ErrorCode.BAD_USER_INPUT
-        ) {
-          setGlobalError(err.graphQLErrors[0].message);
+      } catch (error) {
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
         } else {
-          navigate(
-            "/Error/" +
-              err.graphQLErrors[0].extensions?.code +
-              "/" +
-              err.graphQLErrors[0].message
-          );
+          toast.error("Server Error.");
         }
       }
     };
@@ -55,27 +64,26 @@ const ProductListOne: React.FC = () => {
       toast.success("Produit ajouté au panier !");
     } catch (error) {
       const err = error as ApolloError;
+      const gqlErrors = err.graphQLErrors;
 
-      // Vérifie l'erreur spécifique UNAUTHENTICATED
-      if (err.graphQLErrors[0]?.extensions?.code === "UNAUTHENTICATED") {
-        // Toast pour informer l'utilisateur qu'il doit se connecter
-        toast.error(
-          "Vous devez vous connecter pour ajouter un produit au panier."
-        );
-        // Rediriger vers la page de login si nécessaire
-      } else if (
-        err.graphQLErrors[0]?.extensions?.code === ErrorCode.BAD_USER_INPUT
-      ) {
-        // Si l'erreur est liée à une mauvaise saisie de l'utilisateur
-        setGlobalError(err.graphQLErrors[0].message);
+      if (gqlErrors && gqlErrors.length > 0) {
+        const code = gqlErrors[0].extensions?.code;
+        const message = gqlErrors[0].message;
+
+        switch (code) {
+          case "UNAUTHENTICATED":
+          case "NOT_AUTHORIZED":
+          case "NOT_FOUND":
+          case "BAD_USER_INPUT":
+          case "CART_NOT_FOUND":
+          case "INTERNAL_SERVER_ERROR":
+            toast.error(message); // Affiche le message défini côté backend
+            break;
+          default:
+            toast.error("Unknown Error.");
+        }
       } else {
-        // Autres erreurs générales
-        navigate(
-          "/Error/" +
-            err.graphQLErrors[0]?.extensions?.code +
-            "/" +
-            err.graphQLErrors[0]?.message
-        );
+        toast.error("Server Error.");
       }
     }
   };

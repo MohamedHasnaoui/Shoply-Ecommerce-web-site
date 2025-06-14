@@ -19,20 +19,22 @@ export const CategoryResolver: Resolvers = {
   Mutation: {
     createCategory: async (parent, { input }, context) => {
       if (!context.currentUser) {
-        throw new GraphQLError("UNAUTHENTICATED", {
+        throw new GraphQLError("You should be logged in", {
           extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
       const user = await userService.findOneById(context.currentUser.userId);
       if (user.role !== Role.Admin) {
-        throw new GraphQLError("UNAUTHORIZED", {
+        throw new GraphQLError("Unauthorized Action ", {
           extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
       const category = await categoryService.create(input);
 
       if (!category) {
-        throw new GraphQLError("Category creation failed", {
+        console.log("X-----------Category creation failed-----------X");
+
+        throw new GraphQLError("Server Error", {
           extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }

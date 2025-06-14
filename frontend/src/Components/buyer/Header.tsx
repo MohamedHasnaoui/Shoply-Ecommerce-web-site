@@ -13,6 +13,8 @@ import logo from "../../assets/ClientAssets/images/logo/shoply-logo.svg";
 import { categoryService } from "../../services/category";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { ApolloError } from "@apollo/client";
+import { toast } from "react-toastify";
 
 const actionDispatch = (dispatch: Dispatch) => ({
   logoutAction: () => {
@@ -55,23 +57,46 @@ const Header = () => {
     setActiveIndexCat(-1);
     setSelectedCategory(category);
     setCategoryName(category?.name ?? "All Categories");
-    // navigate("/productslist");
-    alert(`Category selected: ${category?.name}`);
   };
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setProductNameFilter(searchString);
-    console.log("Name:", productNameFilter);
   };
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await categoryService.getCatgories();
-      if (response.data.getAllCategories) {
-        setProductCategories(response.data.getAllCategories);
+      try {
+        const response = await categoryService.getCatgories();
+        if (response.data.getAllCategories) {
+          setProductCategories(response.data.getAllCategories);
+        }
+      } catch (error) {
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
+        } else {
+          toast.error("Server Error.");
+        }
       }
     };
+
     fetchCategoryProducts();
   }, [selectedCategory, productNameFilter]);
 
@@ -142,40 +167,42 @@ const Header = () => {
         className={`side-overlay ${(menuActive || activeCategory) && "show"}`}
       />
       {/* ==================== Search Box Start Here ==================== */}
-
-      <form
-        onSubmit={handleSearchSubmit}
-        action="#"
-        className={`search-box  ${activeSearch && "active"}`}
-      >
-        <button
-          title="button"
-          type="submit"
-          className="search-box__close position-absolute inset-block-start-0 inset-inline-end-0 m-16 w-48 h-48 border border-gray-100 rounded-circle flex-center text-white hover-text-gray-800 hover-bg-white text-2xl transition-1"
+      {currentUser && (
+        <form
+          onSubmit={handleSearchSubmit}
+          action="#"
+          className={`search-box  ${activeSearch && "active"}`}
         >
-          <i className="ph ph-x" />
-        </button>
-        <div className="container">
-          <div className="position-relative">
-            <input
-              type="text"
-              className="form-control py-16 px-24 text-xl rounded-pill pe-64"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearchString(e.target.value)
-              }
-              value={searchString}
-              placeholder="Search for a product"
-            />
-            <button
-              type="submit"
-              title="button"
-              className="w-48 h-48 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
-            >
-              <i className="ph ph-magnifying-glass" />
-            </button>
+          <button
+            title="button"
+            type="submit"
+            className="search-box__close position-absolute inset-block-start-0 inset-inline-end-0 m-16 w-48 h-48 border border-gray-100 rounded-circle flex-center text-white hover-text-gray-800 hover-bg-white text-2xl transition-1"
+          >
+            <i className="ph ph-x" />
+          </button>
+
+          <div className="container">
+            <div className="position-relative">
+              <input
+                type="text"
+                className="form-control py-16 px-24 text-xl rounded-pill pe-64"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchString(e.target.value)
+                }
+                value={searchString}
+                placeholder="Search for a product"
+              />
+              <button
+                type="submit"
+                title="button"
+                className="w-48 h-48 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
+              >
+                <i className="ph ph-magnifying-glass" />
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      )}
 
       {/* ==================== Search Box End Here ==================== */}
       {/* ==================== Mobile Menu Start Here ==================== */}
@@ -404,7 +431,7 @@ const Header = () => {
               </li>
               <li className="border-right-item">
                 <a
-                  href="#"
+                  href="/about-us"
                   className="text-white text-sm hover-text-decoration-underline"
                 >
                   About us
@@ -641,20 +668,22 @@ const Header = () => {
                   </li>
                 </ul>
               </li>
-              <li className="border-right-item">
-                <a
-                  href="/account"
-                  className="text-white text-sm py-8 flex-align gap-6"
-                >
-                  <span className="icon text-md d-flex">
-                    {" "}
-                    <i className="ph ph-user-circle" />{" "}
-                  </span>
-                  <span className="hover-text-decoration-underline">
-                    My Account
-                  </span>
-                </a>
-              </li>
+              {currentUser && (
+                <li className="border-right-item">
+                  <a
+                    href="/account"
+                    className="text-white text-sm py-8 flex-align gap-6"
+                  >
+                    <span className="icon text-md d-flex">
+                      {" "}
+                      <i className="ph ph-user-circle" />{" "}
+                    </span>
+                    <span className="hover-text-decoration-underline">
+                      My Account
+                    </span>
+                  </a>
+                </li>
+              )}
               <li className="border-right-item">
                 {currentUser ? (
                   <button
@@ -691,27 +720,29 @@ const Header = () => {
             {/* form location Start */}
             <div className="flex-align flex-wrap form-location-wrapper ">
               <div className="search-category d-flex h-48 select-border-end-0 radius-end-2 search-form d-sm-flex d-none">
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="search-form__wrapper position-relative"
-                >
-                  <input
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearchString(e.target.value)
-                    }
-                    value={searchString}
-                    type="text"
-                    className="search-form__input common-input py-13 ps-16 pe-18 rounded-end-pill pe-44"
-                    placeholder="Search for a product or brand"
-                  />
-                  <button
-                    type="submit"
-                    title="button"
-                    className="w-32 h-32 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
+                {currentUser && (
+                  <form
+                    onSubmit={handleSearchSubmit}
+                    className="search-form__wrapper position-relative"
                   >
-                    <i className="ph ph-magnifying-glass" />
-                  </button>
-                </form>
+                    <input
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setSearchString(e.target.value)
+                      }
+                      value={searchString}
+                      type="text"
+                      className="search-form__input common-input py-13 ps-16 pe-18 rounded-end-pill pe-44"
+                      placeholder="Search for a product or brand"
+                    />
+                    <button
+                      type="submit"
+                      title="button"
+                      className="w-32 h-32 bg-main-600 rounded-circle flex-center text-xl text-white position-absolute top-50 translate-middle-y inset-inline-end-0 me-8"
+                    >
+                      <i className="ph ph-magnifying-glass" />
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
             {/* form location start */}
@@ -727,28 +758,32 @@ const Header = () => {
                     <i className="ph ph-magnifying-glass" />
                   </span>
                 </button>
-                <Link to="/wishlist" className="flex-align gap-4 item-hover">
-                  <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
-                    <i className="ph ph-heart" />
-                    <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
-                      {totalWishlistItems}
+                {currentUser && (
+                  <Link to="/wishlist" className="flex-align gap-4 item-hover">
+                    <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
+                      <i className="ph ph-heart" />
+                      <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
+                        {totalWishlistItems}
+                      </span>
                     </span>
-                  </span>
-                  <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
-                    Wishlist
-                  </span>
-                </Link>
-                <Link to="/cart" className="flex-align gap-4 item-hover">
-                  <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
-                    <i className="ph ph-shopping-cart-simple" />
-                    <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
-                      {totalItems}
+                    <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
+                      Wishlist
                     </span>
-                  </span>
-                  <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
-                    Cart
-                  </span>
-                </Link>
+                  </Link>
+                )}
+                {currentUser && (
+                  <Link to="/cart" className="flex-align gap-4 item-hover">
+                    <span className="text-2xl text-gray-700 d-flex position-relative me-6 mt-6 item-hover__text">
+                      <i className="ph ph-shopping-cart-simple" />
+                      <span className="w-16 h-16 flex-center rounded-circle bg-main-600 text-white text-xs position-absolute top-n6 end-n4">
+                        {totalItems}
+                      </span>
+                    </span>
+                    <span className="text-md text-gray-500 item-hover__text d-none d-lg-flex">
+                      Cart
+                    </span>
+                  </Link>
+                )}
               </div>
             </div>
             {/* Header Middle Right End  */}
@@ -925,49 +960,51 @@ const Header = () => {
                       </li>
                     </ul> */}
                   </li>
-                  <li className="on-hover-item nav-menu__item has-submenu">
-                    <a href="#" className="nav-menu__link">
-                      Pages
-                    </a>
-                    <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <Link
-                          to="/cart"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Cart
-                        </Link>
-                      </li>
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <Link
-                          to="/wishlist"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Wishlist{" "}
-                        </Link>
-                      </li>
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <Link
-                          to="/checkout"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Checkout{" "}
-                        </Link>
-                      </li>
-                      <li className="common-dropdown__item nav-submenu__item">
-                        <Link
-                          to="/account"
-                          className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
-                        >
-                          {" "}
-                          Account
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+                  {currentUser && (
+                    <li className="on-hover-item nav-menu__item has-submenu">
+                      <a href="#" className="nav-menu__link">
+                        Pages
+                      </a>
+                      <ul className="on-hover-dropdown common-dropdown nav-submenu scroll-sm">
+                        <li className="common-dropdown__item nav-submenu__item">
+                          <Link
+                            to="/cart"
+                            className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
+                          >
+                            {" "}
+                            Cart
+                          </Link>
+                        </li>
+                        <li className="common-dropdown__item nav-submenu__item">
+                          <Link
+                            to="/wishlist"
+                            className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
+                          >
+                            {" "}
+                            Wishlist{" "}
+                          </Link>
+                        </li>
+                        <li className="common-dropdown__item nav-submenu__item">
+                          <Link
+                            to="/myOrders"
+                            className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
+                          >
+                            {" "}
+                            My Orders{" "}
+                          </Link>
+                        </li>
+                        <li className="common-dropdown__item nav-submenu__item">
+                          <Link
+                            to="/account"
+                            className="common-dropdown__link nav-submenu__link hover-bg-neutral-100 activePage"
+                          >
+                            {" "}
+                            Account
+                          </Link>
+                        </li>
+                      </ul>
+                    </li>
+                  )}
 
                   <li className="nav-menu__item">
                     <Link
@@ -985,7 +1022,7 @@ const Header = () => {
             {/* Header Right start */}
             <div className="header-right flex-align">
               <a
-                href="/tel:01234567890"
+                href="tel:01234567890"
                 className="bg-main-600 text-white p-12 h-100 hover-bg-main-800 flex-align gap-8 text-lg d-lg-flex d-none"
               >
                 <div className="d-flex text-32">

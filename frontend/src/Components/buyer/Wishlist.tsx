@@ -13,6 +13,8 @@ import { setCartItems } from "../../redux/slices/cartSlice";
 import { shoppingCartService } from "../../services/shoppingCart";
 import { wishListService } from "../../services/wishlist";
 import { setWishlist } from "../../redux/slices/wishlistSlice/wishlistSlice";
+import { ApolloError } from "@apollo/client";
+import { categoryService } from "../../services/category";
 
 const Wishlist = () => {
   const dispatch = useAppDispatch();
@@ -30,8 +32,28 @@ const Wishlist = () => {
 
       toast.success("Produit ajouté au panier !");
     } catch (error) {
-      console.error("Erreur lors de l'ajout au panier", error);
-      toast.error("Erreur lors de l'ajout !");
+      const err = error as ApolloError;
+      const gqlErrors = err.graphQLErrors;
+
+      if (gqlErrors && gqlErrors.length > 0) {
+        const code = gqlErrors[0].extensions?.code;
+        const message = gqlErrors[0].message;
+
+        switch (code) {
+          case "UNAUTHENTICATED":
+          case "NOT_AUTHORIZED":
+          case "NOT_FOUND":
+          case "BAD_USER_INPUT":
+          case "CART_NOT_FOUND":
+          case "INTERNAL_SERVER_ERROR":
+            toast.error(message); // Affiche le message défini côté backend
+            break;
+          default:
+            toast.error("Unknown Error.");
+        }
+      } else {
+        toast.error("Server Error.");
+      }
     }
   };
 
@@ -139,9 +161,34 @@ const Wishlist = () => {
   // Charger les catégories
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await productService.getCatgories();
-      if (response.data.getAllCategories) {
-        setProductCategories(response.data.getAllCategories);
+      try {
+        const response = await categoryService.getCatgories();
+        if (response.data.getAllCategories) {
+          setProductCategories(response.data.getAllCategories);
+        }
+      } catch (error) {
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
+        } else {
+          toast.error("Server Error.");
+        }
       }
     };
 
@@ -152,7 +199,7 @@ const Wishlist = () => {
   useEffect(() => {
     setFilters((prev) => ({
       ...prev,
-      categoryId: selectedCategory?.id,
+      categoryId: selectedCategory?.id ?? undefined,
       name: productNameFilter,
     }));
   }, [selectedCategory, productNameFilter]);
@@ -176,8 +223,28 @@ const Wishlist = () => {
 
         dispatch(setWishlist(response ?? null));
       } catch (error) {
-        console.error("❌ Erreur lors du chargement de la wishlist :", error);
-        toast.error("Erreur lors du chargement de la wishlist.");
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
+        } else {
+          toast.error("Server Error.");
+        }
       }
     };
 
@@ -198,24 +265,6 @@ const Wishlist = () => {
   useEffect(() => {
     setPageNb(1);
   }, [filters]);
-
-  // Gestion de la catégorie sélectionnée
-  const handleCategoryClick = (category: Category | undefined) => {
-    setSelectedCategory(category);
-    setFilters((prev) => ({
-      ...prev,
-      categoryId: category?.id,
-    }));
-  };
-
-  // Gestion du filtre par nom
-  const handleNameFilterChange = (name: string) => {
-    setProductNameFilter(name);
-    setFilters((prev) => ({
-      ...prev,
-      name: name,
-    }));
-  };
 
   // Tri des produits
   const sortProducts = (products: Product[], sortBy: string) => {
@@ -581,7 +630,7 @@ const Wishlist = () => {
         >
           {displayedProducts.length === 0 ? (
             <div className="text-center text-gray-500">
-              <p>Aucun produit trouvé .</p>
+              <p>Products Not Found .</p>
             </div>
           ) : (
             displayProducts

@@ -34,8 +34,24 @@ const ShopSection = () => {
 
       toast.success("Produit ajouté au panier !");
     } catch (error) {
-      console.error("Erreur lors de l'ajout au panier", error);
-      toast.error("Erreur lors de l'ajout !");
+      const gqlErrors = error.graphQLErrors;
+
+      if (gqlErrors && gqlErrors.length > 0) {
+        const code = gqlErrors[0].extensions?.code;
+        const message = gqlErrors[0].message;
+
+        switch (code) {
+          case "UNAUTHENTICATED":
+          case "NOT_AUTHORIZED":
+          case "BAD_USER_INPUT":
+            toast.error(message); // Affiche le message défini côté backend
+            break;
+          default:
+            toast.error("Erreur inconnue.");
+        }
+      } else {
+        toast.error("Erreur réseau ou serveur.");
+      }
     }
   };
 
@@ -116,9 +132,34 @@ const ShopSection = () => {
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
-      const response = await categoryService.getCatgories();
-      if (response.data.getAllCategories) {
-        setProductCategories(response.data.getAllCategories);
+      try {
+        const response = await categoryService.getCatgories();
+        if (response.data.getAllCategories) {
+          setProductCategories(response.data.getAllCategories);
+        }
+      } catch (error) {
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
+        } else {
+          toast.error("Server Error.");
+        }
       }
     };
 
@@ -131,14 +172,11 @@ const ShopSection = () => {
     setActiveCategoryId(
       category && category.id !== undefined ? category.id : null
     );
-
-    console.log(`Category selected: ${category?.name}`);
   };
   useEffect(() => {
     const initializeWishlist = async () => {
       try {
         const response = await wishListService.getWishList();
-        console.log("🟢 Wishlist initialisée:", response?.products);
 
         const wishlistedIds = (
           response?.products?.map((p) => p?.id) ?? []
@@ -147,9 +185,30 @@ const ShopSection = () => {
         setWishlistProductIds(wishlistedIds);
         dispatch(setWishlist(response ?? null));
       } catch (error) {
-        console.error("Erreur lors de l'initialisation de la wishlist:", error);
         // En cas d'erreur, initialiser avec un tableau vide
         setWishlistProductIds([]);
+        const err = error as ApolloError;
+        const gqlErrors = err.graphQLErrors;
+
+        if (gqlErrors && gqlErrors.length > 0) {
+          const code = gqlErrors[0].extensions?.code;
+          const message = gqlErrors[0].message;
+
+          switch (code) {
+            case "UNAUTHENTICATED":
+            case "NOT_AUTHORIZED":
+            case "NOT_FOUND":
+            case "BAD_USER_INPUT":
+            case "CART_NOT_FOUND":
+            case "INTERNAL_SERVER_ERROR":
+              toast.error(message); // Affiche le message défini côté backend
+              break;
+            default:
+              toast.error("Unknown Error.");
+          }
+        } else {
+          toast.error("Server Error.");
+        }
       }
     };
 
@@ -159,7 +218,6 @@ const ShopSection = () => {
     try {
       // Récupérer la wishlist actuelle une seule fois au début
       const responseW = await wishListService.getWishList();
-      console.log("🟢 Wishlist Products:", responseW?.products);
 
       const wishlistedIds = (
         responseW?.products?.map((p) => p?.id) ?? []
@@ -170,33 +228,39 @@ const ShopSection = () => {
         // Retirer le produit de la wishlist
         await wishListService.deleteProductFromWishList(productId);
         setWishlistProductIds((prev) => prev.filter((id) => id !== productId));
-        toast.success("Produit retiré de la wishlist");
+        toast.success("Product removed from wishlist");
       } else {
         // Ajouter le produit à la wishlist
         await wishListService.addProductToWishList(productId);
         setWishlistProductIds((prev) => [...prev, productId]);
-        toast.success("Produit ajouté à la wishlist");
+        toast.success("Product added to wishlist");
       }
 
       // Récupérer la wishlist mise à jour et mettre à jour le store
       const updatedWishlist = await wishListService.getWishList();
       dispatch(setWishlist(updatedWishlist ?? null));
-    } catch (e) {
-      console.error("Erreur lors de la modification de la wishlist :", e);
+    } catch (error) {
+      const err = error as ApolloError;
+      const gqlErrors = err.graphQLErrors;
 
-      const err = e as ApolloError;
-      const graphErr = err.graphQLErrors?.[0];
+      if (gqlErrors && gqlErrors.length > 0) {
+        const code = gqlErrors[0].extensions?.code;
+        const message = gqlErrors[0].message;
 
-      if (graphErr?.extensions?.code === "UNAUTHORIZED") {
-        toast.error("Veuillez vous connecter pour utiliser la wishlist.");
-      } else if (graphErr?.extensions?.code === "BAD_USER_INPUT") {
-        toast.error(graphErr.message);
+        switch (code) {
+          case "UNAUTHENTICATED":
+          case "NOT_AUTHORIZED":
+          case "NOT_FOUND":
+          case "BAD_USER_INPUT":
+          case "CART_NOT_FOUND":
+          case "INTERNAL_SERVER_ERROR":
+            toast.error(message); // Affiche le message défini côté backend
+            break;
+          default:
+            toast.error("Unknown Error.");
+        }
       } else {
-        toast.error(
-          "Une erreur est survenue lors de la modification de la wishlist."
-        );
-        // Optionnel: navigation vers une page d'erreur
-        // navigate(`/Error/${graphErr?.extensions?.code}/${graphErr?.message}`);
+        toast.error("Server Error.");
       }
     }
   };
@@ -217,12 +281,6 @@ const ShopSection = () => {
           pageSize: pageSz,
           orderBy: sortedBy,
         });
-
-        console.log("🟢 Réponse API complète :", response);
-        console.log(
-          "🟢 Produits retournés :",
-          response?.data?.getAllProducts?.products
-        );
 
         setProducts(response?.data?.getAllProducts?.products as Array);
         setCountFilteredProducts(response.data.getAllProducts.count);
@@ -332,9 +390,9 @@ const ShopSection = () => {
             }}
             className="w-100 h-100"
           ></div>
-          <span className="product-card__badge bg-primary-600 px-8 py-4 text-sm text-white position-absolute inset-inline-start-0 inset-block-start-0">
+          {/* <span className="product-card__badge bg-primary-600 px-8 py-4 text-sm text-white position-absolute inset-inline-start-0 inset-block-start-0">
             Best Sale
-          </span>
+          </span> */}
         </Link>
 
         <div className="product-card__content mt-16">
@@ -701,7 +759,13 @@ const ShopSection = () => {
                 className={grid ? "" : "row"}
                 style={{ flexGrow: 1, padding: "8px" }}
               >
-                {displayProducts}
+                {displayProducts?.length === 0 ? (
+                  <div className="text-center text-gray-500">
+                    <p>Products Not Found .</p>
+                  </div>
+                ) : (
+                  displayProducts
+                )}{" "}
               </div>
 
               {/* Pagination - Toujours en bas */}

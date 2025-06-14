@@ -45,7 +45,7 @@ const PaymentSuccess: React.FC = () => {
           setTimeout(() => navigate("/cart"), 3000);
         }
       } catch (error) {
-        console.error("Erreur de vérification :", error);
+        toast.error("Erreur de vérification ");
         setMessage("Une erreur est survenue lors de la vérification.");
         setTimeout(() => navigate("/cart"), 3000);
       }

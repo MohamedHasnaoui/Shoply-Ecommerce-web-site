@@ -2,26 +2,27 @@ import { GraphQLError } from "graphql";
 import { whishListService } from "../../services/WhishListService.js";
 import { Resolvers, Role } from "../types/resolvers-types.js";
 import { userService } from "../../services/userService.js";
+import { ErrorCode } from "../../../utils/Errors.js";
 
 export const WhishListResolver: Resolvers = {
   Query: {
     getWishList: async (parent, args, context) => {
       if (!context.currentUser || !context.currentUser.userId) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("You should be logged in", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const user = await userService.findOneById(context.currentUser.userId);
       if (!user) {
         throw new GraphQLError("User not found", {
-          extensions: { code: "NOT_FOUND" },
+          extensions: { code: ErrorCode.NOT_FOUND },
         });
       }
 
       if (user.role !== Role.Buyer) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("You should be a buyer", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 
@@ -29,8 +30,9 @@ export const WhishListResolver: Resolvers = {
         context.currentUser.userId
       );
       if (!wishList) {
-        throw new GraphQLError("ShoppingCart not found", {
-          extensions: { code: "NOT_FOUND" },
+        console.log("X-----------WishList not found-----------X");
+        throw new GraphQLError("Server Error", {
+          extensions: { code: ErrorCode.CART_NOT_FOUND },
         });
       }
 
@@ -38,21 +40,21 @@ export const WhishListResolver: Resolvers = {
     },
     getFilteredWishList: async (parent, { input }, context) => {
       if (!context.currentUser || !context.currentUser.userId) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("You should be logged in", {
+          extensions: { code: ErrorCode.UNAUTHENTICATED },
         });
       }
 
       const user = await userService.findOneById(context.currentUser.userId);
       if (!user) {
         throw new GraphQLError("User not found", {
-          extensions: { code: "NOT_FOUND" },
+          extensions: { code: ErrorCode.NOT_FOUND },
         });
       }
 
       if (user.role !== Role.Buyer) {
-        throw new GraphQLError("UNAUTHORIZED", {
-          extensions: { code: "UNAUTHORIZED" },
+        throw new GraphQLError("You should be a buyer", {
+          extensions: { code: ErrorCode.NOT_AUTHORIZED },
         });
       }
 
@@ -64,8 +66,11 @@ export const WhishListResolver: Resolvers = {
           );
         return filteredProducts;
       } catch (error) {
-        throw new GraphQLError("Failed to fetch filtered wishlist", {
-          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        console.log(
+          "X--------------Error fetching filtered wish list---------------X"
+        );
+        throw new GraphQLError("Server Error", {
+          extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }
     },
@@ -74,21 +79,21 @@ export const WhishListResolver: Resolvers = {
     addProductToWishList: async (parent, { productId }, context) => {
       try {
         if (!context.currentUser || !context.currentUser.userId) {
-          throw new GraphQLError("UNAUTHORIZED", {
-            extensions: { code: "UNAUTHORIZED" },
+          throw new GraphQLError("You should be logged in", {
+            extensions: { code: ErrorCode.UNAUTHENTICATED },
           });
         }
 
         const user = await userService.findOneById(context.currentUser.userId);
         if (!user) {
           throw new GraphQLError("User not found", {
-            extensions: { code: "NOT_FOUND" },
+            extensions: { code: ErrorCode.NOT_FOUND },
           });
         }
 
         if (user.role !== Role.Buyer) {
-          throw new GraphQLError("UNAUTHORIZED", {
-            extensions: { code: "UNAUTHORIZED" },
+          throw new GraphQLError("You shoul be a buyer", {
+            extensions: { code: ErrorCode.NOT_AUTHORIZED },
           });
         }
         return await whishListService.addProductToWishList(
@@ -96,29 +101,32 @@ export const WhishListResolver: Resolvers = {
           productId
         );
       } catch (error) {
+        console.log(
+          "X-----------Error adding product to wish list-----------X"
+        );
         throw new GraphQLError(error, {
-          extensions: { code: "ERROR" },
+          extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }
     },
     deleteProductFromWishList: async (parent, { productId }, context) => {
       try {
         if (!context.currentUser || !context.currentUser.userId) {
-          throw new GraphQLError("UNAUTHORIZED", {
-            extensions: { code: "UNAUTHORIZED" },
+          throw new GraphQLError("You should be logged in", {
+            extensions: { code: ErrorCode.UNAUTHENTICATED },
           });
         }
 
         const user = await userService.findOneById(context.currentUser.userId);
         if (!user) {
           throw new GraphQLError("User not found", {
-            extensions: { code: "NOT_FOUND" },
+            extensions: { code: ErrorCode.NOT_FOUND },
           });
         }
 
         if (user.role !== Role.Buyer) {
-          throw new GraphQLError("UNAUTHORIZED", {
-            extensions: { code: "UNAUTHORIZED" },
+          throw new GraphQLError("You should be logged in", {
+            extensions: { code: ErrorCode.NOT_AUTHORIZED },
           });
         }
         return await whishListService.deleteProductFromWishList(
@@ -126,8 +134,11 @@ export const WhishListResolver: Resolvers = {
           productId
         );
       } catch (error) {
+        console.log(
+          "X-----------Error deleting product from wish list-----------X"
+        );
         throw new GraphQLError(error, {
-          extensions: { code: "ERROR" },
+          extensions: { code: ErrorCode.INTERNAL_SERVER_ERROR },
         });
       }
     },
