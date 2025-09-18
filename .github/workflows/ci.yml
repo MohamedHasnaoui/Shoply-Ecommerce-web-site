@@ -1,11 +1,11 @@
 name: CI
 on:
   push:
-    branches: [ main ]
-  
+    branches: [main]
+
   pull_request:
-    branches: [ main ]
-    
+    branches: [main]
+
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Start Postgres with docker-compose
-        working-directory: backend
+        working-directory: Backend
         run: |
           docker compose up -d
           # wait until postgres is ready
@@ -31,12 +31,12 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: Backend/package-lock.json
 
-      - name: Install backend dependencies
-        working-directory: backend
+      - name: Install Backend dependencies
+        working-directory: Backend
         run: npm ci
 
-      - name: Build backend
-        working-directory: backend
+      - name: Build Backend
+        working-directory: Backend
         run: npm run start
