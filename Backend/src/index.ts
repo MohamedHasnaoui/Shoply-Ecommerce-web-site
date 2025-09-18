@@ -6,7 +6,7 @@ import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHt
 import { expressMiddleware } from "@apollo/server/express4";
 import { MyContext } from "./graphql/index.js";
 import { typeDefs, resolvers } from "./graphql/index.js";
-import { appDataSource } from "./database/data-source.js";
+import { appDataSource, initDB } from "./database/data-source.js";
 import { JwtPayload } from "./graphql/types/resolvers-types.js";
 import jwt from "jsonwebtoken";
 import express from "express";
@@ -28,7 +28,7 @@ const server = new ApolloServer<MyContext>({
 });
 const port = Number(process.env.SERVER_PORT) || 4000;
 const host = process.env.BASE_URL;
-await appDataSource.initialize();
+await initDB();
 await server.start();
 app.use(
   "/",

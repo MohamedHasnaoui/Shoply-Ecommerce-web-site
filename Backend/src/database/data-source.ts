@@ -18,7 +18,7 @@ import {
   Review,
   VerificationToken,
 } from "../entities/index.js";
-import { SeedDB1749579231936 } from "../migrations/1749579231936-SeedDB.js";
+import { createDatabase } from "typeorm-extension";
 
 export const appDataSource = new DataSource({
   type: "postgres",
@@ -46,6 +46,15 @@ export const appDataSource = new DataSource({
   ],
   logging: false,
   synchronize: true,
-  migrations: [SeedDB1749579231936],
   subscribers: [],
 });
+
+export async function initDB() {
+  await createDatabase({
+    ifNotExist: true,
+    options: appDataSource.options,
+  });
+
+  await appDataSource.initialize();
+  console.log("Database initialized ✅");
+}

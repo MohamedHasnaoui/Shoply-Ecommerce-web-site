@@ -14,10 +14,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: run a one-line script
-        run: echo Hellow world !
-        
-      - name: Run a multi-line script
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Start Postgres with docker-compose
+        working-directory: backend
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          docker compose up -d
+          # wait until postgres is ready
+          until docker exec $(docker ps -qf "name=postgres") pg_isready -U postgres; do
+            echo "⏳ Waiting for Postgres..."
+            sleep 2
+          done
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run start
