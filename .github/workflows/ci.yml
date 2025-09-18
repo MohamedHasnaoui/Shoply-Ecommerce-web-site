@@ -34,4 +34,4 @@ jobs:
 
       - name: Build Backend
         working-directory: Backend
-        run: npm run start
+        run: npm run build
