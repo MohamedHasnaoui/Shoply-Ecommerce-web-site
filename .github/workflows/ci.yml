@@ -21,11 +21,6 @@ jobs:
         working-directory: Backend
         run: |
           docker compose up -d
-          # wait until postgres is ready
-          until docker exec $(docker ps -qf "name=postgres") pg_isready -U postgres; do
-            echo "⏳ Waiting for Postgres..."
-            sleep 2
-          done
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
