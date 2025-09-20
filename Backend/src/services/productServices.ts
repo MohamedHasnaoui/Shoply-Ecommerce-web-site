@@ -283,6 +283,16 @@ export class ProductServices {
     await this.update(product);
     return true;
   }
+
+  // In your productService file...
+
+  async countProductsByCategoryId(categoryId: number): Promise<number> {
+
+    return await this.productRepository.count({
+      where: { category: { id: categoryId } },
+    });
+
+  }
 }
 
 export const productService = new ProductServices(

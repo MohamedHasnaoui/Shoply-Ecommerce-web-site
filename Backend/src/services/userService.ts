@@ -1,5 +1,4 @@
 import { MoreThanOrEqual, Repository, Not } from "typeorm";
-import { User } from "../entities/index.js";
 import {
   PeriodFilter,
   SignupIpnut,
@@ -14,6 +13,7 @@ import { appDataSource } from "../database/data-source.js";
 import { dateUtil } from "../../utils/dateUtil.js";
 import { addDays, format, getMonth } from "date-fns";
 import { ErrorCode } from "../../utils/Errors.js";
+import { User } from "../entities/index.js";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
