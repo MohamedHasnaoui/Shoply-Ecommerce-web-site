@@ -77,27 +77,27 @@ export class User {
   @Column({ nullable: true })
   @IsPhoneNumber(null, { message: "Invalid phone number." })
   @IsOptional()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @Column({ nullable: true })
   @IsDate({ message: "BirthDay must be a valid date." })
   @IsOptional()
-  birthDay: string;
+  birthDay?: string;
 
   @Column({ nullable: true })
   @IsEnum(Gender, {
     message: "Gender must be one of 'MALE', 'FEMALE'",
   })
   @IsOptional()
-  gender: Gender;
+  gender?: Gender;
 
   @Column({ nullable: true })
   @IsOptional()
-  profileImg: string;
+  profileImg?: string;
 
   @Column({ nullable: true })
   @IsOptional()
-  coverImg: string;
+  coverImg?: string;
 
   @Column()
   @IsEnum(Role, {
@@ -108,13 +108,13 @@ export class User {
 
   @Column({ default: false })
   @IsOptional()
-  isBlocked: boolean;
+  isBlocked?: boolean;
 
   @Column({ default: new Date() })
   @IsOptional()
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column({ default: new Date() })
   @IsOptional()
-  updatedAt: Date;
+  updatedAt?: Date;
 }

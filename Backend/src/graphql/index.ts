@@ -28,7 +28,7 @@ import { adminShema } from "./schemas/admin/admin.graphql.js";
 import { AdminRsolver } from "./resolvers/AdminResolver.js";
 export interface MyContext {
   currentUser?: JwtPayload;
-  idShoppingCart: number;
+  idShoppingCart?: number;
 }
 
 const typeDefsArray = [

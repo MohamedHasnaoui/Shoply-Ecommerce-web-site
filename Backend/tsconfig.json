@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2020", // Modern JavaScript
     "module": "esnext", // Use ES modules
-    "moduleResolution": "node", // Resolve modules like Node.js
+    "moduleResolution": "bundler", // Resolve modules like Node.js
     "outDir": "dist", // Output directory for compiled files
     "rootDirs": ["src"], // Source directory (could remove if not needed)
     "esModuleInterop": true, // Interoperability between CommonJS and ES modules
@@ -11,6 +11,7 @@
     "skipLibCheck": true, // Skip type checking of declaration files
     "lib": ["es2020"], // Include modern JS features
     "types": ["node"], // Include node types for development
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+  },
+  "exclude": ["node_modules","**/*.test.ts","__tests__"]
 }
