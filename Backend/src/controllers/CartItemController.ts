@@ -10,7 +10,7 @@ import { ErrorCode } from "../../utils/Errors.js";
 import { userService } from "../services/userService.js";
 import { cartItemService } from "../services/CartItemServices.js";
 import { shoppingCartService } from "../services/ShoppingCartService.js";
-import { Buyer, User } from "../entities"; // Assuming Buyer extends User or has a user property
+import { User } from "../entities";
 
 export class CartItemController {
   /**
