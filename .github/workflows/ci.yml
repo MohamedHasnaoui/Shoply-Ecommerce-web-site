@@ -19,7 +19,7 @@ jobs:
 
       - name: Start Postgres contaimer
         working-directory: Backend
-        run: docker run -p ${{secrets.PG_PORT}}:${{secrets.PG_PORT}} -e POSTGRES_PASSWORD=${{secrets.PG_PASSWORD}}--name=postgres_host postgres
+        run: docker run -p ${{secrets.PG_PORT}}:${{secrets.PG_PORT}} -e POSTGRES_PASSWORD=${{secrets.PG_PASSWORD}}--name=postgres_host -d postgres
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
