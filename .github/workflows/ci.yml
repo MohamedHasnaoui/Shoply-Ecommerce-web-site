@@ -17,10 +17,10 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Start Postgres with docker-compose
+      - name: Start Postgres contaimer
         working-directory: Backend
-        run: |
-          docker compose up -d
+        run: docker run -p ${{secrets.PG_PORT}}:${{secrets.PG_PORT}} -e POSTGRES_PASSWORD=${{secrets.PG_PASSWORD}}--name=postgres_host postgres
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -71,6 +71,7 @@ jobs:
             STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
             CLIENT_URL=${{ secrets.CLIENT_URL }}
             CLIENT_CART_URL=${{ secrets.CLIENT_CART_URL }}
+            PG_HOST=${{ secrets.PG_HOST }}
 
       - name: Build and push frontend Docker image
         uses: docker/build-push-action@v5

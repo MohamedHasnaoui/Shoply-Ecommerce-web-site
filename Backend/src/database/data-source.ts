@@ -22,7 +22,7 @@ import { createDatabase } from "typeorm-extension";
 
 export const appDataSource = new DataSource({
   type: "postgres",
-  host: "db",
+  host: process.env.PG_HOST,
   port: Number(process.env.PG_PORT),
   username: process.env.PG_NAME,
   password: process.env.PG_PASSWORD,
