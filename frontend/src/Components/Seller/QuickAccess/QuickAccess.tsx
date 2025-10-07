@@ -2,7 +2,7 @@ import avatar15 from "../../../assets/sellerAssets/media/avatars/avatar15.jpg"
 import SimpleBar from "simplebar-react"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../redux/store"
-import ShortStatistics from "./shortStatistics";
+import ShortStatistics from "./ShortStatistics";
 import EditProfile from "./EditProfile";
 interface propsType  {
     closeQuickAccess: ()=>void;

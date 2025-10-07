@@ -5,7 +5,7 @@ import {
 import { QueryOptions } from "@apollo/client";
 import { GET_UPLOAD_PARAMS } from "../../graphql/uploadCloud.graphql";
 import { client } from "../../graphqlProvider";
-import { FileWithPath } from "React-dropzone";
+import { FileWithPath } from "react-dropzone";
 import axios from "axios";
 import { UploadApiResponse } from "cloudinary";
 export class UploadCloudService {

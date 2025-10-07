@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build: frontend
+    image: mohamedelhasnaoui/shoply_frontend:latest
+    ports:
+      - "5173:80"
+
+  backend:
+    build: Backend
+    image: mohamedelhasnaoui/shoply_backend:latest
+    ports:
+      - "4000:4000"
+    depends_on:
+    - db
+    env_file:
+    - ./Backend/.env
+      
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: oussama  
+

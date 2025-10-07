@@ -39,3 +39,42 @@ jobs:
       - name: Run Tests
         working-directory: Backend
         run: npm run test
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/shoply_backend:latest
+          build-args: |
+            BASE_URL=${{ secrets.BASE_URL }}
+            FRONT_URL=${{ secrets.FRONT_URL }}
+            PG_PORT=${{ secrets.PG_PORT }}
+            PORT_SERVER=${{ secrets.PORT_SERVER }}
+            PG_NAME=${{ secrets.PG_NAME }}
+            PG_PASSWORD=${{ secrets.PG_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            JWT_KEY=${{ secrets.JWT_KEY }}
+            OUR_MAIL=${{ secrets.OUR_MAIL }}
+            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+            MAIL_HOST=${{ secrets.MAIL_HOST }}
+            CLOUD_NAME=${{ secrets.CLOUD_NAME }}
+            CLOUD_API_KEY=${{ secrets.CLOUD_API_KEY }}
+            CLOUD_API_SECRET=${{ secrets.CLOUD_API_SECRET }}
+            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            CLIENT_URL=${{ secrets.CLIENT_URL }}
+            CLIENT_CART_URL=${{ secrets.CLIENT_CART_URL }}
+
+      - name: Build and push frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/shoply_frontend:latest

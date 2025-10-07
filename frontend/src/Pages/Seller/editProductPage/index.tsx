@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import backgroundimg from "../../../assets/sellerAssets/media/photos/photo8@2x.jpg"
-import { useDropzone } from "React-dropzone";
+import { useDropzone } from "react-dropzone";
 import { Category, Product } from "../../../generated";
 import { productService } from "../../../services/product";
 import Select from 'react-select'

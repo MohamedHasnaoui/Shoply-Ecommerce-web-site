@@ -1,5 +1,5 @@
 
-import { useDropzone } from "React-dropzone";
+import { useDropzone } from "react-dropzone";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { useState } from "react";

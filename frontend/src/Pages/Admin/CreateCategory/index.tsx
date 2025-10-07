@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDropzone } from "React-dropzone";
+import { useDropzone } from "react-dropzone";
 import { CategoryInput } from "../../../generated";
 import { uploadCloudService } from "../../../services/uploadCloud";
 import { categoryService } from "../../../services/category";
