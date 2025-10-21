@@ -1,5 +1,4 @@
 // src/resolvers/__tests__/AuthResolver.test.ts
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { userService } from '../../services/userService.js';
 import { emailUtil } from '../../../utils/EmailUtil.js';
 import { shoppingCartService } from '../../services/ShoppingCartService.js';

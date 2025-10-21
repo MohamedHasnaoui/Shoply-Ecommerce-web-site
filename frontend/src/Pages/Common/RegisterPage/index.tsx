@@ -13,15 +13,26 @@ const actionDispatch = (dispatch:Dispatch)=>({
 const Register = () => {
   useEffect(() => {
     select2($);
-    const selectElement = $('.js-example-basic-single'); // Select element
-    selectElement.select2(); // Initialize Select2
+    const selectElement = $('.js-example-basic-single');
+    selectElement.select2();
+
+    const handleSelectChange = (e: JQuery.ChangeEvent) => {
+      const value = (e.target as HTMLSelectElement).value;
+      setFormState(prevState => ({
+        ...prevState,
+        role: value as Role
+      }));
+    };
+
+    selectElement.on('change', handleSelectChange);
 
     return () => {
-        if (selectElement.data('select2')) {
-            selectElement.select2('destroy'); // Cleanup on unmount
-        }
+      selectElement.off('change', handleSelectChange);
+      if (selectElement.data('select2')) {
+        selectElement.select2('destroy');
+      }
     };
-}, []);
+  }, []);
   const navigate = useNavigate();
   const {setSignUpEmail} = actionDispatch(useAppDispatch());
   const [formState, setFormState] = useState<SignupMutationVariables["input"]>({
@@ -35,11 +46,12 @@ const Register = () => {
   const [submitError, setsubmitError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormState({
-      ...formState,
-      [e.target.name]: e.target.value as string,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormState(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
   const validate = () => {
